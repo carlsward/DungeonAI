@@ -389,6 +389,12 @@ ALLOWED_EVENTS = {
     "open_hall_door",
     "guard_punishes"
 }
+HIT_VERBS_RE = re.compile(
+    r"\b(strike|strikes|struck|striking|hit|hits|hitting|"
+    r"smack|smacks|smacked|punch|punches|punched|"
+    r"kick|kicks|kicked|club|clubs|clubbed)\b",
+    re.IGNORECASE
+)
 
 
 def coerce_llm_result(raw: Dict[str, Any]) -> LLMResult:
@@ -592,11 +598,13 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
     # Guard narration safety
     if enforced_hp_delta == -20 and state.current_room == "cell_01":
         nl2 = narration.lower()
-        if ("guard" not in nl2) or (("strike" not in nl2) and ("hit" not in nl2)):
+        has_guard = ("guard" in nl2)
+        has_hit_verb = HIT_VERBS_RE.search(nl2) is not None
+        # Lägg bara till fallback om berättelsen inte redan beskriver slaget
+        if not (has_guard and has_hit_verb):
             if narration and narration[-1] not in ".!?":
                 narration += "."
-            narration += " The guard unlocks the door, strikes you, then returns to his bench."
-
+            narration += " The guard unlocks the door, strikes you, locks the door, and then returns to his bench."
     # Cosmetic: avoid “dark” when torch lit in coal
     if state.current_room == "coal_01" and state.flags_coal["torch_lit"]:
         narration = re.sub(r"\bin the dark coal cellar\b", "in the coal cellar", narration, flags=re.IGNORECASE)
@@ -635,7 +643,7 @@ WELCOME_TEXT = (
     "You stand in a dark stone cell. A torch burns low on one wall. An iron door with a barred window faces a torchlit corridor "
     "where a drowsy guard slumps on a bench. He wears full armor; there is no realistic chance to trick him or defeat him. "
     "High above, a tiny window reveals a foggy night sky and distant battlements—falling from there would be certain death. "
-    "A thin straw bed lies on the floor. Hidden beneath the straw is said to be a loose cobblestone—if you can find it.\n\n"
+    "A thin straw bed lies on the floor. There is said to be a loose cobblestone somewhere in the cell, if you can find it.\n\n"
     "Advice: Keep quiet. If you make noticeable noise in the cell, the guard will wake, unlock the door, and strike you before returning to his post."
     "\n"
 )
