@@ -11,28 +11,6 @@ Setup:
 2) Pull the model: `ollama pull llama3.1:8b`
 3) Python deps: `pip install requests`
 4) Run: `python escape_castle.py`
-
-Design goals implemented:
-- LLM interprets free-form action vs scene rules (no verb lists).
-- Strict JSON output; engine validates & applies effects.
-- Noise (0–3) is transient per turn.
-- Guard punishment only in Prison Cell: noise >= 2 ⇒ -20 HP, narrated.
-- HP starts at 100; 0 ⇒ immediate game over (LLM narrates; engine has fallback).
-- Impossible actions: playful grounded refusal + “Nothing happened.”
-- Concise narration (≈3 sentences); English only.
-- Dev log per turn to `game_dev.log`.
-- One-time run; no save/load.
-
-Stage 1 (already included):
-- Multi-room skeleton: Prison Cell (cell_01) ↔ Coal Cellar (coal_01), banners, inventory UI line.
-
-Stage 2 (this update):
-- Coal cellar darkness: moving w/o light ⇒ event 'dark_stumble' and -10 HP with warning.
-- Ground object in coal cellar: can be felt; picking it up ⇒ 'wooden torch' (flag 'has_torch_stick').
-- Lighting torch ONLY in the cell using the wall torch ⇒ 'lit torch' (flag 'torch_lit').
-- With lit torch, coal cellar reveals heaps, tight stone floor, staircase leading to a door.
-- Opening the door in the coal cellar (event 'open_hall_door') wins the game (for now).
-- First arrival to coal cellar prints a longer introduction once, besides the banner.
 """
 
 from __future__ import annotations
@@ -105,17 +83,25 @@ def parse_llm_json(text: str) -> Optional[Dict[str, Any]]:
 class GameState:
     current_room: str = "cell_01"
     hp: int = 100
-    inventory: List[str] = field(default_factory=list)   # derived from flags; kept for UI text
+
+    # World items: single-slot inventory design; torch has "lit" state
+    # location: "player" | "cell_01" | "coal_01"
+    items: Dict[str, Dict[str, Any]] = field(default_factory=lambda: {
+        "torch": {"location": "coal_01", "lit": False}  # starts as a wooden torch stick on the coal cellar floor
+    })
+
+    inventory: List[str] = field(default_factory=list)   # derived from items; kept for UI text
+
     # Room 1 (cell) flags
     flags_cell: Dict[str, bool] = field(default_factory=lambda: {
         "found_loose_stone": False,
         "stone_moved": False,
         "entered_hole": False,
     })
-    # Room 2 (coal) flags
+    # Room 2 (coal) flags (kept for LLM context; derived from items when possible)
     flags_coal: Dict[str, bool] = field(default_factory=lambda: {
-        "has_torch_stick": False,   # picked up the stick (wooden torch, unlit)
-        "torch_lit": False,         # lit the torch (only in cell)
+        "has_torch_stick": False,   # True if holding an unlit torch
+        "torch_lit": False,         # True if there is torchlight with you or in your room
         "coal_intro_shown": False,  # printed once when first entering
     })
 
@@ -174,7 +160,9 @@ ROOM_CELL_SCENE_CARD = {
         "If the player lifts/moves/pries/drags the loose stone (once discovered), set flag: stone_moved and reveal a crawlable hole.",
         "If the player crawls into/goes through the hole (once available), set flag: entered_hole and add event 'enter_coal_cellar'.",
         # Lighting rule (only here):
-        "If the player holds a wooden torch (has_torch_stick) and tries to light it on the wall torch, set flag 'torch_lit' (the wall torch itself cannot be removed).",
+        "If the player holds a wooden torch (has_torch_stick) and tries to light it on the wall torch, add event 'light_torch' and set flag 'torch_lit' (the wall torch itself cannot be removed).",
+        # Inventory (torch):
+        "If the player drops/throws/places their torch here, add event 'drop_torch'. If they pick it up, add event 'pickup_torch'.",
         "If an action is impossible, produce a playful grounded refusal and end with 'Nothing happened.'",
         "Never invent items/exits beyond the scene; never escape via the high window."
     ],
@@ -216,9 +204,11 @@ ROOM_COAL_SCENE_CARD = {
         "If the player attempts to walk/explore/move deeper while in darkness (no 'torch_lit'), they immediately stumble in the dark: set event 'dark_stumble' and hp_delta -10. Warn them it's unwise to move without light and that they remain where they are.",
         "If 'torch_lit' is true, never set 'dark_stumble'; movement is safe and surroundings are visible.",
         # Ground object
-        "If the player feels/picks up the unknown object at their feet, reveal it as a wooden torch stick: set flag 'has_torch_stick'.",
+        "If the player feels/picks up the unknown object at their feet, reveal it as a wooden torch stick: set flag 'has_torch_stick' and add event 'pickup_stick' (or 'pickup_torch').",
         # Returning to cell
         "If the player intends to return through the crawl opening, add event 'return_to_cell'.",
+        # Inventory (torch)
+        "If the player drops/throws/places their torch here, add event 'drop_torch'. If they pick it up, add event 'pickup_torch'.",
         # Visibility-gated exploration
         "If 'torch_lit' is true, you may describe coal heaps, the cramped stone floor, and a short stone staircase leading to a door at the far end.",
         # Door interaction (win for now)
@@ -237,6 +227,12 @@ ROOM_COAL_SCENE_CARD = {
 SCENES: Dict[str, Dict[str, Any]] = {
     "cell_01": ROOM_CELL_SCENE_CARD,
     "coal_01": ROOM_COAL_SCENE_CARD,
+}
+
+# Static room graph (engine controls legal travel)
+ROOM_GRAPH: Dict[str, List[str]] = {
+    "cell_01": ["coal_01"],   # via crawlable hole
+    "coal_01": ["cell_01"],
 }
 
 
@@ -258,14 +254,18 @@ Global rules:
 - Narration: immersive 2nd person, soft limit ~3 sentences, announce each key outcome ONCE (no repetition).
 - If the action is impossible, reply briefly and end with "Nothing happened."
 - If nothing meaningful changes, end narration with "Nothing happened."
-- When an event happens, set relevant flags in "flags_set". Use semantic events for traversal or special effects (e.g., 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','pickup_stick').
+- When an event happens, set relevant flags in "flags_set". Use semantic events for traversal or special effects (e.g., 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','pickup_stick','pickup_torch','drop_torch').
 
 Coal cellar specific:
 - If the player tries to move around without a lit torch, you MUST set event 'dark_stumble' and hp_delta -10, warn them, and say they remain where they are.
 - If 'torch_lit' is true, you MUST NOT set 'dark_stumble'. Movement is safe and you should describe visible surroundings instead.
-- The unknown ground object is a wooden torch stick; only reveal that identity on pickup (set 'has_torch_stick').
-- Lighting the torch is ONLY possible in the Prison Cell by using the wall torch; if attempted there and the player has the stick, set 'torch_lit'.
+- The unknown ground object is a wooden torch stick; only reveal that identity on pickup (set 'has_torch_stick'; using event 'pickup_stick' or 'pickup_torch').
+- Lighting the torch is ONLY possible in the Prison Cell by using the wall torch; if attempted there and the player has the stick, set 'torch_lit' (event 'light_torch').
 - With 'torch_lit' true, you may reveal the staircase and the door; opening the door sets event 'open_hall_door'.
+
+Inventory protocol:
+- The player can carry ONLY ONE item. If they try to pick up an item while already carrying one, you MUST refuse and suggest dropping the current item. End with "Nothing happened."
+- If the player drops/throws/places their torch, you MUST add event 'drop_torch' and treat it as no longer in their inventory (but it remains in the current room).
 
 Return a single JSON object with this schema:
 {
@@ -290,20 +290,18 @@ CURRENT STATE:
 - HP: {hp}
 - Flags (cell): {flags_cell}
 - Flags (coal): {flags_coal}
-- Inventory: {inventory}
+- Items: {items}
+- Inventory (one slot): {inventory}
 
 REMINDERS:
 - Prison Cell only: noise >= 2 ⇒ guard unlocks, strikes (-20 HP), returns (must narrate).
+- Traversal (MANDATORY): use 'enter_coal_cellar' when crawling down; use 'return_to_cell' when crawling back up.
 - Straw in the Prison Cell: searching/looking under/moving reveals the loose stone if not already.
 - Straw-only: do NOT set 'stone_moved' from straw actions alone.
 - To move the stone, the player must explicitly try to lift/pry/drag it; when you do that, include event 'stone_lifted'.
-- Multi-action allowed: if the player both clears straw AND lifts the stone in one prompt, include events 'straw_rummaged' and 'stone_lifted' and set both flags in the same turn.
-
-- Lifting the loose stone reveals a crawlable hole; crawling into it transitions to the coal cellar (event 'enter_coal_cellar').
-- In the Coal Cellar: without a lit torch, moving around causes 'dark_stumble' (-10 HP) and you remain where you are. You can feel an object at your feet; picking it up reveals a wooden torch stick.
-- Lighting the torch works ONLY in the Prison Cell using the wall torch (if you have the stick).
-- With a lit torch in the Coal Cellar, you may see a short stone staircase leading to a door; opening that door wins for now (event 'open_hall_door').
-- Announce each key outcome exactly once; avoid repetition.
+- Inventory: only ONE item carried. To pick up another, the player must drop the current one (event 'drop_torch' for torch).
+- In the Coal Cellar: without a lit torch, moving around causes 'dark_stumble' (-10 HP) and you remain where you are. With a lit torch, do not describe darkness; describe visible details (coal heaps, cramped stone floor, short staircase to a door).
+- Lighting the torch works ONLY in the Prison Cell using the wall torch (if you hold the stick).
 
 PLAYER ACTION:
 {player_action}
@@ -385,16 +383,44 @@ ALLOWED_COAL_FLAGS = {"has_torch_stick", "torch_lit"}
 ALLOWED_EVENTS = {
     "hay_moved", "straw_rummaged", "stone_revealed", "stone_lifted",
     "enter_coal_cellar", "return_to_cell",
-    "dark_stumble", "pickup_stick", "light_torch",
+    "dark_stumble", "pickup_stick", "pickup_torch", "drop_torch", "light_torch",
     "open_hall_door",
     "guard_punishes"
 }
+
+# Robust hit-verb detection to avoid duplicate guard line
 HIT_VERBS_RE = re.compile(
     r"\b(strike|strikes|struck|striking|hit|hits|hitting|"
     r"smack|smacks|smacked|punch|punches|punched|"
     r"kick|kicks|kicked|club|clubs|clubbed)\b",
     re.IGNORECASE
 )
+
+
+def inventory_items_from_items(state: GameState) -> List[str]:
+    """UI text derived from world items."""
+    torch = state.items.get("torch", {})
+    if torch.get("location") == "player":
+        return ["lit torch" if torch.get("lit") else "wooden torch"]
+    return []
+
+
+def torch_light_present_here(state: GameState) -> bool:
+    """Is there torchlight in the current room (carried or placed lit here)?"""
+    torch = state.items.get("torch", {})
+    if not torch.get("lit"):
+        return False
+    loc = torch.get("location")
+    return loc == "player" or loc == state.current_room
+
+
+def sync_flags_with_items(state: GameState) -> None:
+    """Keep legacy flags in sync for LLM context."""
+    torch = state.items.get("torch", {})
+    holding = torch.get("location") == "player"
+    state.flags_coal["has_torch_stick"] = (holding and not torch.get("lit", False))
+    # torch_lit reflects light in *current room* (so the model doesn't assume light elsewhere)
+    state.flags_coal["torch_lit"] = torch_light_present_here(state)
 
 
 def coerce_llm_result(raw: Dict[str, Any]) -> LLMResult:
@@ -424,14 +450,6 @@ COAL_INTRO_TEXT = (
 )
 
 
-def inventory_items_from_flags(flags_coal: Dict[str, bool]) -> List[str]:
-    if flags_coal.get("torch_lit", False):
-        return ["lit torch"]
-    if flags_coal.get("has_torch_stick", False):
-        return ["wooden torch"]
-    return []
-
-
 def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
     """
     Apply deterministic policies for the current room; validate allowed state changes; handle room transitions and victory.
@@ -446,7 +464,7 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
     # Events sanitized
     events = [e for e in llm.events if e in ALLOWED_EVENTS]
 
-    # --- HP enforcement ---
+    # ---------------- HP / Punishments ----------------
     enforced_hp_delta = 0
     cause = ""
 
@@ -462,14 +480,13 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
         else:
             if llm.hp_delta != 0:
                 notes.append(f"Ignored non-guard hp_delta={llm.hp_delta} (noise={noise}) in cell.")
+
     elif state.current_room == "coal_01":
-        # Darkness stumble rule — NEVER if torch is lit
+        # Darkness rule — but only if there is *no* light in this room
         if "dark_stumble" in events:
-            if state.flags_coal["torch_lit"]:
-                notes.append("Ignored 'dark_stumble' because torch is lit.")
+            if torch_light_present_here(state):
+                notes.append("Ignored 'dark_stumble' because torchlight is present in this room.")
                 events = [e for e in events if e != "dark_stumble"]
-                enforced_hp_delta = 0
-                cause = ""
             else:
                 enforced_hp_delta = -10
                 cause = "You stumble in the dark"
@@ -478,9 +495,8 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
         else:
             if llm.hp_delta != 0:
                 notes.append(f"Ignored hp_delta in coal without 'dark_stumble': {llm.hp_delta}")
-            enforced_hp_delta = 0
 
-    # --- Failsafe: derive flags from events (cell & coal) ---
+    # ---------------- Derive flags from events ----------------
     if state.current_room == "cell_01":
         event_to_flag = {
             "stone_moved": "stone_moved",
@@ -492,6 +508,7 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
     else:
         event_to_flag = {
             "pickup_stick": "has_torch_stick",
+            "pickup_torch": "has_torch_stick",
             "light_torch": "torch_lit",
         }
     for e in list(events or []):
@@ -499,77 +516,101 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
         if f and f not in llm.flags_set:
             llm.flags_set.append(f)
 
-    # --- Apply flags (order-aware so multi-action funkar) ---
+    # ---------------- Apply cell flags (ordered) ----------------
     new_flags: List[str] = []
 
     if state.current_room == "cell_01":
-        desired = [f for f in llm.flags_set if f in ALLOWED_CELL_FLAGS]
-        if "found_loose_stone" in desired and not state.flags_cell["found_loose_stone"]:
+        if "found_loose_stone" in llm.flags_set and not state.flags_cell["found_loose_stone"]:
             state.flags_cell["found_loose_stone"] = True
             new_flags.append("found_loose_stone")
-        if "stone_moved" in desired:
+
+        if "stone_moved" in llm.flags_set:
             if state.flags_cell["found_loose_stone"] and not state.flags_cell["stone_moved"]:
                 state.flags_cell["stone_moved"] = True
                 new_flags.append("stone_moved")
             elif not state.flags_cell["found_loose_stone"]:
                 notes.append("Cannot set 'stone_moved' before 'found_loose_stone'. Ignored.")
-        if "entered_hole" in desired:
+
+        if "entered_hole" in llm.flags_set:
             if state.flags_cell["stone_moved"] and not state.flags_cell["entered_hole"]:
                 state.flags_cell["entered_hole"] = True
                 new_flags.append("entered_hole")
             elif not state.flags_cell["stone_moved"]:
                 notes.append("Cannot set 'entered_hole' before 'stone_moved'. Ignored.")
 
-    for flag in llm.flags_set:
-        if flag in ALLOWED_COAL_FLAGS:
-            if flag == "has_torch_stick":
-                if state.current_room != "coal_01":
-                    notes.append("Ignored 'has_torch_stick' outside coal cellar.")
-                else:
-                    if not state.flags_coal["has_torch_stick"]:
-                        state.flags_coal["has_torch_stick"] = True
-                        new_flags.append("has_torch_stick")
-            elif flag == "torch_lit":
-                if state.current_room != "cell_01":
-                    notes.append("Ignored 'torch_lit' outside Prison Cell.")
-                elif not state.flags_coal["has_torch_stick"]:
-                    notes.append("Ignored 'torch_lit' without having a wooden torch.")
-                else:
-                    if not state.flags_coal["torch_lit"]:
-                        state.flags_coal["torch_lit"] = True
-                        new_flags.append("torch_lit")
+    # ---------------- Inventory & item events ----------------
+    torch = state.items.get("torch", {"location": "coal_01", "lit": False})
+    holding_torch = (torch["location"] == "player")
 
-    # --- Room transitions (robust) ---
+    # Pickup attempts
+    if ("pickup_stick" in events) or ("pickup_torch" in events) or ("has_torch_stick" in llm.flags_set):
+        if holding_torch:
+            notes.append("Already holding the torch; pickup ignored.")
+        else:
+            if torch["location"] == state.current_room:
+                # Enforce one-slot inventory (only torch exists for now, so slot is free)
+                torch["location"] = "player"
+                state.items["torch"] = torch
+                new_flags.append("has_torch_stick")
+            else:
+                notes.append("Torch is not in this room; pickup ignored.")
+
+    # Drop attempts
+    if "drop_torch" in events:
+        if holding_torch:
+            torch["location"] = state.current_room
+            state.items["torch"] = torch
+        else:
+            notes.append("Tried to drop torch while not holding it; ignored.")
+
+    # Lighting attempts (only in the cell and only if holding an unlit torch)
+    if "light_torch" in events:
+        if state.current_room != "cell_01":
+            notes.append("Ignored 'light_torch' outside Prison Cell.")
+        elif not holding_torch:
+            notes.append("Ignored 'light_torch' without holding the torch.")
+        elif torch.get("lit"):
+            notes.append("Torch already lit; ignoring duplicate.")
+        else:
+            torch["lit"] = True
+            state.items["torch"] = torch
+            new_flags.append("torch_lit")
+
+    # Keep flags in sync with items for LLM context and engine logic
+    sync_flags_with_items(state)
+
+    # ---------------- Room transitions (engine-gated) ----------------
     room_transition: Optional[str] = None
     game_won: bool = False
 
     prog_norm = (llm.progression or "").strip().lower()
 
     if state.current_room == "cell_01":
-        if state.flags_cell["stone_moved"] and (
-            "enter_coal_cellar" in events or prog_norm in {"next_room", "coal_01", "coal", "coal_cellar"}
-        ):
+        can_go = "coal_01" in ROOM_GRAPH["cell_01"] and state.flags_cell["stone_moved"]
+        wants_go = ("enter_coal_cellar" in events) or (prog_norm in {"next_room", "coal_01", "coal", "coal_cellar"})
+        if can_go and wants_go:
             room_transition = "coal_01"
-
     elif state.current_room == "coal_01":
-        if "return_to_cell" in events or prog_norm in {"cell_01", "cell", "prison_cell"}:
+        can_go = "cell_01" in ROOM_GRAPH["coal_01"]
+        wants_go = ("return_to_cell" in events) or (prog_norm in {"cell_01", "cell", "prison_cell"})
+        if can_go and wants_go:
             room_transition = "cell_01"
+
         if "open_hall_door" in events:
-            if state.flags_coal["torch_lit"]:
+            if torch_light_present_here(state):
                 game_won = True
             else:
-                notes.append("Ignored 'open_hall_door' without light (torch_lit is False).")
+                notes.append("Ignored 'open_hall_door' without light present in this room.")
 
-    # --- Apply HP ---
+    # ---------------- Apply HP ----------------
     prev_hp = state.hp
     state.hp = max(0, min(100, state.hp + enforced_hp_delta))
     if state.hp != prev_hp:
         notes.append(f"HP changed {prev_hp} -> {state.hp} (delta {enforced_hp_delta}).")
 
-    # --- Base narration ---
+    # ---------------- Narration & cues ----------------
     narration = llm.narration.strip() or "Nothing happens. The scene remains as it was. Nothing happened."
 
-    # Deterministic cues in the cell
     if state.current_room == "cell_01":
         nl = narration.lower()
         cues: List[str] = []
@@ -584,41 +625,38 @@ def validate_and_apply(state: GameState, llm: LLMResult) -> Dict[str, Any]:
                 narration += "."
             narration += " " + " ".join(cues)
 
-    # Deterministic cues i källaren
     if state.current_room == "coal_01":
         nl = narration.lower()
         cues: List[str] = []
-        if "has_torch_stick" in new_flags and ("wooden torch" not in nl and "torch stick" not in nl):
+        # If you just picked it up and model didn't narrate the identity
+        if "has_torch_stick" in new_flags and ("wooden torch" not in nl and "torch stick" not in nl and "torch" not in nl):
             cues.append("You pick up a wooden torch.")
         if cues:
             if narration and narration[-1] not in ".!?":
                 narration += "."
             narration += " " + " ".join(cues)
 
-    # Guard narration safety
+    # Ensure guard strike narration line if needed (cell) — no duplicates
     if enforced_hp_delta == -20 and state.current_room == "cell_01":
         nl2 = narration.lower()
         has_guard = ("guard" in nl2)
         has_hit_verb = HIT_VERBS_RE.search(nl2) is not None
-        # Lägg bara till fallback om berättelsen inte redan beskriver slaget
         if not (has_guard and has_hit_verb):
             if narration and narration[-1] not in ".!?":
                 narration += "."
-            narration += " The guard unlocks the door, strikes you, locks the door, and then returns to his bench."
-    # Cosmetic: avoid “dark” when torch lit in coal
-    if state.current_room == "coal_01" and state.flags_coal["torch_lit"]:
-        narration = re.sub(r"\bin the dark coal cellar\b", "in the coal cellar", narration, flags=re.IGNORECASE)
-        narration = re.sub(r"\bin the dark\b", "with torchlight", narration, flags=re.IGNORECASE)
+            narration += " The guard unlocks the door, strikes you, then returns to his bench."
 
-    # --- Commit room transition ---
+    # ---------------- Commit room transition ----------------
     if room_transition:
         notes.append(f"Room transition: {state.current_room} -> {room_transition}")
         state.current_room = room_transition
+        # After moving rooms, sync visibility flag again (light may or may not be present here)
+        sync_flags_with_items(state)
 
-    # --- Inventory UI (derived from flags) ---
-    state.inventory = inventory_items_from_flags(state.flags_coal)
+    # ---------------- Inventory UI ----------------
+    state.inventory = inventory_items_from_items(state)
 
-    # --- Decide progression ---
+    # ---------------- Result ----------------
     progression = "stay"
 
     return {
@@ -643,7 +681,7 @@ WELCOME_TEXT = (
     "You stand in a dark stone cell. A torch burns low on one wall. An iron door with a barred window faces a torchlit corridor "
     "where a drowsy guard slumps on a bench. He wears full armor; there is no realistic chance to trick him or defeat him. "
     "High above, a tiny window reveals a foggy night sky and distant battlements—falling from there would be certain death. "
-    "A thin straw bed lies on the floor. There is said to be a loose cobblestone somewhere in the cell, if you can find it.\n\n"
+    "A thin straw bed lies on the floor. There is said to be a loose cobblestone somewhere in the cell - if you can find it, that'll say.\n\n"
     "Advice: Keep quiet. If you make noticeable noise in the cell, the guard will wake, unlock the door, and strike you before returning to his post."
     "\n"
 )
@@ -672,13 +710,13 @@ def print_room_intro_if_needed(state: GameState) -> None:
 
 
 def print_coal_lit_entry_hint_if_applicable(state: GameState) -> None:
-    """When entering the coal cellar with a lit torch, print what is now visible."""
-    if state.current_room == "coal_01" and state.flags_coal.get("torch_lit", False):
+    """When entering the coal cellar with torchlight present, print what is now visible."""
+    if state.current_room == "coal_01" and torch_light_present_here(state):
         print("Torchlight pushes back the darkness: heaps of coal crowd the tight stone floor, and at the far end a short staircase leads to a closed door.\n")
 
 
 def main() -> None:
-    dev_log("PROMPT_VERSION: 2.6 (robust traversal, lit-entry hint, no dark text when torch lit, multi-action gating)")
+    dev_log("PROMPT_VERSION: 3.0 (room graph, item system, single-slot inventory, per-room light, guard dedupe)")
     print("\n=== ESCAPE THE CASTLE — ROOMS 1–2 (Prototype Stage 2) ===\n")
     print(WELCOME_TEXT)
     print_room_banner("cell_01")
@@ -700,7 +738,7 @@ def main() -> None:
 
         if player_action.lower() in {"inventory", "inv"}:
             # Quick inventory peek without LLM call
-            state.inventory = inventory_items_from_flags(state.flags_coal)
+            state.inventory = inventory_items_from_items(state)
             print_status(state.hp, noise_level=0, hp_delta=0, inventory=state.inventory, cause="")
             continue
 
@@ -713,7 +751,10 @@ def main() -> None:
         scene_card = SCENES[state.current_room]
         scene_json = json.dumps(scene_card, ensure_ascii=False, indent=2)
         flags_cell_str = json.dumps(state.flags_cell, ensure_ascii=False)
+        # Sync flags with items before sending to model (for accurate context)
+        sync_flags_with_items(state)
         flags_coal_str = json.dumps(state.flags_coal, ensure_ascii=False)
+        items_str = json.dumps(state.items, ensure_ascii=False)
         inventory_str = json.dumps(state.inventory, ensure_ascii=False)
 
         user_prompt = USER_INSTRUCTION_TEMPLATE.format(
@@ -723,6 +764,7 @@ def main() -> None:
             hp=state.hp,
             flags_cell=flags_cell_str,
             flags_coal=flags_coal_str,
+            items=items_str,
             inventory=inventory_str,
             player_action=player_action
         )
@@ -745,6 +787,7 @@ def main() -> None:
         dev_log(f"ENGINE_ROOM: {state.current_room}")
         dev_log(f"ENGINE_FLAGS_CELL: {state.flags_cell}")
         dev_log(f"ENGINE_FLAGS_COAL: {state.flags_coal}")
+        dev_log(f"ENGINE_ITEMS: {state.items}")
         dev_log(f"ENGINE_INV: {state.inventory}")
         dev_log(f"ENGINE_HP: {state.hp}")
 
@@ -762,7 +805,7 @@ def main() -> None:
             print(game_over_line())
             return
 
-        # Room transition banner + intros/hints
+        # Room transition banner + first-time intro + lit entry hint
         if result.get("room_transition"):
             print_room_banner(state.current_room)
             print_room_intro_if_needed(state)
