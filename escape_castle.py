@@ -385,14 +385,16 @@ class OllamaChat:
 # Engine: validation & progression
 # -----------------------------
 
-ALLOWED_CELL_FLAGS = {"found_loose_stone", "stone_moved", "entered_hole"}
+ALLOWED_CELL_FLAGS = {"found_loose_stone", "stone_moved", "entered_hole", "has_torch_stick", "torch_lit"}
 ALLOWED_COAL_FLAGS = {"has_torch_stick", "torch_lit"}
+
 ALLOWED_EVENTS = {
     "straw_rummaged", "stone_lifted",
     "enter_coal_cellar", "return_to_cell",
     "dark_stumble", "pickup_stick", "pickup_torch", "drop_torch", "light_torch",
     "open_hall_door",
     "guard_punishes"
+    "extinguish_torch",  # NEW
 }
 
 # Robust hit-verb detection to avoid duplicate guard line
@@ -410,6 +412,25 @@ _PICK_RE = re.compile(r"\b(pick\s*up|take|grab|collect|retrieve|get)\b", re.IGNO
 _LIGHT_RE = re.compile(r"\b(light|ignite|set\s+(?:it\s+)?alight|set\s+(?:it\s+)?on\s+fire)\b", re.IGNORECASE)
 _STRAW_RE = re.compile(r"\b(straw|hay|straw\s*bed|bed)\b", re.IGNORECASE)
 _CELL_WORD = re.compile(r"\bcell\b(?!ar)", re.IGNORECASE)  # 'cell' men inte 'cellar'
+# Extra intent / narration detectors
+_EXTINGUISH_RE = re.compile(r"\b(extinguish|snuff|put\s+out|douse|blow\s+out|quench)\b", re.IGNORECASE)
+
+# Sätt som text påstår att du har/använder facklan eller att det finns ljus
+_TORCHLIGHT_WORDS_RE = re.compile(
+    r"\b(torchlight|by\s+torchlight|the\s+torch(?:'s)?\s+faint\s+light|faint\s+light|dim(?:ly)?\s+lit|lit\s+torch|with\s+(?:your|the)\s+(?:lit\s+)?torch)\b",
+    re.IGNORECASE
+)
+
+_TORCH_POSSESSION_CLAIM_RE = re.compile(
+    r"\b(with\s+(?:your|the)\s+torch|grab(?:s|bing)?\s+the\s+torch|pick(?:s|ing)?\s+up\s+the\s+torch|holding\s+the\s+torch)\b",
+    re.IGNORECASE
+)
+
+# Ord som ofta följer "jag ser ..." i källaren
+_SEEING_DETAILS_IN_COAL_RE = re.compile(
+    r"\b(see|make\s+out|glimpse|visible)\b.*\b(door|stair|staircase|steps?|coal|heaps?)\b",
+    re.IGNORECASE
+)
 
 
 def infer_move_event(current_room: str, text: str) -> Optional[str]:
@@ -441,7 +462,9 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
 
 def infer_item_event(text: str) -> Optional[str]:
     t = (text or "").lower()
-    mentions_torch = ("torch" in t) or ("stick" in t)
+    mentions_torch = ("torch" in t) or ("stick" in t) or ("fire" in t)  # "put out the fire" utan att säga "torch"
+    if mentions_torch and _EXTINGUISH_RE.search(t):
+        return "extinguish_torch"
     if mentions_torch and _DROP_RE.search(t):
         return "drop_torch"
     if mentions_torch and _PICK_RE.search(t):
@@ -449,6 +472,7 @@ def infer_item_event(text: str) -> Optional[str]:
     if mentions_torch and _LIGHT_RE.search(t):
         return "light_torch"
     return None
+
 
 
 def inventory_items_from_items(state: GameState) -> List[str]:
@@ -570,6 +594,10 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     # Dedupe while preserving order
     events = list(dict.fromkeys(events))
+
+    if "drop_torch" in events and _EXTINGUISH_RE.search(player_action_text or ""):
+        events = ["extinguish_torch" if e == "drop_torch" else e for e in events]
+        notes.append("Converted 'drop_torch' to 'extinguish_torch' based on player intent.")
 
         # Guard: disallow straw rummage unless player actually mentions straw/hay/bed
     if state.current_room == "cell_01":
@@ -694,6 +722,9 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 new_flags.append("has_torch_stick")
             else:
                 notes.append("Torch is not in this room; pickup ignored.")
+                # Ersätt narration för att undvika falsk positiv text från LLM
+                llm.narration = "You feel around, but there’s no torch here. Nothing happened."
+
 
     # Drop attempts
     if "drop_torch" in events:
@@ -731,6 +762,22 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             torch["lit"] = True
             state.items["torch"] = torch
             new_flags.append("torch_lit")
+
+    # Extinguish attempts
+    if "extinguish_torch" in events:
+        if holding_torch and torch.get("lit"):
+            torch["lit"] = False
+            state.items["torch"] = torch
+            notes.append("Torch extinguished while held.")
+        elif torch.get("location") == state.current_room and torch.get("lit"):
+            # Tillåt släckning av en tänd fackla i rummet
+            torch["lit"] = False
+            state.items["torch"] = torch
+            notes.append("Torch extinguished on the ground in this room.")
+        else:
+            notes.append("No lit torch to extinguish; ignoring.")
+            llm.narration = "There’s no lit torch to extinguish. Nothing happened."
+
 
 
 
@@ -812,7 +859,16 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         if not (has_guard and has_hit_verb):
             if narration and narration[-1] not in ".!?":
                 narration += "."
-            narration += " The guard unlocks the door, strikes you, then returns to his bench."
+            narration += " The guard unlocks the door, strikes you with his fist, locks the door, and then returns to his bench."
+
+    # NEW: Guard scrub outside the cell
+    if state.current_room != "cell_01":
+        if "guard_punishes" in events or re.search(r"\bguard\b", narration, re.IGNORECASE):
+            # Ta bort eventet och ersätt narrationen — HP/Noise rör vi inte (du vill kunna ha 2–3 i källaren också)
+            events = [e for e in events if e != "guard_punishes"]
+            narration = "There’s no guard here. Nothing happened."
+            notes.append("Removed guard-related narration/events outside the cell.")
+
 
     # ---------------- Darkness-specific narrative guards ----------------
     # Deny "using the torch" if not carried/present lit here.
@@ -827,6 +883,17 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         if narration and narration[-1] not in ".!?":
             narration += "."
         narration += " Better not move while in darkness—find some light first."
+
+    # NEW: Hard darkness clamp — ersätt narrationen om LLM påstår ljus/detaljer i beckmörker
+    if state.current_room == "coal_01" and dark_here:
+        # Om narrationen eller spelarens input antyder torchlight/ljus eller "jag ser ..." detaljer -> ersätt
+        if (_TORCHLIGHT_WORDS_RE.search(narration) or
+            _TORCHLIGHT_WORDS_RE.search(player_action_text or "") or
+            _TORCH_POSSESSION_CLAIM_RE.search(narration) or
+            _SEEING_DETAILS_IN_COAL_RE.search(narration)):
+            narration = "It is pitch-black. Better not move while in darkness—find some light first."
+            notes.append("Replaced narration due to light/seeing claims while in total darkness.")
+
 
     # ---------------- Commit room transition ----------------
     if room_transition:
