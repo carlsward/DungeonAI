@@ -87,8 +87,10 @@ class GameState:
     # World items: single-slot inventory design; torch has "lit" state
     # location: "player" | "cell_01" | "coal_01"
     items: Dict[str, Dict[str, Any]] = field(default_factory=lambda: {
-        "torch": {"location": "coal_01", "lit": False}  # starts on coal floor
-    })
+    "torch": {"location": "coal_01", "lit": False},  # starts on coal floor
+    "keys":  {"location": "hall_01"}                 # nyckelknippan hänger i hallen (på riddaren)
+})
+
 
     inventory: List[str] = field(default_factory=list)   # derived from items; kept for UI text
 
@@ -104,6 +106,16 @@ class GameState:
         "torch_lit": False,         # True if there is torchlight with you or in your room
         "coal_intro_shown": False,  # printed once when first entering
     })
+
+    # Hall (great hall) flags
+    flags_hall: Dict[str, bool] = field(default_factory=lambda: {
+        "knight_knocked_out": False,       # Etapp 2 använder denna
+        "courtyard_door_unlocked": False,  # dörren låst tills den låses upp med keys
+        "hall_intro_shown": False          # skrivs ut en gång när man kommer in i hallen
+})
+
+
+
 
 
 @dataclass
@@ -185,6 +197,7 @@ ROOM_COAL_SCENE_CARD = {
         "No guards here; noise does not summon anyone.",
         "Physical realism applies—no magic or conjured tools.",
         "The crawl opening behind you leads back up to the prison cell.",
+        "The far cellar door is CLOSED but NOT locked; with light it can be opened freely.",
         "It is very dark by default. Without a lit torch, moving around is dangerous."
     ],
     "stateful_flags": [
@@ -203,9 +216,58 @@ ROOM_COAL_SCENE_CARD = {
         "If the player intends to return through the crawl opening, add 'return_to_cell'.",
         "If the player drops/throws/places their torch here, add 'drop_torch'. If they pick it up, add 'pickup_torch'.",
         "If 'torch_lit' is true, you may describe coal heaps, cramped floor, and a short staircase leading to a door.",
-        "If the player opens the door at the far end (typically with light), add 'open_hall_door'.",
+        "If the player opens OR 'unlocks' the far door (with light), add 'open_hall_door' and succeed — the door is not locked.",
         "If an action is impossible, playful grounded refusal and end with 'Nothing happened.'",
-        "Never invent items or exits not stated."
+        "Never invent items or exits not stated.",
+        
+
+    ],
+    "style_and_tone": [
+        "Second person, immersive, concise, vivid.",
+        "Maximum ~3 sentences per turn.",
+        "Announce each key outcome exactly once."
+    ],
+}
+
+ROOM_HALL_SCENE_CARD = {
+    "room_id": "hall_01",
+    "title": "Great Hall",
+    "room_description": (
+        "A grand, well-lit hall about 30×10 meters. Five stone pillars line each side; "
+        "chandeliers burn high above, and paintings hang along the walls. "
+        "You enter from a door at one short end; at the opposite short end stands a heavy door to the courtyard. "
+        "A knight stands near the entry-side short wall with his back turned, a keyring hanging from his belt."
+    ),
+    "facts_and_constraints": [
+        "English only.",
+        "The hall is brightly lit—no darkness mechanics here.",
+        "Single-slot inventory still applies.",
+        "The keyring is here (initially on the knight). It can be picked up only if your hands are free.",
+        "The courtyard door is locked until you unlock it with the keys.",
+        "You can return to the coal cellar through the door you came from."
+    ],
+    "stateful_flags": [
+        "knight_knocked_out", "courtyard_door_unlocked"
+    ],
+    "noise_scale_reference": {
+        "0": "Silent/minimal: careful sneaking, soft footsteps, hugging pillars.",
+        "1": "Quiet: normal walking, brief cloth/armor rustle.",
+        "2": "Noticeable/disruptive: stumbling, clanking, dropping items, raised voice.",
+        "3": "Loud/alarming: shouting, banging, sprinting heavily."
+    },
+    "triggers_policy": [
+        # Navigation & keys:
+        "If the player goes back to the cellar, add 'return_to_coal'.",
+        "If the player tries to pick up the keys, add 'pickup_keys'. Require empty hands (single-slot).",
+        "If the player drops the keys here, add 'drop_keys'.",
+        "To unlock the courtyard door, add 'unlock_courtyard_door' and require keys in inventory. If locked and no keys, refuse and end with 'Nothing happened.'",
+        # Stage 2: Knight logic — the engine will enforce, but the model should mirror it:
+        "If noise_level >= 2 and the knight is not already knocked out, add 'knight_notice' and 'combat_knock_guard'.",
+        "After 'combat_knock_guard', the knight is unconscious (knight_knocked_out=True). The player always succeeds in knocking him out.",
+        "Stealth paths are allowed: quietly take the keys (hands free) and slip behind pillars to the door.",
+        "Avoid stealth phrasing if knight_knocked_out=True (he’s unconscious).",
+        "Do NOT invent custom events like 'exit_hall'; use provided events only."
+
     ],
     "style_and_tone": [
         "Second person, immersive, concise, vivid.",
@@ -215,16 +277,21 @@ ROOM_COAL_SCENE_CARD = {
 }
 
 
+
 SCENES: Dict[str, Dict[str, Any]] = {
     "cell_01": ROOM_CELL_SCENE_CARD,
     "coal_01": ROOM_COAL_SCENE_CARD,
+    "hall_01": ROOM_HALL_SCENE_CARD,
 }
+
 
 # Static room graph (engine controls legal travel)
 ROOM_GRAPH: Dict[str, List[str]] = {
     "cell_01": ["coal_01"],
-    "coal_01": ["cell_01"],
+    "coal_01": ["cell_01", "hall_01"], 
+    "hall_01": ["coal_01"],
 }
+
 
 
 # -----------------------------
@@ -252,8 +319,10 @@ Global rules:
 - Multi-action: if player both clears straw AND lifts stone, include 'straw_rummaged' and 'stone_lifted', and set 'found_loose_stone' and 'stone_moved' this turn.
 - Never invent items, tools, magic, or exits beyond the active scene card.
 - Narration: immersive 2nd person, ~3 sentences, announce each key outcome once. If impossible/no change, end with "Nothing happened."
-- Use semantic events for effects: 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','pickup_stick','pickup_torch','drop_torch'.
+- Use semantic events for effects: 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','pickup_stick','pickup_torch','drop_torch','knight_notice','combat_knock_guard'.
+
 - Event parity: You may only narrate outcomes that correspond to entries in 'events' and/or 'flags_set'.
+- Do NOT create custom events like 'exit_hall' or 'exited_hall'.
 
 Coal cellar (coal_01) — darkness & safety:
 - Default state is PITCH-BLACK. Do NOT describe it as "dimly lit" unless 'torch_lit' is true in the current room.
@@ -263,9 +332,25 @@ Coal cellar (coal_01) — darkness & safety:
 - Identifying the unknown floor object happens ONLY on pickup: reveal it as a wooden torch stick and set 'has_torch_stick' with 'pickup_stick'/'pickup_torch'.
 - Opening the far door ('open_hall_door') is ONLY possible if 'torch_lit' is true in coal_01 this turn; otherwise refuse and end with "Nothing happened."
 - Do NOT describe lighting a torch outside cell_01; if the player tries, refuse and end with "Nothing happened."
+- The far cellar door is CLOSED but NOT locked. With light present, attempts to open OR "unlock" it MUST add 'open_hall_door' and succeed this turn.
+
+Great hall (hall_01) — Stage 2 (Knight & stealth):
+- The hall is well-lit; ignore darkness mechanics here.
+- Stealth is viable: at noise_level 0–1 you may narrate sneaking (pillars/angles), quietly stealing keys (requires empty hands).
+- If noise_level >= 2 this turn AND the knight is not already knocked out:
+  * Include 'knight_notice' and 'combat_knock_guard' in events.
+  * The player always knocks the knight out.
+  * HP penalty this turn depends on whether the player holds the torch: -30 HP if holding the torch; otherwise -50 HP.
+- After the knight is unconscious (knight_knocked_out=True), further noise does not cause combat again.
+- The player may return to the coal cellar: add 'return_to_coal'.
+- Keys can be picked up only if the player's single inventory slot is free: add 'pickup_keys'.
+- Keys can be dropped: add 'drop_keys'.
+- The courtyard door is locked by default. To unlock, require keys in inventory and add 'unlock_courtyard_door'.
+
+
 
 Inventory protocol:
-- The player can carry ONLY ONE item (we currently have one torch). If they try to pick up an item while already carrying one, refuse and end with "Nothing happened."
+- The player can carry ONLY ONE item (torch or keys). If they try to pick up an item while already carrying one, refuse and end with "Nothing happened."
 - If the player drops/throws/places their torch, add 'drop_torch' and treat it as no longer in their inventory (it remains in the current room).
 
 Return a single JSON object with keys:
@@ -287,8 +372,10 @@ CURRENT STATE:
 - HP: {hp}
 - Flags (cell): {flags_cell}
 - Flags (coal): {flags_coal}
+- Flags (hall): {flags_hall}
 - Items: {items}
 - Inventory (one slot): {inventory}
+
 
 REMINDERS:
 - Traversal (MANDATORY): down from the cell => 'enter_coal_cellar'; up from the cellar => 'return_to_cell'.
@@ -301,6 +388,8 @@ REMINDERS:
 - IMPORTANT (coal_01): Do NOT narrate using a torch unless it's in inventory or a lit torch is present here. Do NOT describe a "dimly lit" cellar unless 'torch_lit' is true.
 - Do NOT add 'straw_rummaged' or narrate interacting with straw unless the player explicitly wrote straw/hay/bed.
 - Do NOT narrate lighting a torch outside cell_01; if attempted, refuse and end with "Nothing happened."
+- Great Hall: well-lit. You may 'return_to_coal'. Keys can be picked up only with free hands (single-slot). 
+  The courtyard door is locked until 'unlock_courtyard_door' with keys.
 
 PLAYER ACTION:
 {player_action}
@@ -384,6 +473,7 @@ class OllamaChat:
 # -----------------------------
 # Engine: validation & progression
 # -----------------------------
+ALLOWED_HALL_FLAGS = {"knight_knocked_out", "courtyard_door_unlocked"}
 
 ALLOWED_CELL_FLAGS = {"found_loose_stone", "stone_moved", "entered_hole", "has_torch_stick", "torch_lit"}
 ALLOWED_COAL_FLAGS = {"has_torch_stick", "torch_lit"}
@@ -391,11 +481,21 @@ ALLOWED_COAL_FLAGS = {"has_torch_stick", "torch_lit"}
 ALLOWED_EVENTS = {
     "straw_rummaged", "stone_lifted",
     "enter_coal_cellar", "return_to_cell",
-    "dark_stumble", "pickup_stick", "pickup_torch", "drop_torch", "light_torch",
-    "open_hall_door",
-    "guard_punishes"
-    "extinguish_torch",  # NEW
+    "dark_stumble",
+    "pickup_stick", "pickup_torch", "drop_torch", "light_torch", "extinguish_torch",
+    "open_hall_door",  # från källaren till hallen
+
+    # HALL / KEYS
+    "return_to_coal",
+    "pickup_keys", "drop_keys",
+    "unlock_courtyard_door",
+
+    # Cell & Hall
+    "guard_punishes",
+    "knight_notice", "combat_knock_guard",
 }
+
+
 
 # Robust hit-verb detection to avoid duplicate guard line
 HIT_VERBS_RE = re.compile(
@@ -442,10 +542,19 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
             return "enter_coal_cellar"
         if re.search(r"\b(?:to|towards?)\b.*\b(?:coal\s+cellar|cellar)\b", t):
             return "enter_coal_cellar"
+        
+       
+
         if "cellar" in t and any(w in t for w in ["go", "enter", "head", "toward", "to"]):
             return "enter_coal_cellar"
 
     elif current_room == "coal_01":
+
+        # öppna/gå igenom dörren längst bort i källaren
+        if re.search(r"\b(open|unlatch|unlock|go\s+through|enter)\b.*\bdoor\b", t):
+            return "open_hall_door"
+
+
         # Up through the hole or back to (prison) cell
         up_back = any(w in t for w in ["back", "go back", "head back", "return", "up", "climb", "crawl up", "back up", "go up"])
         via_hole = re.search(r"\b(hole|opening|crawl(?:space)?)\b", t) is not None
@@ -457,12 +566,21 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
         if re.search(r"\b(?:return|go|head|crawl|climb)\b.*\bto\b.*\b(?:prison\s+cell|the\s+cell|cell\b(?!ar))", t):
             return "return_to_cell"
 
+    elif current_room == "hall_01":
+        if re.search(r"\b(return|go\s+back|head\s+back|back)\b", t) and re.search(r"\b(coal|cellar|door)\b", t):
+            return "return_to_coal"
+
+
     return None
 
+_KEYS_RE = re.compile(r"\b(key|keys|keyring|keychain|key\s*ring)\b", re.IGNORECASE)
+_UNLOCK_RE = re.compile(r"\b(unlock|use\s+key|use\s+keys|open\s+with\s+(?:key|keys))\b", re.IGNORECASE)
 
 def infer_item_event(text: str) -> Optional[str]:
     t = (text or "").lower()
-    mentions_torch = ("torch" in t) or ("stick" in t) or ("fire" in t)  # "put out the fire" utan att säga "torch"
+    mentions_torch = ("torch" in t) or ("stick" in t) or ("fire" in t)
+    mentions_keys = _KEYS_RE.search(t) is not None
+
     if mentions_torch and _EXTINGUISH_RE.search(t):
         return "extinguish_torch"
     if mentions_torch and _DROP_RE.search(t):
@@ -471,16 +589,27 @@ def infer_item_event(text: str) -> Optional[str]:
         return "pickup_torch"
     if mentions_torch and _LIGHT_RE.search(t):
         return "light_torch"
+
+    if mentions_keys and _DROP_RE.search(t):
+        return "drop_keys"
+    if mentions_keys and _PICK_RE.search(t):
+        return "pickup_keys"
+    if _UNLOCK_RE.search(t) and mentions_keys:
+        return "unlock_courtyard_door"
+
     return None
 
 
 
 def inventory_items_from_items(state: GameState) -> List[str]:
-    """UI text derived from world items."""
     torch = state.items.get("torch", {})
+    keys = state.items.get("keys", {})
     if torch.get("location") == "player":
         return ["lit torch" if torch.get("lit") else "wooden torch"]
+    if keys.get("location") == "player":
+        return ["keys"]
     return []
+
 
 
 def torch_light_present_here(state: GameState) -> bool:
@@ -502,17 +631,45 @@ def sync_flags_with_items(state: GameState) -> None:
 
 def coerce_llm_result(raw: Dict[str, Any]) -> LLMResult:
     narration = str(raw.get("narration", "") or "").strip()
-    noise_level = int(raw.get("noise_level", 0) or 0)
-    hp_delta = int(raw.get("hp_delta", 0) or 0)
-    events = list(raw.get("events") or [])
-    flags_set = list(raw.get("flags_set") or [])
+
+    # noise_level
+    try:
+        noise_level = int(raw.get("noise_level", 0) or 0)
+    except Exception:
+        noise_level = 0
+
+    # hp_delta
+    try:
+        hp_delta = int(raw.get("hp_delta", 0) or 0)
+    except Exception:
+        hp_delta = 0
+
+    # events (acceptera list eller dict{event: bool})
+    ev_raw = raw.get("events", [])
+    if isinstance(ev_raw, dict):
+        events = [k for k, v in ev_raw.items() if v]
+    elif isinstance(ev_raw, list):
+        events = list(ev_raw)
+    else:
+        events = []
+
+    # flags_set (acceptera list eller dict{flag: bool})
+    fs_raw = raw.get("flags_set", [])
+    if isinstance(fs_raw, dict):
+        flags_set = [k for k, v in fs_raw.items() if v]
+    elif isinstance(fs_raw, list):
+        flags_set = list(fs_raw)
+    else:
+        flags_set = []
+
+    # progression som text
     prog_raw = raw.get("progression", "")
-    progression = (prog_raw or "")
-    if not isinstance(progression, str):
-        progression = ""
-    progression = progression.strip()
+    progression = prog_raw if isinstance(prog_raw, str) else ""
+
     safety_reason = str(raw.get("safety_reason", "") or "").strip()
+
     return LLMResult(narration, noise_level, hp_delta, events, flags_set, progression, safety_reason)
+
 
 
 
@@ -521,6 +678,10 @@ def print_room_banner(room_id: str) -> None:
         print("\n— You are in the Prison Cell. —\n")
     elif room_id == "coal_01":
         print("\n— You are in the Coal Cellar. —\n")
+    
+    elif room_id == "hall_01":
+        print("\n— You are in the Great Hall. —\n")
+
     else:
         print(f"\n— You are in: {room_id} —\n")
 
@@ -529,6 +690,12 @@ COAL_INTRO_TEXT = (
     "It’s pitch-black. Coal dust clings to your throat; the stone floor feels uneven underfoot. "
     "Heaps of coal hem you in on both sides. As you steady yourself, your foot bumps against something lying on the ground. "
     "You can feel it with your toes, but you can’t tell what it is until you pick it up."
+)
+
+HALL_INTRO_TEXT = (
+    "A lofty chamber opens before you: five stone pillars on each side, chandeliers burning above, portraits along the walls. "
+    "Near the door you entered stands a mail-clad knight with his back turned; a keyring hangs from his belt. "
+    "Across the hall, a heavy door leads to the courtyard."
 )
 
 
@@ -558,6 +725,12 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         r"(?:\b(use|shine|raise|brandish|wave|aim|point)\b.*\btorch\b|\btorch\b.*\b(use|shine|raise|brandish|wave|aim|point)\b)",
         _re.IGNORECASE
     )
+    room_transition: Optional[str] = None
+    game_won: bool = False
+    # Snapshot: holding torch at start of this turn (used for hall combat damage)
+    torch_snapshot = state.items.get("torch", {"location": None, "lit": False})
+    holding_torch_snapshot = (torch_snapshot.get("location") == "player")
+
 
     # Bound noise level
     noise = max(0, min(3, int(llm.noise_level)))
@@ -565,7 +738,14 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         notes.append(f"Noise coerced from {llm.noise_level} to {noise}.")
 
     # Strictly filter flags reported by the LLM to what is allowed for the current room
-    allowed_flags = ALLOWED_CELL_FLAGS if state.current_room == "cell_01" else ALLOWED_COAL_FLAGS
+    if state.current_room == "cell_01":
+        allowed_flags = ALLOWED_CELL_FLAGS
+    elif state.current_room == "coal_01":
+        allowed_flags = ALLOWED_COAL_FLAGS
+    elif state.current_room == "hall_01":
+        allowed_flags = ALLOWED_HALL_FLAGS
+    else:
+        allowed_flags = set()
     if llm.flags_set:
         original_flags = list(llm.flags_set)
         llm.flags_set = [f for f in llm.flags_set if f in allowed_flags]
@@ -659,6 +839,50 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             if llm.hp_delta != 0:
                 notes.append(f"Ignored hp_delta in coal without 'dark_stumble': {llm.hp_delta}")
 
+    elif state.current_room == "hall_01":
+
+        # Stage 2: Knight combat if too noisy and not already knocked out
+        if noise >= 2 and not state.flags_hall["knight_knocked_out"]:
+            # ensure events are present
+            if "knight_notice" not in events:
+                events.append("knight_notice")
+            if "combat_knock_guard" not in events:
+                events.append("combat_knock_guard")
+
+            # damage rule: -30 if torch in hand this turn, else -50
+            enforced_hp_delta = -30 if holding_torch_snapshot else -50
+            cause = "The knight hears you; you struggle and knock him out"
+            state.flags_hall["knight_knocked_out"] = True  # permanently unconscious
+
+            # strengthen narration (non-intrusive append)
+            if llm.narration and llm.narration[-1] not in ".!?":
+                llm.narration += "."
+            llm.narration = (llm.narration + " The knight wheels around, you clash briefly, and he crumples to the floor, unconscious.").strip()
+
+        # Rörelse tillbaka
+        can_go_back = "coal_01" in ROOM_GRAPH.get("hall_01", [])
+        if "return_to_coal" in events and can_go_back:
+            room_transition = "coal_01"
+
+        # Unlock courtyard (requires keys in inventory) -> TEMP VICTORY
+        if "unlock_courtyard_door" in events:
+            keys = state.items.get("keys", {})
+            if keys.get("location") == "player":
+                if not state.flags_hall["courtyard_door_unlocked"]:
+                    state.flags_hall["courtyard_door_unlocked"] = True
+                    if llm.narration and llm.narration[-1] not in ".!?":
+                        llm.narration += "."
+                    llm.narration = (llm.narration + " The courtyard door unlocks with a solid click.").strip()
+                else:
+                    notes.append("Courtyard door already unlocked; ignoring duplicate unlock.")
+                # Trigger temporary victory on unlock
+                game_won = True
+            else:
+                notes.append("Tried to unlock courtyard door without keys.")
+                llm.narration = "The door is locked and you have no keys. Nothing happened."
+
+
+
     # ---------------- Derive flags from events ----------------
     if state.current_room == "cell_01":
         event_to_flag = {
@@ -709,84 +933,95 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     # ---------------- Inventory & item events ----------------
     torch = state.items.get("torch", {"location": "coal_01", "lit": False})
+    keys = state.items.get("keys", {"location": "hall_01"})
     holding_torch = (torch["location"] == "player")
+    holding_keys  = (keys["location"]  == "player")
 
-    # Pickup attempts
-    if ("pickup_stick" in events) or ("pickup_torch" in events) or ("has_torch_stick" in llm.flags_set):
-        if holding_torch:
-            notes.append("Already holding the torch; pickup ignored.")
-        else:
-            if torch["location"] == state.current_room:
-                torch["location"] = "player"
-                state.items["torch"] = torch
-                new_flags.append("has_torch_stick")
-            else:
-                notes.append("Torch is not in this room; pickup ignored.")
-                # Ersätt narration för att undvika falsk positiv text från LLM
-                llm.narration = "You feel around, but there’s no torch here. Nothing happened."
-
-
-    # Drop attempts
-    if "drop_torch" in events:
-        if holding_torch:
-            torch["location"] = state.current_room
-            state.items["torch"] = torch
-        else:
-            notes.append("Tried to drop torch while not holding it; ignored.")
-
-            # Lighting attempts (only in the cell and only if holding an unlit torch)
-    if "light_torch" in events:
-        # välj tydligaste nek-rad och ERSÄTT narration
-        def _set_narr(msg: str):
-            llm.narration = msg
-
-        # Vi prioriterar att informera om cell-kravet, men hanterar också saknad fackla
-        if state.current_room != "cell_01":
-            notes.append("Ignored 'light_torch' outside Prison Cell.")
-            # rensa event/flagga som modellen kanske lagt
-            events = [e for e in events if e != "light_torch"]
-            if "torch_lit" in llm.flags_set:
-                llm.flags_set = [f for f in llm.flags_set if f != "torch_lit"]
-            if not holding_torch:
-                _set_narr("You’re not holding the torch, and you can only light it on the wall torch in the prison cell. Nothing happened.")
-            else:
-                _set_narr("You can only light the torch on the wall torch in the prison cell. Nothing happened.")
-        elif not holding_torch:
-            notes.append("Ignored 'light_torch' without holding the torch.")
-            events = [e for e in events if e != "light_torch"]
-            _set_narr("You’re not holding the torch. Nothing happened.")
-        elif torch.get("lit"):
-            notes.append("Torch already lit; ignoring duplicate.")
-            # behåll tyst narration (ingen ändring)
-        else:
-            torch["lit"] = True
-            state.items["torch"] = torch
-            new_flags.append("torch_lit")
-
-    # Extinguish attempts
+    # 1) Process DROPS first (to free hands for same-turn pickups)
     if "extinguish_torch" in events:
         if holding_torch and torch.get("lit"):
-            torch["lit"] = False
-            state.items["torch"] = torch
-            notes.append("Torch extinguished while held.")
+            torch["lit"] = False; state.items["torch"] = torch; notes.append("Torch extinguished while held.")
         elif torch.get("location") == state.current_room and torch.get("lit"):
-            # Tillåt släckning av en tänd fackla i rummet
-            torch["lit"] = False
-            state.items["torch"] = torch
-            notes.append("Torch extinguished on the ground in this room.")
+            torch["lit"] = False; state.items["torch"] = torch; notes.append("Torch extinguished on the ground in this room.")
         else:
             notes.append("No lit torch to extinguish; ignoring.")
             llm.narration = "There’s no lit torch to extinguish. Nothing happened."
 
+    if "drop_torch" in events:
+        if holding_torch:
+            torch["location"] = state.current_room; state.items["torch"] = torch
+        else:
+            notes.append("Tried to drop torch while not holding it; ignored.")
 
+    if "drop_keys" in events:
+        if holding_keys:
+            keys["location"] = state.current_room; state.items["keys"] = keys
+        else:
+            notes.append("Tried to drop keys while not holding them; ignored.")
 
+    # Recompute slot occupancy after drops
+    holding_torch = (state.items.get("torch", {}).get("location") == "player")
+    holding_keys  = (state.items.get("keys", {}).get("location") == "player")
+    slot_occupied = holding_torch or holding_keys
+
+    # 2) Process PICKUPS after drops
+    if ("pickup_stick" in events) or ("pickup_torch" in events) or ("has_torch_stick" in llm.flags_set):
+        if holding_torch:
+            notes.append("Already holding the torch; pickup ignored.")
+        elif slot_occupied:
+            notes.append("Hands full; cannot pick up torch while holding another item.")
+            llm.narration = "Your hands are full. Drop what you're holding first. Nothing happened."
+        else:
+            if torch["location"] == state.current_room:
+                torch["location"] = "player"
+                state.items["torch"] = torch
+            else:
+                notes.append("Torch is not in this room; pickup ignored.")
+                llm.narration = "You feel around, but there’s no torch here. Nothing happened."
+
+    if "pickup_keys" in events:
+        if holding_keys:
+            notes.append("Already holding the keys; pickup ignored.")
+        elif slot_occupied:
+            notes.append("Hands full; cannot pick up keys while holding another item.")
+            llm.narration = "Your hands are full. Drop what you're holding first. Nothing happened."
+        else:
+            if keys["location"] == state.current_room:
+                keys["location"] = "player"
+                state.items["keys"] = keys
+            else:
+                notes.append("Keys are not in this room; pickup ignored.")
+                llm.narration = "You don't find any keys here. Nothing happened."
+
+    # 3) Lighting attempts (only in the cell and only if holding an unlit torch)
+    if "light_torch" in events:
+        def _set_narr(msg: str):
+            llm.narration = msg
+        holding_torch_now = (state.items["torch"]["location"] == "player")
+        if state.current_room != "cell_01":
+            notes.append("Ignored 'light_torch' outside Prison Cell.")
+            events = [e for e in events if e != "light_torch"]
+            if "torch_lit" in llm.flags_set:
+                llm.flags_set = [f for f in llm.flags_set if f != "torch_lit"]
+            if not holding_torch_now:
+                _set_narr("You’re not holding the torch, and you can only light it on the wall torch in the prison cell. Nothing happened.")
+            else:
+                _set_narr("You can only light the torch on the wall torch in the prison cell. Nothing happened.")
+        elif not holding_torch_now:
+            notes.append("Ignored 'light_torch' without holding the torch.")
+            events = [e for e in events if e != "light_torch"]
+            _set_narr("You’re not holding the torch. Nothing happened.")
+        elif state.items["torch"].get("lit"):
+            notes.append("Torch already lit; ignoring duplicate.")
+        else:
+            state.items["torch"]["lit"] = True
+            notes.append("Torch lit.")
 
     # Keep flags in sync with items for LLM context and engine logic
     sync_flags_with_items(state)
 
-    # ---------------- Room transitions (engine-gated) ----------------
-    room_transition: Optional[str] = None
-    game_won: bool = False
+
+    
 
     prog_norm = (llm.progression or "").strip().lower()
 
@@ -814,9 +1049,10 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
         if "open_hall_door" in events:
             if torch_light_present_here(state):
-                game_won = True
+                room_transition = "hall_01"
             else:
                 notes.append("Ignored 'open_hall_door' without light present in this room.")
+
 
     # ---------------- Apply HP ----------------
     prev_hp = state.hp
@@ -861,13 +1097,13 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 narration += "."
             narration += " The guard unlocks the door, strikes you with his fist, locks the door, and then returns to his bench."
 
-    # NEW: Guard scrub outside the cell
-    if state.current_room != "cell_01":
+    # Guard-scrub endast i källaren (förhindra cell-guard-respons i coal_01)
+    if state.current_room == "coal_01":
         if "guard_punishes" in events or re.search(r"\bguard\b", narration, re.IGNORECASE):
-            # Ta bort eventet och ersätt narrationen — HP/Noise rör vi inte (du vill kunna ha 2–3 i källaren också)
             events = [e for e in events if e != "guard_punishes"]
             narration = "There’s no guard here. Nothing happened."
-            notes.append("Removed guard-related narration/events outside the cell.")
+            notes.append("Removed guard-related narration/events in the coal cellar.")
+
 
 
     # ---------------- Darkness-specific narrative guards ----------------
@@ -906,23 +1142,31 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     state.inventory = inventory_items_from_items(state)
 
     # ---------------- Final sanity: if nothing meaningful happened, enforce "Nothing happened."
-    meaningful_events = {"drop_torch", "pickup_torch", "light_torch",
-                         "dark_stumble", "guard_punishes",
-                         "enter_coal_cellar", "return_to_cell", "open_hall_door", "straw_rummaged", "stone_lifted"}
+    meaningful_events = {
+        "drop_torch", "pickup_torch", "pickup_stick", "light_torch", "extinguish_torch",
+        "drop_keys", "pickup_keys", "unlock_courtyard_door",
+        "dark_stumble", "guard_punishes",
+        "enter_coal_cellar", "return_to_cell", "return_to_coal", "open_hall_door",
+        "straw_rummaged", "stone_lifted",
+        "knight_notice", "combat_knock_guard"
+    }
 
     something_happened = (
-        bool(new_flags) or
         bool(room_transition) or
         bool(game_won) or
         (state.hp != prev_hp) or
         any(e in events for e in meaningful_events)
     )
 
-    if not something_happened:
+    # Suppress "Nothing happened." on pure LOOK/describe turns
+    look_only = (not something_happened) and LOOK_RE.search(player_action_text or "") is not None
+
+    if not something_happened and not look_only:
         if narration and narration[-1] not in ".!?":
             narration += "."
         if "Nothing happened." not in narration:
             narration += " Nothing happened."
+
 
     # ---------------- Result ----------------
     progression = "stay"
@@ -973,10 +1217,14 @@ def game_over_line() -> str:
 
 
 def print_room_intro_if_needed(state: GameState) -> None:
-    """Print a longer intro only the first time a room is entered (coal cellar for now)."""
+    """Print a longer intro only the first time a room is entered."""
     if state.current_room == "coal_01" and not state.flags_coal.get("coal_intro_shown", False):
         print(COAL_INTRO_TEXT + "\n")
         state.flags_coal["coal_intro_shown"] = True
+    if state.current_room == "hall_01" and not state.flags_hall.get("hall_intro_shown", False):
+        print(HALL_INTRO_TEXT + "\n")
+        state.flags_hall["hall_intro_shown"] = True
+
 
 
 def print_coal_lit_entry_hint_if_applicable(state: GameState) -> None:
@@ -1025,6 +1273,8 @@ def main() -> None:
         flags_coal_str = json.dumps(state.flags_coal, ensure_ascii=False)
         items_str = json.dumps(state.items, ensure_ascii=False)
         inventory_str = json.dumps(state.inventory, ensure_ascii=False)
+        flags_hall_str = json.dumps(state.flags_hall, ensure_ascii=False)
+
 
         user_prompt = USER_INSTRUCTION_TEMPLATE.format(
             room_id=state.current_room,
@@ -1033,6 +1283,7 @@ def main() -> None:
             hp=state.hp,
             flags_cell=flags_cell_str,
             flags_coal=flags_coal_str,
+            flags_hall=flags_hall_str,
             items=items_str,
             inventory=inventory_str,
             player_action=player_action
@@ -1080,11 +1331,12 @@ def main() -> None:
             print_room_intro_if_needed(state)
             print_coal_lit_entry_hint_if_applicable(state)
 
-        # Win check
+        # Win check (temporary victory on courtyard unlock)
         if result.get("game_won"):
-            print("\nYou push the door open and step into the great hall. Fresh air washes over the coal dust on your skin.")
-            print("*** YOU ESCAPED THE COAL CELLAR! (Next room coming soon) ***")
+            print("\n*** TEMPORARY VICTORY ***")
+            print("The key turns with a firm click. You pull the heavy door open and slip into the night air of the courtyard.\n")
             return
+
 
         # Continue loop
 
