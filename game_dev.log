@@ -511,3 +511,32 @@
 [2025-09-30 23:28:42] RAW_MODEL_OUTPUT: {"narration": "You stomp on the cobblestones, making a loud noise.", "noise_level": 2, "hp_delta": -20, "events": ["guard_punishes"], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
 [2025-09-30 23:29:15] RAW_MODEL_OUTPUT: {"narration": "You try to light the straw bed on fire, but it's too damp and doesn't catch.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
 [2025-09-30 23:29:45] RAW_MODEL_OUTPUT: {"narration": "You try to light the straw bed on fire, but it's too damp and doesn't catch.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-09-30 23:31:38] RAW_MODEL_OUTPUT: {"narration": "You try to remove the wall torch, but it's stuck in place.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-09-30 23:33:33] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-09-30 23:34:02] RAW_MODEL_OUTPUT: {"narration": "You carefully jump into the crawlable hole.", "noise_level": 1, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-09-30 23:37:45] RAW_MODEL_OUTPUT: {"narration": "You pick up a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-09-30 23:38:28] RAW_MODEL_OUTPUT: {"narration": "Nothing happened.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-09-30 23:38:50] RAW_MODEL_OUTPUT: {"narration": "You return through the crawl opening and find yourself back in the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-09-30 23:40:17] RAW_MODEL_OUTPUT: {"narration": "You hold the wooden torch and light it on the wall torch.", "noise_level": 0, "hp_delta": 0, "events": ["light_torch"], "flags_set": {"torch_lit": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-09-30 23:54:19] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back down through the crawlable hole.", "noise_level": 0, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 00:12:45] RAW_MODEL_OUTPUT: {
+  "narration": "You carefully hold the wooden torch stick against the wall and manage to light it on the existing flame.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": ["light_torch"],
+  "flags_set": {"torch_lit": true},
+  "progression": "cell_01",
+  "safety_reason": null
+}
+[2025-10-01 00:16:13] RAW_MODEL_OUTPUT: {
+  "narration": "You carefully search under the straw bed in your cell.",
+  "noise_level": 1,
+  "hp_delta": 0,
+  "events": ["straw_rummaged"],
+  "flags_set": {"found_loose_stone": true},
+  "progression": null,
+  "safety_reason": null
+}
+[2025-10-01 00:16:34] RAW_MODEL_OUTPUT: {"narration": "You carefully peer under the straw bed in your cell.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": null, "safety_reason": null}
+[2025-10-01 00:16:55] RAW_MODEL_OUTPUT: {"narration": "You try to remove the straw bed, but nothing changes.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": null, "safety_reason": null}
+[2025-10-01 00:19:16] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true, "stone_moved": true}, "progression": null, "safety_reason": null}

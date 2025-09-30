@@ -1,12 +1,14 @@
 # ui_server.py
-# Flask-baserad web-UI för Escape the Castle med CRT-look, rums-intros och stabil inputrad.
+# Flask-baserad web-UI för Escape the Castle med CRT-look, rums-intros,
+# stabil inputrad, glow-highlight för key events och typskrivaranimation + ljud.
+
 from __future__ import annotations
 
 import json
 import os
 from flask import Flask, request, jsonify, send_from_directory, render_template_string
 
-# Importera din motor och resurser
+# Importera motor och resurser från ditt spel
 from escape_castle import (
     GameState,
     OllamaChat,
@@ -26,13 +28,11 @@ from escape_castle import (
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
-# ---------- Global enkel spelsession (single-user lokalt) ----------
+# ---------- Enkel global spelsession ----------
 STATE = GameState()
 CLIENT = OllamaChat()
-SESSION_STARTED = False  # för att ge uppstarts-intro exakt en gång
+SESSION_STARTED = False  # visa välkomsttext en gång
 
-
-# ---------- Hjälp: generera intro/banner på rumsbyte ----------
 ROOM_TITLES = {
     "cell_01": "Prison Cell",
     "coal_01": "Coal Cellar",
@@ -41,21 +41,18 @@ ROOM_TITLES = {
 }
 
 def append_room_entry_text(state: GameState) -> str:
-    """Returnerar banner + ev. intro/hint när man befinner sig i rummet nu."""
+    """Banner + intro + hint (coal-ljus) för aktuellt rum, samt sätt motsv. flaggor."""
     room = state.current_room
     title = ROOM_TITLES.get(room, room)
     out = []
-
-    # Banner
     out.append(f"\n— You are in the {title}. —\n")
 
-    # Första-gången-intros + sätt flaggarna (samma semantik som terminalversionen)
     if room == "coal_01":
         if not state.flags_coal.get("coal_intro_shown", False):
             out.append(COAL_INTRO_TEXT + "\n")
             state.flags_coal["coal_intro_shown"] = True
-        # Hint vid ljus: återskapa samma rad som i print_coal_lit_entry_hint_if_applicable()
         if torch_light_present_here(state):
+            # Den här raden vill du uttryckligen highlighta
             out.append("Torchlight pushes back the darkness: heaps of coal crowd the tight stone floor, and at the far end a short staircase leads to a closed door.\n")
 
     elif room == "hall_01":
@@ -71,7 +68,7 @@ def append_room_entry_text(state: GameState) -> str:
     return "".join(out)
 
 
-# ---------- HTML (inline template) ----------
+# ---------- HTML (inline) ----------
 INDEX_HTML = r"""
 <!doctype html>
 <html lang="en">
@@ -82,201 +79,116 @@ INDEX_HTML = r"""
 <style>
   :root{
     --bg:#0b0f0b;
-    --glass:#0b120b;
-    --scan:#0c120c;
-    --phosphor:#9cff57;  /* retrogrönt */
+    --phosphor:#9cff57;
     --accent:#b6ff7b;
-    --grid:#0a140a;
-    --shadow: rgba(0,0,0,.7);
   }
   *{ box-sizing:border-box; }
-  html,body{ height:100%; margin:0; background: #000; }
-  body{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:12px;
-  }
+  html,body{ height:100%; margin:0; background:#000; }
+  body{ display:flex; align-items:center; justify-content:center; padding:12px; }
 
-  /* Ytterhölje (CRT-kåpa) */
   .shell{
     position:relative;
     width:min(1200px, 96vw);
     height:min(720px, 92vh);
     background: radial-gradient(120% 140% at 50% 50%, #0a0a0a 0%, #000 70%, #000 100%);
-    border-radius: 22px;
-    box-shadow:
-      0 8px 40px rgba(0,0,0,.65),
-      inset 0 0 140px rgba(0,0,0,.9);
+    border-radius:22px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.65), inset 0 0 140px rgba(0,0,0,.9);
     overflow:hidden;
   }
-
-  /* Svag kromatisk “glas”-yta med scanlines och subtil böjning */
   .crt{
-    position:absolute; inset:16px;
+    position:absolute; inset:16px; border-radius:14px; overflow:hidden;
     background: linear-gradient(180deg, rgba(12,18,12,.65), rgba(12,18,12,.65));
-    border-radius: 14px;
-    padding:0;
-    overflow:hidden;
-    /* lätt utåtbuktning via filter + transform */
     filter: saturate(0.9) contrast(1.02);
     transform: perspective(1100px) translateZ(0) scale(1.002);
   }
-  /* Scanlines-overlay */
   .crt::before{
-    content:"";
-    position:absolute; inset:0;
-    pointer-events:none;
-    background:
-      repeating-linear-gradient(
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(
         to bottom,
         rgba(0,0,0,0) 0px,
         rgba(0,0,0,0) 2px,
         rgba(0,0,0,.16) 3px,
         rgba(0,0,0,.16) 4px
-      );
+    );
     mix-blend-mode:multiply;
   }
-  /* Subtil “flicker” och brightness-vobble */
   .crt::after{
-    content:"";
-    position:absolute; inset:-1px;
-    pointer-events:none;
+    content:""; position:absolute; inset:-1px; pointer-events:none;
     background: radial-gradient(120% 180% at 50% 50%, rgba(255,255,255,.05), rgba(255,255,255,0) 60%);
     animation: flicker 6.5s infinite, glow 7.2s infinite;
   }
-  @keyframes flicker {
-    0%, 94%, 100% { opacity: .06; }
-    96% { opacity: .11; }
-    98% { opacity: .03; }
-  }
-  @keyframes glow {
-    0%,100% { filter: brightness(1.00); }
-    45% { filter: brightness(1.02); }
-    70% { filter: brightness(0.98); }
-  }
+  @keyframes flicker { 0%,94%,100%{opacity:.06;} 96%{opacity:.11;} 98%{opacity:.03;} }
+  @keyframes glow { 0%,100%{filter:brightness(1.00);} 45%{filter:brightness(1.02);} 70%{filter:brightness(0.98);} }
 
-  /* Layout: vänster textpanel + höger bild */
   .screen{
     position:relative;
-    display:grid;
-    grid-template-columns: 1.4fr 0.9fr;
-    gap:14px;
-    padding:16px;
-    width:100%;
-    height:100%;
+    display:grid; grid-template-columns: 1.4fr 0.9fr; gap:14px;
+    padding:16px; width:100%; height:100%;
     color: var(--phosphor);
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     text-shadow: 0 0 6px rgba(156,255,87,.25);
   }
 
-  /* Textkolumn är en flex-kolumn som fyller höjd: log scrollar; input sticky i botten */
   .left{
-    display:flex;
-    flex-direction:column;
-    min-width:0;
+    display:flex; flex-direction:column; min-width:0; overflow:hidden;
     background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.35)),
                 repeating-linear-gradient(90deg, rgba(10,20,10,.16) 0 1px, transparent 1px 2px);
-    border:1px solid rgba(156,255,87,.15);
-    border-radius:12px;
+    border:1px solid rgba(156,255,87,.15); border-radius:12px;
     box-shadow: inset 0 0 18px rgba(0,0,0,.65);
-    overflow:hidden;
   }
-
-  .header{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(156,255,87,.14);
-    font-weight:700;
-    letter-spacing:.5px;
-  }
-
-  .log{
-    flex:1;
-    overflow:auto;
-    padding:12px;
-    line-height:1.35;
-    white-space:pre-wrap;
-    scrollbar-color: rgba(156,255,87,.35) rgba(0,0,0,.2);
-    scrollbar-width: thin;
-  }
+  .header{ padding:10px 12px; border-bottom:1px solid rgba(156,255,87,.14); font-weight:700; letter-spacing:.5px; }
+  .log{ flex:1; overflow:auto; padding:12px; line-height:1.35; white-space:pre-wrap;
+        scrollbar-color: rgba(156,255,87,.35) rgba(0,0,0,.2); scrollbar-width: thin; }
   .log .user{ color: var(--accent); }
-  .log .sys { color: var(--phosphor); opacity:.95; }
+  .log .sys{}
+  .line{ margin: 0 0 4px 0; }
 
-  /* Sticky inputbar: försvinner inte, växer ej oändligt */
+  /* Key-event highlight (glow + pulser) */
+  .glowline{
+    text-shadow:
+      0 0 8px rgba(156,255,87,.85),
+      0 0 18px rgba(156,255,87,.45),
+      0 0 32px rgba(156,255,87,.25);
+    animation: pulse 2.1s ease-in-out 2;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.85} }
+
+  .status{ display:flex; gap:12px; flex-wrap:wrap; padding:8px 12px 0 12px; font-size:13px; opacity:.9; }
+  .badge{ padding:2px 8px; border-radius:999px; border:1px solid rgba(156,255,87,.25); background: rgba(0,0,0,.35); }
+
   .inputbar{
-    position: sticky;
-    bottom: 0;
-    padding: 10px;
+    position: sticky; bottom: 0; padding:10px; display:flex; gap:8px; align-items:flex-end;
     background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
     border-top:1px solid rgba(156,255,87,.14);
-    display:flex;
-    gap:8px;
-    align-items:flex-end;
   }
   .inputbar textarea{
-    flex:1;
-    min-height: 42px;
-    max-height: 120px;   /* <-- STOPP: väx inte utanför skärmen */
-    overflow:auto;       /* intern scrollbar */
-    resize: vertical;    /* kan dras lite, men begränsas av max-height */
-    padding:10px 10px 10px 12px;
-    font: inherit;
-    color: var(--phosphor);
-    background: rgba(0,0,0,.45);
-    border:1px solid rgba(156,255,87,.22);
-    border-radius:8px;
-    outline:none;
-    box-shadow: inset 0 0 10px rgba(0,0,0,.55);
+    flex:1; min-height:42px; max-height:120px; overflow:auto; resize:vertical;
+    padding:10px 10px 10px 12px; font:inherit; color:var(--phosphor);
+    background: rgba(0,0,0,.45); border:1px solid rgba(156,255,87,.22); border-radius:8px;
+    outline:none; box-shadow: inset 0 0 10px rgba(0,0,0,.55);
   }
   .inputbar button{
-    padding:10px 14px;
-    color:#051;
-    background: linear-gradient(180deg, #baff7a, #8de354);
-    border:none;
-    border-radius:8px;
-    font-weight:700;
-    cursor:pointer;
+    padding:10px 14px; color:#051; background: linear-gradient(180deg, #baff7a, #8de354);
+    border:none; border-radius:8px; font-weight:700; cursor:pointer;
     box-shadow: 0 2px 0 #5ca534, 0 6px 14px rgba(0,0,0,.25);
   }
   .inputbar button:active{ transform: translateY(1px); box-shadow: 0 1px 0 #5ca534, 0 4px 10px rgba(0,0,0,.3); }
 
-  /* Statusrad ovanför input */
-  .status{
-    display:flex; gap:12px; flex-wrap:wrap;
-    padding: 8px 12px 0 12px;
-    font-size: 13px;
-    opacity:.9;
-  }
-  .badge{
-    padding:2px 8px; border-radius: 999px;
-    border:1px solid rgba(156,255,87,.25);
-    background: rgba(0,0,0,.35);
-  }
-
-  /* Bildpanel */
   .right{
-    min-width:0;
+    min-width:0; display:flex; flex-direction:column; overflow:hidden;
     background: radial-gradient(140% 140% at 50% 50%, rgba(10,20,10,.5), rgba(0,0,0,.7));
-    border:1px solid rgba(156,255,87,.15);
-    border-radius:12px;
+    border:1px solid rgba(156,255,87,.15); border-radius:12px;
     box-shadow: inset 0 0 18px rgba(0,0,0,.65);
-    display:flex; flex-direction:column; overflow:hidden;
   }
-  .imgwrap{
-    flex:1; display:flex; align-items:center; justify-content:center;
-    padding: 12px;
-  }
-  .imgwrap img{
-    width:100%; height:100%; object-fit:contain;
-    image-rendering: pixelated; /* retro */
-    filter: contrast(1.05) saturate(0.9) brightness(0.92);
-  }
+  .imgwrap{ flex:1; display:flex; align-items:center; justify-content:center; padding: 12px; }
+  .imgwrap img{ width:100%; height:100%; object-fit:contain; image-rendering: pixelated; filter: contrast(1.05) saturate(0.9) brightness(0.92); }
+
+  /* STÖRRE & CENTRERAD platsrubrik */
   .right .caption{
-    padding:8px 10px; font-size:12px; opacity:.9;
+    padding:10px 12px; font-size:18px; font-weight:800; letter-spacing:.8px; text-align:center;
     border-top:1px solid rgba(156,255,87,.14);
   }
 
-  /* Smal layout */
   @media (max-width: 900px){
     .screen{ grid-template-columns: 1fr; }
     .right{ order:-1; height: 36vh; }
@@ -326,14 +238,42 @@ INDEX_HTML = r"""
   const img = document.getElementById('roomimg');
   const caption = document.getElementById('caption');
 
-  function appendLine(text, cls="sys"){
-    const div = document.createElement('div');
-    div.className = cls;
-    div.textContent = text;
-    log.appendChild(div);
-    log.scrollTop = log.scrollHeight;
+  // ---- Tangentbordsljud ----
+  const keyAudio = new Audio('/static/sfx/keyboard.mp3');
+  keyAudio.loop = true;
+  keyAudio.volume = 0.95;
+
+  function startKeyAudio(){
+    keyAudio.currentTime = 0;
+    keyAudio.play().catch(()=>{ /* autoplay kan vara blockerad, ignoreras */ });
+  }
+  function stopKeyAudio(){
+    keyAudio.pause();
+    keyAudio.currentTime = 0;
   }
 
+  // ---- Key-event detection (glow) ----
+  // Du kan lägga till fler fraser vid behov.
+  const KEY_EVENT_PATTERNS = [
+    /Torchlight pushes back the darkness/i,
+    /You reveal a crawlable hole/i,
+    /You carefully lift the loose cobblestone/i,
+    /You (?:push|pull) the .* door open/i,
+    /You (?:climb|step) onto the small platform/i,
+    /With a thunderous slam the gate drops/i,
+    /three armored guards/i,
+    /You (?:loose|fire) .*guard/i,
+    /The lawn falls silent/i,
+    /You sprint across the lowered gate/i,
+    /You swim hard, scramble up the far bank/i,
+    /The knight whirls .* you knock him out/i
+  ];
+
+  function isKeyEventLine(text){
+    return KEY_EVENT_PATTERNS.some(re => re.test(text));
+  }
+
+  // ---- Hjälp: status & bilder ----
   function updateStatus(s){
     hp.textContent = `HP: ${s.hp}` + (s.hp_delta !== 0 ? ` (${s.hp_delta > 0 ? '+' : ''}${s.hp_delta})` : '');
     if (s.cause) hp.textContent += ` — ${s.cause}`;
@@ -341,7 +281,6 @@ INDEX_HTML = r"""
     room.textContent = `Room: ${s.room_title}`;
     inv.textContent = `Inventory: ${s.inventory && s.inventory.length ? s.inventory.join(', ') : 'empty'}`;
 
-    // byt bild
     const map = {
       "cell_01": "/static/art/cell.png",
       "coal_01": "/static/art/coal.png",
@@ -352,17 +291,81 @@ INDEX_HTML = r"""
     caption.textContent = s.room_title;
   }
 
+  // ---- Typskrivaranimation för SYS-rader ----
+  // Skriver text linje för linje, spelar ljud under tiden.
+  const BASE_DELAY = 14; // ms per tecken
+  const PUNCT_PAUSE = { ',': 80, '.': 120, '!': 140, '?': 140, ';': 100, ':': 100 };
+
+  function typeLine(lineText, parentEl, isKey){
+    return new Promise(async (resolve) => {
+      const line = document.createElement('div');
+      line.className = 'sys line' + (isKey ? ' glowline' : '');
+      parentEl.appendChild(line);
+
+      // Skriv tecken för tecken
+      for (let i=0; i<lineText.length; i++){
+        line.textContent += lineText[i];
+        log.scrollTop = log.scrollHeight;
+
+        const ch = lineText[i];
+        const extra = PUNCT_PAUSE[ch] || 0;
+        const delay = BASE_DELAY + (extra ? 0 : 0);
+        await new Promise(r => setTimeout(r, delay));
+        if (extra){
+          await new Promise(r => setTimeout(r, extra));
+        }
+      }
+      resolve();
+    });
+  }
+
+  async function typeNarration(text){
+    if (!text) return;
+
+    // Starta ljudet precis när vi börjar skriva
+    startKeyAudio();
+
+    const lines = text.split(/\r?\n/);
+    for (const rawLine of lines){
+      const t = rawLine; // oförändrat (servern trustas)
+      if (t.trim().length === 0){
+        // tom rad – lägg in liten spacer
+        const spacer = document.createElement('div');
+        spacer.className = 'line';
+        spacer.innerHTML = '&nbsp;';
+        log.appendChild(spacer);
+        log.scrollTop = log.scrollHeight;
+        continue;
+      }
+      const key = isKeyEventLine(t);
+      await typeLine(t, log, key);
+    }
+
+    // Stanna ljudet när allt är klart
+    stopKeyAudio();
+  }
+
+  // ---- Vanliga utskrifter (user prompt)—utan animation
+  function appendUser(text){
+    const div = document.createElement('div');
+    div.className = 'user line';
+    div.textContent = '> ' + text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // ---- API-anrop ----
   async function fetchState(){
     const r = await fetch('/state');
     const s = await r.json();
-    if (s.narration) appendLine(s.narration.trim());
+    if (s.narration) await typeNarration(s.narration.trim());
     updateStatus(s);
   }
 
   async function sendCmd(){
     const text = cmd.value.trim();
     if(!text) return;
-    appendLine("> " + text, "user");
+    appendUser(text);
     cmd.value = "";
 
     const r = await fetch('/act', {
@@ -371,7 +374,7 @@ INDEX_HTML = r"""
       body: JSON.stringify({ text })
     });
     const s = await r.json();
-    if (s.narration) appendLine(s.narration.trim(), "sys");
+    if (s.narration) await typeNarration(s.narration.trim());
     updateStatus(s);
     cmd.focus();
   }
@@ -398,7 +401,7 @@ def index():
 
 @app.route("/state")
 def get_state():
-    """Första laddningen: returnera välkomsttext + banner + ev. intro för start-rummet."""
+    """Första laddningen: returnera välkomsttext + banner + ev. intro för startrummet."""
     global SESSION_STARTED
     sync_flags_with_items(STATE)
     STATE.inventory = inventory_items_from_items(STATE)
@@ -406,7 +409,6 @@ def get_state():
     narration = ""
     if not SESSION_STARTED:
         SESSION_STARTED = True
-        # Samma känsla som terminalen:
         narration += WELCOME_TEXT.strip() + "\n"
         narration += append_room_entry_text(STATE)
 
@@ -426,9 +428,9 @@ def act():
     data = request.get_json(force=True)
     player_action = (data.get("text") or "").strip()
     if not player_action:
-        return jsonify({"error":"empty"}), 400
+        return jsonify({"error": "empty"}), 400
 
-    # Förbered prompt (samma som i din main-loop)
+    # Förbered prompten (samma som i terminal-versionen)
     scene_card = SCENES[STATE.current_room]
     scene_json = json.dumps(scene_card, ensure_ascii=False, indent=2)
 
@@ -454,17 +456,14 @@ def act():
         player_action=player_action
     )
 
-    # LLM-call + motorns validering
     raw = CLIENT.chat_json(SYSTEM_PROMPT, user_prompt)
     llm = coerce_llm_result(raw)
     result = validate_and_apply(STATE, llm, player_action)
 
-    # Bygg narration + lägg på rums-entry (banner/intro/hint) vid transition
     narration = (result.get("narration") or "").strip()
     if result.get("room_transition"):
         narration = narration.rstrip() + "\n" + append_room_entry_text(STATE)
 
-    # Uppdatera inventory UI
     STATE.inventory = inventory_items_from_items(STATE)
 
     return jsonify({
@@ -478,14 +477,12 @@ def act():
         "cause": result.get("cause", ""),
     })
 
-
-# ---------- Statik (valfritt, enkla platshållare) ----------
+# Statik
 @app.route("/static/art/<path:filename>")
 def art_file(filename):
-    # Servera bilder från ./static/art
     return send_from_directory(os.path.join(app.static_folder, "art"), filename)
 
-
 if __name__ == "__main__":
-    # Starta Flask. Sätt debug=False om du inte vill ha auto-reload/import två gånger.
+    # Lägg keyboard.mp3 i static/sfx/keyboard.mp3
+    # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png}
     app.run(host="127.0.0.1", port=5000, debug=True)
