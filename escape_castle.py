@@ -188,6 +188,9 @@ ROOM_CELL_SCENE_CARD = {
         "If the player drops/throws/places their torch here, add 'drop_torch'. If they pick it up, add 'pickup_torch'.",
         "If an action is impossible, playful grounded refusal and end with 'Nothing happened.'",
         "Never invent items/exits beyond the scene; never escape via the high window."
+        "If the player interacts with the hole using non-movement verbs, you MUST refuse and end with 'Nothing happened.' Do NOT add traversal events.",
+        "If the player tries to light a torch without holding the wooden torch stick, give a brief flavorful warning about heat/singeing and end with 'Nothing happened.'",
+
     ],
     "style_and_tone": [
         "Second person, immersive, concise, vivid.",
@@ -233,6 +236,8 @@ ROOM_COAL_SCENE_CARD = {
         "If the player opens OR 'unlocks' the far door (with light), add 'open_hall_door' and succeed — the door is not locked.",
         "If an action is impossible, playful grounded refusal and end with 'Nothing happened.'",
         "Never invent items or exits not stated."
+        "If the player tries to ignite/set the coal heaps on fire, refuse with a realistic reason (damp dust, no airflow) and end with 'Nothing happened.'",
+
     ],
     "style_and_tone": [
         "Second person, immersive, concise, vivid.",
@@ -274,8 +279,9 @@ ROOM_HALL_SCENE_CARD = {
         "If the player drops the keys here, add 'drop_keys'.",
         "To unlock the courtyard door, add 'unlock_courtyard_door' and require keys in inventory. If locked and no keys, refuse and end with 'Nothing happened.'",
         # Stage 2: Knight logic — the engine will enforce, but the model should mirror it:
-        "If noise_level >= 2 and the knight is not already knocked out, add 'knight_notice' and 'combat_knock_guard'.",
-        "After 'combat_knock_guard', the knight is unconscious (knight_knocked_out=True). The player always succeeds in knocking him out.",
+        "If noise_level >= 2 and the knight is not already knocked out, add 'knight_notice' and 'combat_knock_guard' this turn; the player always knocks him unconscious (knight_knocked_out=True).",
+        "After the knight is unconscious (knight_knocked_out=True), you MUST NOT add 'knight_notice' or new combat in later turns. If the player makes noise or addresses him, respond that he’s out cold.",
+
         "Stealth paths are allowed: quietly take the keys (requires empty hands) and slip behind pillars to the door.",
         "Avoid stealth phrasing if knight_knocked_out=True (he’s unconscious).",
         "Do NOT invent custom events like 'exit_hall'; use provided events only."
@@ -316,13 +322,13 @@ ROOM_COURTYARD_SCENE_CARD = {
         "3": "Very loud: the gate slamming down (lever)."
     },
     "triggers_policy": [
-        "Climbing the ladder sets 'at_tower_top' when on top; climbing down unsets it.",
-        "Pulling the lever MUST succeed: set 'gate_lowered' true. Also, three guards arrive: model may add 'guards_arrive'.",
+        "Climbing the ladder sets 'at_tower_top' true; climbing down unsets it.",
+        "The gate cannot be opened from the ground. Only pulling the lever at the tower top lowers it: 'pull_lever' MUST succeed there, sets 'gate_lowered' true and summons three guards ('guards_arrive').",
+        "Attempts like 'open the gate' from the grass should be refused with a short flavored line pointing to the lever, then end with 'Nothing happened.'",
         "Picking up the crossbow requires free hands and being on the tower platform.",
-        "Shooting a guard requires holding the crossbow. You may let the player shoot 1–3 guards in a single turn.",
-        "Crossing the gate-bridge requires the gate to be lowered. Doing so wins the game (you escape into the forest).",
-        "Jumping from the tower into the moat costs 40 HP immediately; if you then swim across, you win the game.",
-        "If the player stands on the ground while guards remain, the player takes heavy damage each turn."
+        "'shoot_guard' requires holding the crossbow; remove 1–3 guards depending on the player’s intent. If no guards remain, say so.",
+        "Crossing the gate-bridge requires the gate to be lowered; doing so ends the game in victory.",
+
     ],
     "style_and_tone": [
         "Second person, immersive, concise, vivid.",
@@ -360,6 +366,7 @@ Follow the CURRENT ROOM's scene card and the rules below. Respond in VALID JSON 
 Global rules:
 - English only. Interpret player intent semantically; no verb lists.
 - Evaluate noise_level (0–3) using the current room's scale; resets next turn.
+
 - Guard punishment applies ONLY in cell_01.
   - If noise_level >= 2 THIS TURN in cell_01, then:
     * You MUST include 'guard_punishes' in events.
@@ -367,62 +374,72 @@ Global rules:
     * You MUST NOT narrate the guard as oblivious/unresponsive/not noticing the player this turn.
     * Keep narration consistent with 'guard_punishes'. You may briefly mention the strike; the engine may append a fixed line.
   - If noise_level < 2 in cell_01, the guard does NOT punish; do not narrate a strike.
-- Traversal events are mandatory: going down from cell_01 -> 'enter_coal_cellar'; going up from coal_01 -> 'return_to_cell'.
-- Hard rule (straw in cell_01): straw mentions MUST add 'straw_rummaged' and set 'found_loose_stone' if not already.
-- Straw-only rule: do NOT set 'stone_moved' from straw actions alone. Do NOT reveal the loose stone from generic searching; ONLY interacting with the straw bed (mentions “straw”, “hay”, or “bed”) can reveal it and MUST include 'straw_rummaged' in events.
-- Do NOT reinterpret the player's action as interacting with straw: if the player does NOT mention 'straw', 'hay', or 'bed', you MUST NOT add 'straw_rummaged' and MUST NOT narrate touching/moving straw.
 
-- Multi-action: if player both clears straw AND lifts stone, include 'straw_rummaged' and 'stone_lifted', and set 'found_loose_stone' and 'stone_moved' this turn.
+- Traversal events are mandatory and ONLY movement verbs cause traversal:
+  * Down from the cell => 'enter_coal_cellar'.
+  * Up from the cellar => 'return_to_cell'.
+  * Interactions with the **hole** that are **not** movement (e.g., throw/poop/spit/look/talk) MUST NOT traverse. Give a playful grounded refusal and end with "Nothing happened."
+
+- Straw in cell_01:
+  * Any interaction that explicitly mentions **straw/hay/bed** MUST add 'straw_rummaged' and set 'found_loose_stone' if not already.
+  * Do NOT set 'stone_moved' from straw-only actions. Lifting/prying the **stone** is separate.
+  * Do NOT invent straw interaction if the player didn’t mention straw/hay/bed.
+
+- Multi-action: if player both clears straw AND lifts stone, include 'straw_rummaged' and 'stone_lifted', and set both flags the same turn.
 - Never invent items, tools, magic, or exits beyond the active scene card.
+
+- **Flavorful denials** for impossible/silly actions:
+  * Give a short, vivid, **playful** line tailored to the user’s verbs/nouns (e.g., “You hover your face by the flame; heat singes your eyebrows. You back off.”), then end with **"Nothing happened."**
+  * Prefer color over scolding; keep it one sentence of color + the standard line.
+  * Example themes to re-use when apt: “face near wall torch (too hot)”; “baseball swing with coal (sad thud)”; “imagining cupcake recipe with coal/water (bad idea)”.
+
+- **Self-harm attempts:** never describe the player injuring or killing themselves. Give a grounded, in-universe refusal (survival instinct, hesitation), then end with "Nothing happened." Do NOT apply damage.
+
 - Narration: immersive 2nd person, ~3 sentences, announce each key outcome once. If impossible/no change, end with "Nothing happened."
-- Use semantic events for effects: 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','pickup_stick','pickup_torch','drop_torch','knight_notice','combat_knock_guard','climb_ladder_up','climb_ladder_down','pull_lever','guards_arrive','pickup_crossbow','drop_crossbow','shoot_guard','cross_gate_bridge','jump_into_moat','swim_across'.
-
-
-- Event parity: You may only narrate outcomes that correspond to entries in 'events' and/or 'flags_set'.
-- Do NOT create custom events like 'exit_hall' or 'exited_hall'.
+- Use only these semantic events: 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','pickup_stick','pickup_torch','drop_torch','knight_notice','combat_knock_guard','climb_ladder_up','climb_ladder_down','pull_lever','guards_arrive','pickup_crossbow','drop_crossbow','shoot_guard','cross_gate_bridge','jump_into_moat','swim_across'.
+- Event parity: only narrate outcomes that correspond to 'events' and/or 'flags_set'. Do NOT invent new event names.
 
 Coal cellar (coal_01) — darkness & safety:
-- Default state is PITCH-BLACK. Do NOT describe it as "dimly lit" unless 'torch_lit' is true in the current room.
-- Item/visibility parity: Do NOT narrate using a torch unless the player carries it (inventory shows "wooden torch" or "lit torch") OR a lit torch is present in the CURRENT ROOM.
-- If the player attempts to move deeper while 'torch_lit' is false, you MUST include 'dark_stumble' and set hp_delta to -10 this turn, warn them, and they remain where they are. Returning UP to the cell never stumbles.
-- If 'torch_lit' is true, NEVER set 'dark_stumble'; instead describe visible surroundings (coal heaps, cramped floor, short staircase, far door).
-- Identifying the unknown floor object happens ONLY on pickup: reveal it as a wooden torch stick and set 'has_torch_stick' with 'pickup_stick'/'pickup_torch'.
-- Opening the far door ('open_hall_door') is ONLY possible if torchlight is present in coal_01 THIS TURN (either carried or a lit torch placed in this room); otherwise refuse and end with "Nothing happened."
-- Do NOT describe lighting a torch outside cell_01; if the player tries, refuse and end with "Nothing happened."
-- The far cellar door is CLOSED but NOT locked. With light present, attempts to open OR "unlock" it MUST add 'open_hall_door' and succeed this turn.
+- Default state is **pitch-black**. Do NOT describe it as dim/visible unless 'torch_lit' is true here.
+- Visibility parity: don’t narrate using a torch unless the player carries it or a lit torch is present **in this room**.
+- Moving deeper while dark: include 'dark_stumble' and hp_delta -10; warn they remain in place. Returning UP never stumbles.
+- If 'torch_lit' is true, NEVER set 'dark_stumble'; instead describe heaps/staircase/far door.
+- Identifying the unknown floor object happens ONLY on pickup: reveal a wooden torch stick ('pickup_stick'/'pickup_torch').
+- Opening the far door ('open_hall_door') is ONLY possible if torchlight is present in coal_01 **this turn**; otherwise refuse and end with "Nothing happened."
+- Do NOT describe lighting a torch **outside** cell_01; refuse and end with "Nothing happened."
+- Trying to ignite coal heaps is **not feasible here** (no draft/prep); give a realistic, flavorful refusal + "Nothing happened."
 
-Great hall (hall_01) — Stage 2 (Knight & stealth):
-- The hall is well-lit; ignore darkness mechanics here.
-- Stealth is viable: at noise_level 0–1 you may narrate sneaking (pillars/angles), quietly stealing keys (requires empty hands).
-- If noise_level >= 2 this turn AND the knight is not already knocked out:
+Great hall (hall_01):
+- Well-lit; ignore darkness.
+- Stealth viable at noise 0–1 (quietly steal keys; requires empty hands).
+- If noise >= 2 this turn AND the knight is not already out:
   * Include 'knight_notice' and 'combat_knock_guard' in events.
-  * The player always knocks the knight out.
-  * HP penalty this turn depends on whether the player holds the torch: -30 HP if holding the torch; otherwise -50 HP.
-- After the knight is unconscious (knight_knocked_out=True), further noise does not cause combat again.
-- The player may return to the coal cellar: add 'return_to_coal'.
-- Keys can be picked up only if the player's single inventory slot is free: add 'pickup_keys'.
-- Keys can be dropped: add 'drop_keys'.
-- The courtyard door is locked by default. To unlock, require keys in inventory and add 'unlock_courtyard_door'.
+  * The player always knocks the knight unconscious (set knight_knocked_out=True).
+  * HP penalty depends on torch-in-hand snapshot (engine may adjust).
+- **After the knight is unconscious**, you MUST NOT add 'knight_notice' or new combat; instead flavor-line that he’s out cold if relevant.
+
+- Keys pickup requires free hands. Keys can be dropped. The courtyard door is locked until 'unlock_courtyard_door' with keys.
 
 Courtyard (courtyard_01):
-- The yard is well lit; ignore darkness mechanics here.
-- 'pull_lever' MUST succeed, lowering the gate into a bridge and summoning three guards ('guards_arrive').
-- Guards remain on the grass and cannot climb the ladder.
-- The crossbow is on the tower platform. Picking it up requires free hands.
-- 'shoot_guard' can remove 1–3 guards in a single turn (player intent may specify one, two, or all three).
-- 'cross_gate_bridge' is only possible after the gate is lowered; doing so ends the game in victory.
-- 'jump_into_moat' can be done only from the tower top; costs 40 HP. If the player then 'swim_across', they win the game.
-- If the player remains on the ground while guards are present, they will be harmed (the engine will enforce damage).
-
+- Well lit; ignore darkness.
+- The **gate cannot be opened from the ground.** Only the **tower lever** lowers it:
+  * 'pull_lever' MUST succeed **only when at the tower top**, sets 'gate_lowered' true and summons three guards ('guards_arrive').
+  * Attempts like “open the gate” from the ground: give a flavorful denial pointing at the lever up top + "Nothing happened."
+- Guards remain on the grass; they cannot climb the ladder. After they arrive, they are real targets—do NOT claim “no guards here.”
+- The crossbow is on the tower platform; pickup requires free hands. 'shoot_guard' requires holding the crossbow.
+- You may let the player shoot 1–3 guards in a single turn; if none remain, say so.
+- 'cross_gate_bridge' only after the gate is lowered; doing so wins (escape).
+- 'jump_into_moat' only from tower top; costs 40 HP (engine may apply). If then 'swim_across', player wins.
+- If the player ends a turn on the ground while guards are present, expect heavy damage (engine may apply).
 
 Inventory protocol:
-- The player can carry ONLY ONE item (torch, keys, or crossbow). If they try to pick up an item while already carrying one, refuse and end with "Nothing happened."
-- If the player drops/throws/places their torch, add 'drop_torch' and treat it as no longer in their inventory (it remains in the current room).
-
+- Single slot (torch OR keys OR crossbow). If hands are full and they try to pick something else, refuse and end with "Nothing happened."
+- Dropping/placing the torch removes it from inventory ('drop_torch'); if lit, it still provides light only in that room.
 
 Return a single JSON object with keys:
 narration, noise_level, hp_delta, events, flags_set, progression, safety_reason
 """
+
 
 USER_INSTRUCTION_TEMPLATE = """CURRENT ROOM:
 - Id: {room_id}
@@ -455,6 +472,12 @@ REMINDERS:
 - Do NOT narrate lighting a torch outside cell_01; if attempted, refuse and end with "Nothing happened."
 - Great Hall: well-lit. You may 'return_to_coal'. Keys can be picked up only with free hands (single-slot). 
   The courtyard door is locked until 'unlock_courtyard_door' with keys.
+- Non-movement interactions with the hole (throw/poop/etc.) MUST NOT cause traversal; give a playful denial + "Nothing happened."
+- Flavorful denials are preferred over plain refusals for impossible/silly actions; keep them short and end with "Nothing happened."
+- Self-harm attempts must be refused diegetically; do not inflict damage.
+- In the courtyard, the gate can’t be opened from the ground; only the tower lever lowers it.
+- After the knight is unconscious, do not create new combat; mention he’s out cold if addressed.
+
 
 PLAYER ACTION:
 {player_action}
@@ -920,7 +943,13 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     # Dedupe while preserving order
     events = list(dict.fromkeys(events))
 
-   
+    # --- Courtyard gate flag hygiene: require lever event from tower top
+    if state.current_room == "courtyard_01":
+        if ("gate_lowered" in llm.flags_set) and ("pull_lever" not in events or not state.flags_courtyard.get("at_tower_top", False)):
+            llm.flags_set = [f for f in llm.flags_set if f != "gate_lowered"]
+            notes.append("Ignored 'gate_lowered' flag without pulling the lever at the tower top.")
+
+
 
     if "drop_torch" in events and _re.search(r"\b(extinguish|snuff|put\s+out|douse|blow\s+out|quench)\b", player_action_text or "", _re.IGNORECASE):
         events = ["extinguish_torch" if e == "drop_torch" else e for e in events]
@@ -1448,11 +1477,9 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     # Guard-scrub endast i källaren (förhindra cell-guard-respons i coal_01)
    
     # Guard-scrub i alla rum utom cell_01
-    if state.current_room != "cell_01":
-        if ("guard_punishes" in events) or re.search(r"\bguard\b", narration, re.IGNORECASE):
-            events = [e for e in events if e != "guard_punishes"]
-            narration = "There’s no guard here to punish you. Nothing happened."
-            notes.append("Removed guard-related narration/events outside the prison cell.")
+    if state.current_room != "cell_01" and "guard_punishes" in events:
+        events = [e for e in events if e != "guard_punishes"]
+        notes.append("Removed 'guard_punishes' outside the prison cell.")
 
 
     # Knight-scrub i rum där riddaren inte finns (cell_01 & coal_01)
