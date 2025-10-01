@@ -40,6 +40,84 @@ ROOM_TITLES = {
     "courtyard_01": "Castle Courtyard",
 }
 
+# Basbilder per rum
+ART_DEFAULT = {
+    "cell_01": "cell.png",
+    "coal_01": "coal.png",
+    "hall_01": "hall.png",
+    "courtyard_01": "courtyard.png",
+}
+
+def _exists_art(filename: str) -> bool:
+    return os.path.exists(os.path.join(app.static_folder, "art", filename))
+
+def pick_art_filename(state: GameState, result: dict, narration: str) -> str:
+    """
+    Välj rätt bild för denna tick, utifrån aktuellt rum, events och flaggor.
+    Prioriterad ordning per rum. Fallback till ART_DEFAULT[room].
+    """
+    events = set(result.get("events", []))
+    room   = state.current_room
+
+    # Neutral fallback om inget hände
+    if ("Nothing happened." in (narration or "")) and not events:
+        if _exists_art("nothing_happened.png"):
+            return "nothing_happened.png"
+
+    # ----- Prison Cell -----
+    if room == "cell_01":
+        if "light_torch" in events:
+            if _exists_art("setting_fire_to_torch.png"):
+                return "setting_fire_to_torch.png"
+        if "stone_lifted" in events or state.flags_cell.get("stone_moved"):
+            if _exists_art("movestonesaside.png"):
+                return "movestonesaside.png"
+        if "straw_rummaged" in events or state.flags_cell.get("found_loose_stone"):
+            if _exists_art("finding_cobblestone_2.png"):
+                return "finding_cobblestone_2.png"
+        return ART_DEFAULT["cell_01"]
+
+    # ----- Coal Cellar -----
+    if room == "coal_01":
+        if not state.flags_coal.get("torch_lit", False):
+            if _exists_art("first_time_in_coalroom_without_lit_torch.png"):
+                return "first_time_in_coalroom_without_lit_torch.png"
+        if state.flags_coal.get("torch_lit", False):
+            if _exists_art("in_coalroom_with_torch.png"):
+                return "in_coalroom_with_torch.png"
+        return ART_DEFAULT["coal_01"]
+
+    # ----- Great Hall -----
+    if room == "hall_01":
+        if "combat_knock_guard" in events:
+            # Stöder både korrekt och felstavat filnamn
+            if _exists_art("fight_with_torch.png"):
+                return "fight_with_torch.png"
+            if _exists_art("fiht_with_torch.png"):
+                return "fiht_with_torch.png"
+            if _exists_art("fight_with_hands.png"):
+                return "fight_with_hands.png"
+        if "pickup_keys" in events and _exists_art("smygande_bakom2.png"):
+            return "smygande_bakom2.png"
+        return ART_DEFAULT["hall_01"]
+
+    # ----- Courtyard -----
+    if room == "courtyard_01":
+        # Vinst (både bro och simma – använder samma flyktbild)
+        if "cross_gate_bridge" in events or "swim_across" in events or result.get("game_won"):
+            if _exists_art("running_away.png"):
+                return "running_away.png"
+        if "shoot_guard" in events and _exists_art("shooting_from_tower2.png"):
+            return "shooting_from_tower2.png"
+        if "climb_ladder_up" in events or state.flags_courtyard.get("at_tower_top"):
+            if _exists_art("going_up_tower.png"):
+                return "going_up_tower.png"
+        return ART_DEFAULT["courtyard_01"]
+
+    # Fallback
+    return ART_DEFAULT.get(room, "cell.png")
+
+
 def append_room_entry_text(state: GameState) -> str:
     """Banner + intro + hint (coal-ljus) för aktuellt rum, samt sätt motsv. flaggor."""
     room = state.current_room
@@ -322,13 +400,18 @@ INDEX_HTML = r"""
     room.textContent = `Room: ${s.room_title}`;
     inv.textContent = `Inventory: ${s.inventory && s.inventory.length ? s.inventory.join(', ') : 'empty'}`;
 
-    const map = {
-      "cell_01": "/static/art/cell.png",
-      "coal_01": "/static/art/coal.png",
-      "hall_01": "/static/art/hall.png",
-      "courtyard_01": "/static/art/courtyard.png"
-    };
-    img.src = map[s.room_id] || "/static/art/cell.png";
+    // NYTT: använd bild som servern valt, annars fallback per rum
+    if (s.art){
+      img.src = `/static/art/${s.art}`;
+    } else {
+      const map = {
+        "cell_01": "/static/art/cell.png",
+        "coal_01": "/static/art/coal.png",
+        "hall_01": "/static/art/hall.png",
+        "courtyard_01": "/static/art/courtyard.png"
+      };
+      img.src = map[s.room_id] || "/static/art/cell.png";
+    }
     caption.textContent = s.room_title;
   }
 
@@ -351,7 +434,6 @@ INDEX_HTML = r"""
     // Losing/winning – spela en gång när det inträffar
     if (s.dead){
       playOnce(sfx.lose);
-      // valfritt: pausa BGM
       if (currentBgmKey && bgmMap[currentBgmKey]) bgmMap[currentBgmKey].pause();
     } else if (s.game_won){
       playOnce(sfx.win);
@@ -486,6 +568,7 @@ def get_state():
         "events": [],
         "game_won": False,
         "dead": STATE.hp <= 0,
+        "art": ART_DEFAULT.get(STATE.current_room, "cell.png"),  # <-- bild för startscreen
     })
 
 @app.route("/act", methods=["POST"])
@@ -531,6 +614,9 @@ def act():
 
     STATE.inventory = inventory_items_from_items(STATE)
 
+    # Välj rätt art för klienten
+    art_file = pick_art_filename(STATE, result, narration)
+
     # skicka events + vinst/död i svaret så klienten kan trigga ljud
     return jsonify({
         "narration": narration,
@@ -544,6 +630,7 @@ def act():
         "events": result.get("events", []),
         "game_won": bool(result.get("game_won", False)),
         "dead": STATE.hp <= 0,
+        "art": art_file,
     })
 
 # Statik (art)
@@ -555,5 +642,5 @@ if __name__ == "__main__":
     # Lägg filer i:
     # static/sfx/{keyboard.mp3, prison_music.mp3, coalroom_music.mp3, hallway_music.mp3, courtyard_music.mp3,
     #            opening_doors.mp3, punch_sound.mp3, losing_sound.mp3, vinning_sound.mp3}
-    # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png}
+    # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png, ...}
     app.run(host="127.0.0.1", port=5000, debug=True)

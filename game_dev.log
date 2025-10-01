@@ -1515,3 +1515,47 @@
 [2025-10-02 00:38:18] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
 [2025-10-02 00:38:18] ENGINE_INV: ['keys']
 [2025-10-02 00:38:18] ENGINE_HP: 60
+[2025-10-02 00:44:32] PROMPT_VERSION: 3.3 (... )
+[2025-10-02 01:08:40] PROMPT_VERSION: 3.3 (... )
+[2025-10-02 01:09:54] RAW_MODEL_OUTPUT: {
+  "narration": "You lay down on the thin straw 'bed', but there's nothing to gain from resting here.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": null
+}
+[2025-10-02 01:12:09] PROMPT_VERSION: 3.3 (... )
+[2025-10-02 01:12:45] RAW_MODEL_OUTPUT: {
+  "narration": "You peer into the thin straw 'bed' and find it's just that – a thin layer of straw. Nothing else is hidden beneath.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {
+    "straw_rummaged": true
+  },
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-02 01:13:02] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed. A crawlable hole leading down to a coal cellar is now visible.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true, "found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 01:14:10] PROMPT_VERSION: 3.3 (... )
+[2025-10-02 01:14:33] RAW_MODEL_OUTPUT: {
+  "narration": "You carefully inspect the thin straw 'bed' on the floor.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {"straw_rummaged": true},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-02 01:14:33] LLM_PARSED: {"narration": "You carefully inspect the thin straw 'bed' on the floor.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 01:14:33] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.
+[2025-10-02 01:14:33] ENGINE_ROOM: cell_01
+[2025-10-02 01:14:33] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 01:14:33] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 01:14:33] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 01:14:33] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 01:14:33] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 01:14:33] ENGINE_INV: []
+[2025-10-02 01:14:33] ENGINE_HP: 100

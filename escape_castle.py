@@ -1674,6 +1674,7 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     # Om ingen transition skedde men narrationen hävdar att du "är i" ett annat rum: klampa
     if not room_transition:
+        narration = llm.narration.strip() or narration
         claim_hall = _re.search(r"\b(Great Hall)\b", narration, _re.IGNORECASE)
         claim_coal = _re.search(r"\b(Coal Cellar)\b", narration, _re.IGNORECASE)
         claim_cell = _re.search(r"\b(Prison Cell)\b", narration, _re.IGNORECASE)
@@ -1687,10 +1688,21 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         if claimed and claimed != state.current_room:
             narration = "You stay where you are. Nothing happened."
 
-        # Sub-location clamp: tower top claims
-        if state.current_room == "courtyard_01" and not state.flags_courtyard.get("at_tower_top", False):
+                # Sub-location clamp: tower top claims
+        # Apply only when you're actually standing on the grass (not at tower top or in moat)
+        # and nothing about tower position changed this turn.
+        if (
+            state.current_room == "courtyard_01"
+            and not state.flags_courtyard.get("at_tower_top", False)
+            and not state.flags_courtyard.get("in_moat", False)
+            and "jump_into_moat" not in events
+            and "climb_ladder_up" not in events
+            and "climb_ladder_down" not in events
+            and "pull_lever" not in events
+        ):
             if re.search(r"\b(platform|tower\s+top|top\s+of\s+the\s+tower)\b", narration, re.IGNORECASE):
                 narration = "You are on the grass below the tower. Nothing happened."
+
 
 
         # Suppress "Nothing happened." on pure LOOK/describe turns
