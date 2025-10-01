@@ -596,3 +596,922 @@
 [2025-10-01 13:38:55] RAW_MODEL_OUTPUT: {"narration": "The gate creaks into place, forming a bridge across the moat. Three guards arrive, charging towards you with a loud shout.", "noise_level": 2, "hp_delta": 0, "events": ["pull_lever", "guards_arrive"], "flags_set": {"gate_lowered": true}, "progression": "courtyard_01", "safety_reason": ""}
 [2025-10-01 13:39:48] RAW_MODEL_OUTPUT: {"narration": "You drop the keys on the grass, and then pick up the crossbow from the tower platform.", "noise_level": 1, "hp_delta": 0, "events": ["drop_keys", "pickup_crossbow"], "flags_set": {}, "progression": "courtyard_01", "safety_reason": ""}
 [2025-10-01 13:40:39] RAW_MODEL_OUTPUT: {"narration": "You aim the crossbow and fire at a guard, hitting them squarely in the chest. The guard falls to the ground, motionless.", "noise_level": 2, "hp_delta": 0, "events": ["shoot_guard"], "flags_set": {"guards_remaining": 2}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-01 23:03:07] RAW_MODEL_OUTPUT: {
+  "narration": "You're in a cramped prison cell with stone walls and a single torch flickering on one wall.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-01 23:03:10] PROMPT_VERSION: 3.3 (... )
+[2025-10-01 23:03:46] RAW_MODEL_OUTPUT: {"narration": "You crash into the stone wall with a loud thud.", "noise_level": 2, "hp_delta": -10, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:04:21] RAW_MODEL_OUTPUT: {"narration": "You let a stinky fart rip, but the guard doesn't even flinch.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:04:53] RAW_MODEL_OUTPUT: {"narration": "You grab the wall torch, and it feels warm in your hands.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:05:16] RAW_MODEL_OUTPUT: {"narration": "You hover your face by the high window; the 20-meter drop is a lethal one.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:05:39] RAW_MODEL_OUTPUT: {"narration": "You imagine making smoke signals with the straw bed; flames would engulf you in this confined space.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:06:11] RAW_MODEL_OUTPUT: {"narration": "You bend the stone upwards, but it doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:06:36] RAW_MODEL_OUTPUT: {"narration": "You attempt to smash the cobblestone against the wall, but it's too heavy and doesn't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:07:03] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a crawlable hole leading down to a coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:07:23] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:07:53] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:08:06] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole.", "noise_level": 1, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:08:36] RAW_MODEL_OUTPUT: {
+  "narration": "You bounce off the cobblestone wall with a thud; your back hurts.",
+  "noise_level": 2,
+  "hp_delta": -0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-01 23:08:36] LLM_PARSED: {"narration": "You bounce off the cobblestone wall with a thud; your back hurts.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:08:36] ENGINE_NOTES: HP delta overridden to -20 due to guard punishment (noise=2) in cell.; HP changed 100 -> 80 (delta -20).
+[2025-10-01 23:08:36] ENGINE_ROOM: cell_01
+[2025-10-01 23:08:36] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:08:36] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:08:36] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:08:36] ENGINE_INV: []
+[2025-10-01 23:08:36] ENGINE_HP: 80
+[2025-10-01 23:08:55] RAW_MODEL_OUTPUT: {"narration": "You let out a quiet, pungent fart; the air in the cell doesn't change.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:08:55] LLM_PARSED: {"narration": "You let out a quiet, pungent fart; the air in the cell doesn't change.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:08:55] ENGINE_NOTES: 
+[2025-10-01 23:08:55] ENGINE_ROOM: cell_01
+[2025-10-01 23:08:55] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:08:55] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:08:55] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:08:55] ENGINE_INV: []
+[2025-10-01 23:08:55] ENGINE_HP: 80
+[2025-10-01 23:09:09] RAW_MODEL_OUTPUT: {"narration": "You carefully grab the wooden torch stick from its resting place on the wall.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:09:09] LLM_PARSED: {"narration": "You carefully grab the wooden torch stick from its resting place on the wall.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:09:09] ENGINE_NOTES: Tried to take the fixed wall torch in the cell; denied.
+[2025-10-01 23:09:09] ENGINE_ROOM: cell_01
+[2025-10-01 23:09:09] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:09:09] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:09:09] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:09:09] ENGINE_INV: []
+[2025-10-01 23:09:09] ENGINE_HP: 80
+[2025-10-01 23:09:21] RAW_MODEL_OUTPUT: {"narration": "You attempt to climb out of the high window, but it's a fatal 20-meter drop. You hesitate and back away from the window.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:09:21] LLM_PARSED: {"narration": "You attempt to climb out of the high window, but it's a fatal 20-meter drop. You hesitate and back away from the window.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:09:21] ENGINE_NOTES: 
+[2025-10-01 23:09:21] ENGINE_ROOM: cell_01
+[2025-10-01 23:09:21] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:09:21] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:09:21] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:09:21] ENGINE_INV: []
+[2025-10-01 23:09:21] ENGINE_HP: 80
+[2025-10-01 23:09:40] RAW_MODEL_OUTPUT: {"narration": "You attempt to set the straw bed ablaze, but it's too damp and doesn't catch fire. The guard stirs, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:09:40] LLM_PARSED: {"narration": "You attempt to set the straw bed ablaze, but it's too damp and doesn't catch fire. The guard stirs, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:09:40] ENGINE_NOTES: 
+[2025-10-01 23:09:40] ENGINE_ROOM: cell_01
+[2025-10-01 23:09:40] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:09:40] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:09:40] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:09:40] ENGINE_INV: []
+[2025-10-01 23:09:40] ENGINE_HP: 80
+[2025-10-01 23:10:00] RAW_MODEL_OUTPUT: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and doesn't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:00] LLM_PARSED: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and doesn't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:00] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.
+[2025-10-01 23:10:00] ENGINE_ROOM: cell_01
+[2025-10-01 23:10:00] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:10:00] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:10:00] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:10:00] ENGINE_INV: []
+[2025-10-01 23:10:00] ENGINE_HP: 80
+[2025-10-01 23:10:15] RAW_MODEL_OUTPUT: {"narration": "You try to smash the cobblestone on the floor, but it's too heavy and doesn't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:15] LLM_PARSED: {"narration": "You try to smash the cobblestone on the floor, but it's too heavy and doesn't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:15] ENGINE_NOTES: 
+[2025-10-01 23:10:15] ENGINE_ROOM: cell_01
+[2025-10-01 23:10:15] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:10:15] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:10:15] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:10:15] ENGINE_INV: []
+[2025-10-01 23:10:15] ENGINE_HP: 80
+[2025-10-01 23:10:30] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a small crawlable hole leading down to a coal cellar.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:30] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a small crawlable hole leading down to a coal cellar.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:30] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.; Inferred 'stone_lifted' from player intent.
+[2025-10-01 23:10:30] ENGINE_ROOM: cell_01
+[2025-10-01 23:10:30] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:10:30] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:10:30] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:10:30] ENGINE_INV: []
+[2025-10-01 23:10:30] ENGINE_HP: 80
+[2025-10-01 23:10:44] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:44] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:44] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.
+[2025-10-01 23:10:44] ENGINE_ROOM: cell_01
+[2025-10-01 23:10:44] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:10:44] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:10:44] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:10:44] ENGINE_INV: []
+[2025-10-01 23:10:44] ENGINE_HP: 80
+[2025-10-01 23:10:57] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:57] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:10:57] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.
+[2025-10-01 23:10:57] ENGINE_ROOM: cell_01
+[2025-10-01 23:10:57] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:10:57] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:10:57] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:10:57] ENGINE_INV: []
+[2025-10-01 23:10:57] ENGINE_HP: 80
+[2025-10-01 23:11:16] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole, finding yourself in a dark and musty coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:11:16] LLM_PARSED: {"narration": "You carefully make your way down the crawlable hole, finding yourself in a dark and musty coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:11:16] ENGINE_NOTES: Ignored non-guard hp_delta=-10 (noise=0) in cell.; Room transition: cell_01 -> coal_01
+[2025-10-01 23:11:16] ENGINE_ROOM: coal_01
+[2025-10-01 23:11:16] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:11:16] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:11:16] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:11:16] ENGINE_INV: []
+[2025-10-01 23:11:16] ENGINE_HP: 80
+[2025-10-01 23:20:46] PROMPT_VERSION: 3.3 (... )
+[2025-10-01 23:21:15] RAW_MODEL_OUTPUT: {
+  "narration": "You crash into the cobblestone wall with a dull thud. Nothing happened.",
+  "noise_level": 2,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": null
+}
+[2025-10-01 23:21:15] LLM_PARSED: {"narration": "You crash into the cobblestone wall with a dull thud. Nothing happened.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:21:15] ENGINE_NOTES: HP delta overridden to -20 due to guard punishment (noise=2) in cell.; HP changed 100 -> 80 (delta -20).
+[2025-10-01 23:21:15] ENGINE_ROOM: cell_01
+[2025-10-01 23:21:15] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:21:15] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:21:15] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:21:15] ENGINE_INV: []
+[2025-10-01 23:21:15] ENGINE_HP: 80
+[2025-10-01 23:21:43] RAW_MODEL_OUTPUT: {"narration": "You let out a quiet yet pungent fart, but the guard remains oblivious to the smell.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:21:43] LLM_PARSED: {"narration": "You let out a quiet yet pungent fart, but the guard remains oblivious to the smell.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:21:43] ENGINE_NOTES: 
+[2025-10-01 23:21:43] ENGINE_ROOM: cell_01
+[2025-10-01 23:21:43] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:21:43] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:21:43] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:21:43] ENGINE_INV: []
+[2025-10-01 23:21:43] ENGINE_HP: 80
+[2025-10-01 23:21:54] RAW_MODEL_OUTPUT: {"narration": "You carefully grab the wooden torch stick from its resting place on the wall.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:21:54] LLM_PARSED: {"narration": "You carefully grab the wooden torch stick from its resting place on the wall.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:21:54] ENGINE_NOTES: Inferred item event from input: pickup_torch; Tried to take the fixed wall torch in the cell; denied.
+[2025-10-01 23:21:54] ENGINE_ROOM: cell_01
+[2025-10-01 23:21:54] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:21:54] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:21:54] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:21:54] ENGINE_INV: []
+[2025-10-01 23:21:54] ENGINE_HP: 80
+[2025-10-01 23:22:16] RAW_MODEL_OUTPUT: {"narration": "You hover your face by the high window; the 20-meter drop is a lethal one. You back off.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:22:16] LLM_PARSED: {"narration": "You hover your face by the high window; the 20-meter drop is a lethal one. You back off.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:22:16] ENGINE_NOTES: 
+[2025-10-01 23:22:16] ENGINE_ROOM: cell_01
+[2025-10-01 23:22:16] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:22:16] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:22:16] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:22:16] ENGINE_INV: []
+[2025-10-01 23:22:16] ENGINE_HP: 80
+[2025-10-01 23:22:51] RAW_MODEL_OUTPUT: {"narration": "You try to set the straw bed ablaze, but it's damp and refuses to catch fire. The guard stirs on his bench, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:22:51] LLM_PARSED: {"narration": "You try to set the straw bed ablaze, but it's damp and refuses to catch fire. The guard stirs on his bench, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:22:51] ENGINE_NOTES: 
+[2025-10-01 23:22:51] ENGINE_ROOM: cell_01
+[2025-10-01 23:22:51] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:22:51] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:22:51] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:22:51] ENGINE_INV: []
+[2025-10-01 23:22:51] ENGINE_HP: 80
+[2025-10-01 23:23:03] RAW_MODEL_OUTPUT: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and refuses to budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:23:03] LLM_PARSED: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and refuses to budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:23:03] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.
+[2025-10-01 23:23:03] ENGINE_ROOM: cell_01
+[2025-10-01 23:23:03] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:23:03] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:23:03] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:23:03] ENGINE_INV: []
+[2025-10-01 23:23:03] ENGINE_HP: 80
+[2025-10-01 23:23:16] RAW_MODEL_OUTPUT: {"narration": "You try to smash the cobblestone against the wall, but it's too heavy and refuses to budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:23:16] LLM_PARSED: {"narration": "You try to smash the cobblestone against the wall, but it's too heavy and refuses to budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:23:16] ENGINE_NOTES: 
+[2025-10-01 23:23:16] ENGINE_ROOM: cell_01
+[2025-10-01 23:23:16] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:23:16] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:23:16] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:23:16] ENGINE_INV: []
+[2025-10-01 23:23:16] ENGINE_HP: 80
+[2025-10-01 23:23:34] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a crawlable hole leading down to a coal cellar.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": null}
+[2025-10-01 23:35:39] PROMPT_VERSION: 3.3 (... )
+[2025-10-01 23:35:57] RAW_MODEL_OUTPUT: {
+  "narration": "You bounce off the cobblestone wall with a dull thud; your back hurts from the landing.",
+  "noise_level": 1,
+  "hp_delta": -10,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-01 23:35:57] LLM_PARSED: {"narration": "You bounce off the cobblestone wall with a dull thud; your back hurts from the landing.", "noise_level": 1, "hp_delta": -10, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:35:57] ENGINE_NOTES: Ignored non-guard hp_delta=-10 (noise=1) in cell.
+[2025-10-01 23:35:57] ENGINE_ROOM: cell_01
+[2025-10-01 23:35:57] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:35:57] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:35:57] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:35:57] ENGINE_INV: []
+[2025-10-01 23:35:57] ENGINE_HP: 100
+[2025-10-01 23:36:09] RAW_MODEL_OUTPUT: {"narration": "You let out a quiet, stinky fart; the air in the cell doesn't change.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:09] LLM_PARSED: {"narration": "You let out a quiet, stinky fart; the air in the cell doesn't change.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:09] ENGINE_NOTES: 
+[2025-10-01 23:36:09] ENGINE_ROOM: cell_01
+[2025-10-01 23:36:09] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:36:09] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:36:09] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:36:09] ENGINE_INV: []
+[2025-10-01 23:36:09] ENGINE_HP: 100
+[2025-10-01 23:36:25] RAW_MODEL_OUTPUT: {"narration": "You carefully grab the wall torch, and it feels sturdy in your hands.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:25] LLM_PARSED: {"narration": "You carefully grab the wall torch, and it feels sturdy in your hands.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:25] ENGINE_NOTES: Tried to take the fixed wall torch in the cell; denied.
+[2025-10-01 23:36:25] ENGINE_ROOM: cell_01
+[2025-10-01 23:36:25] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:36:25] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:36:25] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:36:25] ENGINE_INV: []
+[2025-10-01 23:36:25] ENGINE_HP: 100
+[2025-10-01 23:36:39] RAW_MODEL_OUTPUT: {"narration": "You lean against the high window and try to hoist yourself up, but it's a fatal drop outside. Your body instinctively recoils from the edge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:39] LLM_PARSED: {"narration": "You lean against the high window and try to hoist yourself up, but it's a fatal drop outside. Your body instinctively recoils from the edge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:39] ENGINE_NOTES: 
+[2025-10-01 23:36:39] ENGINE_ROOM: cell_01
+[2025-10-01 23:36:39] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:36:39] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:36:39] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:36:39] ENGINE_INV: []
+[2025-10-01 23:36:39] ENGINE_HP: 100
+[2025-10-01 23:36:50] RAW_MODEL_OUTPUT: {"narration": "You try to set the straw bed ablaze, but it's damp and refuses to catch fire. The guard stirs on his bench outside, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:50] LLM_PARSED: {"narration": "You try to set the straw bed ablaze, but it's damp and refuses to catch fire. The guard stirs on his bench outside, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:36:50] ENGINE_NOTES: 
+[2025-10-01 23:36:50] ENGINE_ROOM: cell_01
+[2025-10-01 23:36:50] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:36:50] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:36:50] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:36:50] ENGINE_INV: []
+[2025-10-01 23:36:50] ENGINE_HP: 100
+[2025-10-01 23:37:28] RAW_MODEL_OUTPUT: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and refuses to move.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:37:44] PROMPT_VERSION: 3.3 (... )
+[2025-10-01 23:37:58] RAW_MODEL_OUTPUT: {
+  "narration": "You crash into the stone wall with a thud; your back hurts.",
+  "noise_level": 2,
+  "hp_delta": -10,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-01 23:37:58] LLM_PARSED: {"narration": "You crash into the stone wall with a thud; your back hurts.", "noise_level": 2, "hp_delta": -10, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:37:58] ENGINE_NOTES: HP delta overridden to -20 due to guard punishment (noise=2) in cell.; HP changed 100 -> 80 (delta -20).
+[2025-10-01 23:37:58] ENGINE_ROOM: cell_01
+[2025-10-01 23:37:58] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:37:58] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:37:58] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:37:58] ENGINE_INV: []
+[2025-10-01 23:37:58] ENGINE_HP: 80
+[2025-10-01 23:38:10] RAW_MODEL_OUTPUT: {"narration": "You let a small, pungent cloud escape; the guard's eyes flicker open, but he merely grumbles and goes back to sleep.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:38:10] LLM_PARSED: {"narration": "You let a small, pungent cloud escape; the guard's eyes flicker open, but he merely grumbles and goes back to sleep.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:38:10] ENGINE_NOTES: 
+[2025-10-01 23:38:10] ENGINE_ROOM: cell_01
+[2025-10-01 23:38:10] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:38:10] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:38:10] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:38:10] ENGINE_INV: []
+[2025-10-01 23:38:10] ENGINE_HP: 80
+[2025-10-01 23:38:28] RAW_MODEL_OUTPUT: {"narration": "You carefully grab the wall torch's wooden handle, and it feels sturdy in your hand.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:38:28] LLM_PARSED: {"narration": "You carefully grab the wall torch's wooden handle, and it feels sturdy in your hand.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:38:28] ENGINE_NOTES: Tried to take the fixed wall torch in the cell; denied.
+[2025-10-01 23:38:28] ENGINE_ROOM: cell_01
+[2025-10-01 23:38:28] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:38:28] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:38:28] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:38:28] ENGINE_INV: []
+[2025-10-01 23:38:28] ENGINE_HP: 80
+[2025-10-01 23:38:41] RAW_MODEL_OUTPUT: {"narration": "You hover your face by the high window; the 20-meter drop is a lethal one.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Window too high"}
+[2025-10-01 23:38:41] LLM_PARSED: {"narration": "You hover your face by the high window; the 20-meter drop is a lethal one.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Window too high"}
+[2025-10-01 23:38:41] ENGINE_NOTES: 
+[2025-10-01 23:38:41] ENGINE_ROOM: cell_01
+[2025-10-01 23:38:41] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:38:41] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:38:41] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:38:41] ENGINE_INV: []
+[2025-10-01 23:38:41] ENGINE_HP: 80
+[2025-10-01 23:38:53] RAW_MODEL_OUTPUT: {"narration": "You attempt to set the straw bed ablaze, but it's damp and refuses to catch fire. The guard stirs, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Straw too damp"}
+[2025-10-01 23:38:53] LLM_PARSED: {"narration": "You attempt to set the straw bed ablaze, but it's damp and refuses to catch fire. The guard stirs, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Straw too damp"}
+[2025-10-01 23:38:53] ENGINE_NOTES: 
+[2025-10-01 23:38:53] ENGINE_ROOM: cell_01
+[2025-10-01 23:38:53] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:38:53] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:38:53] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:38:53] ENGINE_INV: []
+[2025-10-01 23:38:53] ENGINE_HP: 80
+[2025-10-01 23:39:07] RAW_MODEL_OUTPUT: {"narration": "You bend the loose cobblestone upwards, but it doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:39:07] LLM_PARSED: {"narration": "You bend the loose cobblestone upwards, but it doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:39:07] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.; Inferred 'stone_lifted' from player intent.
+[2025-10-01 23:39:07] ENGINE_ROOM: cell_01
+[2025-10-01 23:39:07] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:39:07] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:39:07] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:39:07] ENGINE_INV: []
+[2025-10-01 23:39:07] ENGINE_HP: 80
+[2025-10-01 23:39:37] RAW_MODEL_OUTPUT: {"narration": "You attempt to smash the cobblestone against the wall, but it's too heavy and doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:39:37] LLM_PARSED: {"narration": "You attempt to smash the cobblestone against the wall, but it's too heavy and doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:39:37] ENGINE_NOTES: 
+[2025-10-01 23:39:37] ENGINE_ROOM: cell_01
+[2025-10-01 23:39:37] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:39:37] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:39:37] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:39:37] ENGINE_INV: []
+[2025-10-01 23:39:37] ENGINE_HP: 80
+[2025-10-01 23:39:53] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a crawlable hole leading down to a coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:39:53] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a crawlable hole leading down to a coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:39:53] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.
+[2025-10-01 23:39:53] ENGINE_ROOM: cell_01
+[2025-10-01 23:39:53] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:39:53] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:39:53] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:39:53] ENGINE_INV: []
+[2025-10-01 23:39:53] ENGINE_HP: 80
+[2025-10-01 23:40:11] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:40:11] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:40:11] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.
+[2025-10-01 23:40:11] ENGINE_ROOM: cell_01
+[2025-10-01 23:40:11] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:40:11] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:40:11] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:40:11] ENGINE_INV: []
+[2025-10-01 23:40:11] ENGINE_HP: 80
+[2025-10-01 23:40:23] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:40:23] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:40:23] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.
+[2025-10-01 23:40:23] ENGINE_ROOM: cell_01
+[2025-10-01 23:40:23] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:40:23] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:40:23] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:40:23] ENGINE_INV: []
+[2025-10-01 23:40:23] ENGINE_HP: 80
+[2025-10-01 23:40:32] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl into the hole beneath the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:40:32] LLM_PARSED: {"narration": "You carefully crawl into the hole beneath the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:40:32] ENGINE_NOTES: Room transition: cell_01 -> coal_01
+[2025-10-01 23:40:32] ENGINE_ROOM: coal_01
+[2025-10-01 23:40:32] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:40:32] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:40:32] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:40:32] ENGINE_INV: []
+[2025-10-01 23:40:32] ENGINE_HP: 80
+[2025-10-01 23:48:19] PROMPT_VERSION: 3.3 (... )
+[2025-10-01 23:48:44] RAW_MODEL_OUTPUT: {
+  "narration": "You bounce off the cobblestone wall with a dull thud; your back hurts.",
+  "noise_level": 2,
+  "hp_delta": -0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-01 23:48:44] LLM_PARSED: {"narration": "You bounce off the cobblestone wall with a dull thud; your back hurts.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:48:44] ENGINE_NOTES: HP delta overridden to -20 due to guard punishment (noise=2) in cell.; HP changed 100 -> 80 (delta -20).
+[2025-10-01 23:48:44] ENGINE_ROOM: cell_01
+[2025-10-01 23:48:44] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:48:44] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:48:44] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:48:44] ENGINE_INV: []
+[2025-10-01 23:48:44] ENGINE_HP: 80
+[2025-10-01 23:49:06] RAW_MODEL_OUTPUT: {"narration": "You let a stink bomb rip; the guard's eyes water, but he doesn't flinch.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:49:06] LLM_PARSED: {"narration": "You let a stink bomb rip; the guard's eyes water, but he doesn't flinch.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:49:06] ENGINE_NOTES: 
+[2025-10-01 23:49:06] ENGINE_ROOM: cell_01
+[2025-10-01 23:49:06] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:49:06] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:49:06] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:49:06] ENGINE_INV: []
+[2025-10-01 23:49:06] ENGINE_HP: 80
+[2025-10-01 23:49:19] RAW_MODEL_OUTPUT: {"narration": "You grab the wall torch and hold it in your hand.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:49:19] LLM_PARSED: {"narration": "You grab the wall torch and hold it in your hand.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:49:19] ENGINE_NOTES: Tried to take the fixed wall torch in the cell; denied.
+[2025-10-01 23:49:19] ENGINE_ROOM: cell_01
+[2025-10-01 23:49:19] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:49:19] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:49:19] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:49:19] ENGINE_INV: []
+[2025-10-01 23:49:19] ENGINE_HP: 80
+[2025-10-01 23:49:34] RAW_MODEL_OUTPUT: {"narration": "You lean against the high window and try to climb out, but the 20-meter drop is fatal.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "fatal drop"}
+[2025-10-01 23:49:34] LLM_PARSED: {"narration": "You lean against the high window and try to climb out, but the 20-meter drop is fatal.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "fatal drop"}
+[2025-10-01 23:49:34] ENGINE_NOTES: 
+[2025-10-01 23:49:34] ENGINE_ROOM: cell_01
+[2025-10-01 23:49:34] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:49:34] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:49:34] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:49:34] ENGINE_INV: []
+[2025-10-01 23:49:34] ENGINE_HP: 80
+[2025-10-01 23:49:56] RAW_MODEL_OUTPUT: {"narration": "You try to set the straw bed ablaze, but it's damp and doesn't catch fire. The guard stirs, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "damp straw"}
+[2025-10-01 23:49:56] LLM_PARSED: {"narration": "You try to set the straw bed ablaze, but it's damp and doesn't catch fire. The guard stirs, looking annoyed.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "damp straw"}
+[2025-10-01 23:49:56] ENGINE_NOTES: 
+[2025-10-01 23:49:56] ENGINE_ROOM: cell_01
+[2025-10-01 23:49:56] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:49:56] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:49:56] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:49:56] ENGINE_INV: []
+[2025-10-01 23:49:56] ENGINE_HP: 80
+[2025-10-01 23:50:25] RAW_MODEL_OUTPUT: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:50:25] LLM_PARSED: {"narration": "You try to bend the loose cobblestone upwards, but it's too heavy and doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:50:25] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.; Inferred 'stone_lifted' from player intent.
+[2025-10-01 23:50:25] ENGINE_ROOM: cell_01
+[2025-10-01 23:50:25] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:50:25] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:50:25] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:50:25] ENGINE_INV: []
+[2025-10-01 23:50:25] ENGINE_HP: 80
+[2025-10-01 23:50:38] RAW_MODEL_OUTPUT: {"narration": "You try to smash the cobblestone against the wall, but it's too heavy and doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:50:38] LLM_PARSED: {"narration": "You try to smash the cobblestone against the wall, but it's too heavy and doesn't budge.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:50:38] ENGINE_NOTES: 
+[2025-10-01 23:50:38] ENGINE_ROOM: cell_01
+[2025-10-01 23:50:38] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:50:38] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:50:38] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:50:38] ENGINE_INV: []
+[2025-10-01 23:50:38] ENGINE_HP: 80
+[2025-10-01 23:50:52] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed. The hole beneath is now accessible.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:50:52] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed. The hole beneath is now accessible.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:50:52] ENGINE_NOTES: Removed 'straw_rummaged' since player did not mention straw/hay/bed.
+[2025-10-01 23:50:52] ENGINE_ROOM: cell_01
+[2025-10-01 23:50:52] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:50:52] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:50:52] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:50:52] ENGINE_INV: []
+[2025-10-01 23:50:52] ENGINE_HP: 80
+[2025-10-01 23:51:04] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole, finding yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-01 23:51:04] LLM_PARSED: {"narration": "You carefully make your way down the crawlable hole, finding yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-01 23:51:04] ENGINE_NOTES: Removed 'dark_stumble' outside the coal cellar.; Ignored non-guard hp_delta=-10 (noise=0) in cell.; Room transition: cell_01 -> coal_01
+[2025-10-01 23:51:04] ENGINE_ROOM: coal_01
+[2025-10-01 23:51:04] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:51:04] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-01 23:51:04] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:51:04] ENGINE_INV: []
+[2025-10-01 23:51:04] ENGINE_HP: 80
+[2025-10-01 23:51:27] RAW_MODEL_OUTPUT: {"narration": "You let out a rather... enthusiastic fart, but nothing else happens.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:51:27] LLM_PARSED: {"narration": "You let out a rather... enthusiastic fart, but nothing else happens.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:51:27] ENGINE_NOTES: 
+[2025-10-01 23:51:27] ENGINE_ROOM: coal_01
+[2025-10-01 23:51:27] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:51:27] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:51:27] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:51:27] ENGINE_INV: []
+[2025-10-01 23:51:27] ENGINE_HP: 80
+[2025-10-01 23:51:52] RAW_MODEL_OUTPUT: {"narration": "You try to eat the coal, but your tongue feels like sandpaper and you gag on the taste. Nothing happened.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:51:52] LLM_PARSED: {"narration": "You try to eat the coal, but your tongue feels like sandpaper and you gag on the taste. Nothing happened.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:51:52] ENGINE_NOTES: 
+[2025-10-01 23:51:52] ENGINE_ROOM: coal_01
+[2025-10-01 23:51:52] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:51:52] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:51:52] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:51:52] ENGINE_INV: []
+[2025-10-01 23:51:52] ENGINE_HP: 80
+[2025-10-01 23:52:19] RAW_MODEL_OUTPUT: {"narration": "You carefully remove the wall-mounted torch from its holder, but it's not lit. Nothing happened.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:52:19] LLM_PARSED: {"narration": "You carefully remove the wall-mounted torch from its holder, but it's not lit. Nothing happened.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:52:19] ENGINE_NOTES: 
+[2025-10-01 23:52:19] ENGINE_ROOM: coal_01
+[2025-10-01 23:52:19] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:52:19] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:52:19] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:52:19] ENGINE_INV: []
+[2025-10-01 23:52:19] ENGINE_HP: 80
+[2025-10-01 23:52:51] RAW_MODEL_OUTPUT: {"narration": "You dive into the coal piles, but your movements are clumsy and awkward in the dark. You struggle to find a comfortable position among the dusty coals.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:52:51] LLM_PARSED: {"narration": "You dive into the coal piles, but your movements are clumsy and awkward in the dark. You struggle to find a comfortable position among the dusty coals.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:52:51] ENGINE_NOTES: 
+[2025-10-01 23:52:51] ENGINE_ROOM: coal_01
+[2025-10-01 23:52:51] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:52:51] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:52:51] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:52:51] ENGINE_INV: []
+[2025-10-01 23:52:51] ENGINE_HP: 80
+[2025-10-01 23:53:17] RAW_MODEL_OUTPUT: {"narration": "You strain your eyes in the darkness, trying to make out any details of your surroundings. The coal cellar is pitch-black, and you can't see a thing.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"dark_stumble": true}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:53:17] LLM_PARSED: {"narration": "You strain your eyes in the darkness, trying to make out any details of your surroundings. The coal cellar is pitch-black, and you can't see a thing.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"dark_stumble": true}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:53:17] ENGINE_NOTES: Filtered LLM flags from ['dark_stumble'] to [] for room coal_01.; Replaced narration due to light/seeing claims while in total darkness (pickup preserved if present).
+[2025-10-01 23:53:17] ENGINE_ROOM: coal_01
+[2025-10-01 23:53:17] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:53:17] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:53:17] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:53:17] ENGINE_INV: []
+[2025-10-01 23:53:17] ENGINE_HP: 80
+[2025-10-01 23:53:38] RAW_MODEL_OUTPUT: {"narration": "You awkwardly attempt to do a backflip against the coal piles, but your feet fly out from under you and you land with a thud on the cold stone floor.", "noise_level": 1, "hp_delta": -10, "events": [], "flags_set": {"dark_stumble": true}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:53:38] LLM_PARSED: {"narration": "You awkwardly attempt to do a backflip against the coal piles, but your feet fly out from under you and you land with a thud on the cold stone floor.", "noise_level": 1, "hp_delta": -10, "events": [], "flags_set": {"dark_stumble": true}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:53:38] ENGINE_NOTES: Filtered LLM flags from ['dark_stumble'] to [] for room coal_01.; Ignored hp_delta in coal without 'dark_stumble': -10
+[2025-10-01 23:53:38] ENGINE_ROOM: coal_01
+[2025-10-01 23:53:38] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:53:38] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:53:38] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:53:38] ENGINE_INV: []
+[2025-10-01 23:53:38] ENGINE_HP: 80
+[2025-10-01 23:54:06] RAW_MODEL_OUTPUT: {"narration": "You burst into a sprint, but your feet fly out from under you and you land with a thud on the cold stone floor.", "noise_level": 2, "hp_delta": -10, "events": [], "flags_set": {"dark_stumble": true}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:54:06] LLM_PARSED: {"narration": "You burst into a sprint, but your feet fly out from under you and you land with a thud on the cold stone floor.", "noise_level": 2, "hp_delta": -10, "events": [], "flags_set": {"dark_stumble": true}, "progression": "coal_01", "safety_reason": "Nothing happened."}
+[2025-10-01 23:54:06] ENGINE_NOTES: Filtered LLM flags from ['dark_stumble'] to [] for room coal_01.; Ignored hp_delta in coal without 'dark_stumble': -10
+[2025-10-01 23:54:06] ENGINE_ROOM: coal_01
+[2025-10-01 23:54:06] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:54:06] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:54:06] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:54:06] ENGINE_INV: []
+[2025-10-01 23:54:06] ENGINE_HP: 80
+[2025-10-01 23:54:26] RAW_MODEL_OUTPUT: {"narration": "You fumble around in the darkness, trying to get your bearings. Your foot bumps against something on the ground.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"coal_intro_shown": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:54:26] LLM_PARSED: {"narration": "You fumble around in the darkness, trying to get your bearings. Your foot bumps against something on the ground.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"coal_intro_shown": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:54:26] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room coal_01.; Auto-injected 'dark_stumble' due to moving in darkness in coal_01.; HP delta overridden to -10 for dark stumble in coal cellar.; HP changed 80 -> 70 (delta -10).
+[2025-10-01 23:54:26] ENGINE_ROOM: coal_01
+[2025-10-01 23:54:26] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:54:26] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:54:26] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:54:26] ENGINE_INV: []
+[2025-10-01 23:54:26] ENGINE_HP: 70
+[2025-10-01 23:54:44] RAW_MODEL_OUTPUT: {"narration": "You bend down and pick up the unknown object at your feet. It's a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:54:44] LLM_PARSED: {"narration": "You bend down and pick up the unknown object at your feet. It's a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:54:44] ENGINE_NOTES: 
+[2025-10-01 23:54:44] ENGINE_ROOM: coal_01
+[2025-10-01 23:54:44] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:54:44] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:54:44] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:54:44] ENGINE_INV: ['wooden torch']
+[2025-10-01 23:54:44] ENGINE_HP: 70
+[2025-10-01 23:55:13] RAW_MODEL_OUTPUT: {"narration": "You hover your face by the flame of the wall torch; heat singes your eyebrows. You back off.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:55:13] LLM_PARSED: {"narration": "You hover your face by the flame of the wall torch; heat singes your eyebrows. You back off.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:55:13] ENGINE_NOTES: 
+[2025-10-01 23:55:13] ENGINE_ROOM: coal_01
+[2025-10-01 23:55:13] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:55:13] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:55:13] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:55:13] ENGINE_INV: ['wooden torch']
+[2025-10-01 23:55:13] ENGINE_HP: 70
+[2025-10-01 23:55:46] RAW_MODEL_OUTPUT: {"narration": "You try to insert the wooden torch into a rather...unconventional location. Your face contorts in discomfort.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:55:46] LLM_PARSED: {"narration": "You try to insert the wooden torch into a rather...unconventional location. Your face contorts in discomfort.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:55:46] ENGINE_NOTES: 
+[2025-10-01 23:55:46] ENGINE_ROOM: coal_01
+[2025-10-01 23:55:46] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-01 23:55:46] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:55:46] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:55:46] ENGINE_INV: ['wooden torch']
+[2025-10-01 23:55:46] ENGINE_HP: 70
+[2025-10-01 23:56:06] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawl opening behind you and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:56:06] LLM_PARSED: {"narration": "You carefully make your way back through the crawl opening behind you and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:56:06] ENGINE_NOTES: Room transition: coal_01 -> cell_01
+[2025-10-01 23:56:06] ENGINE_ROOM: cell_01
+[2025-10-01 23:56:06] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': True, 'torch_lit': False}
+[2025-10-01 23:56:06] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:56:06] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:56:06] ENGINE_INV: ['wooden torch']
+[2025-10-01 23:56:06] ENGINE_HP: 70
+[2025-10-01 23:56:33] RAW_MODEL_OUTPUT: {"narration": "You poke your wooden stick through the iron bars on the iron door, but it's too thin to do any good.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:56:33] LLM_PARSED: {"narration": "You poke your wooden stick through the iron bars on the iron door, but it's too thin to do any good.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:56:33] ENGINE_NOTES: 
+[2025-10-01 23:56:33] ENGINE_ROOM: cell_01
+[2025-10-01 23:56:33] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': True, 'torch_lit': False}
+[2025-10-01 23:56:33] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-01 23:56:33] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:56:33] ENGINE_INV: ['wooden torch']
+[2025-10-01 23:56:33] ENGINE_HP: 70
+[2025-10-01 23:56:51] RAW_MODEL_OUTPUT: {"narration": "You try to light the wooden stick on the wall torch, but it's too hot and you quickly back off.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:56:51] LLM_PARSED: {"narration": "You try to light the wooden stick on the wall torch, but it's too hot and you quickly back off.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:56:51] ENGINE_NOTES: Inferred item event from input: light_torch; Torch lit.
+[2025-10-01 23:56:51] ENGINE_ROOM: cell_01
+[2025-10-01 23:56:51] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:56:51] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:56:51] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:56:51] ENGINE_INV: ['lit torch']
+[2025-10-01 23:56:51] ENGINE_HP: 70
+[2025-10-01 23:57:28] RAW_MODEL_OUTPUT: {"narration": "You try to entice the guard with the flame, but he remains oblivious and continues dozing on his bench.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:57:28] LLM_PARSED: {"narration": "You try to entice the guard with the flame, but he remains oblivious and continues dozing on his bench.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:57:28] ENGINE_NOTES: 
+[2025-10-01 23:57:28] ENGINE_ROOM: cell_01
+[2025-10-01 23:57:28] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:57:28] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:57:28] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:57:28] ENGINE_INV: ['lit torch']
+[2025-10-01 23:57:28] ENGINE_HP: 70
+[2025-10-01 23:57:54] RAW_MODEL_OUTPUT: {"narration": "You try to set the straw bed ablaze with the flame from your lit torch, but it's a bad idea - the dry straw ignites quickly and you're forced back by the sudden heat.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:57:54] LLM_PARSED: {"narration": "You try to set the straw bed ablaze with the flame from your lit torch, but it's a bad idea - the dry straw ignites quickly and you're forced back by the sudden heat.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:57:54] ENGINE_NOTES: 
+[2025-10-01 23:57:54] ENGINE_ROOM: cell_01
+[2025-10-01 23:57:54] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:57:54] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:57:54] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:57:54] ENGINE_INV: ['lit torch']
+[2025-10-01 23:57:54] ENGINE_HP: 70
+[2025-10-01 23:58:20] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawlable hole in the floor.", "noise_level": 0, "hp_delta": -10, "events": ["dark_stumble"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:58:20] LLM_PARSED: {"narration": "You carefully make your way back through the crawlable hole in the floor.", "noise_level": 0, "hp_delta": -10, "events": ["dark_stumble"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-01 23:58:20] ENGINE_NOTES: Removed 'dark_stumble' outside the coal cellar.; Inferred movement event from input: enter_coal_cellar; Ignored non-guard hp_delta=-10 (noise=0) in cell.; Room transition: cell_01 -> coal_01
+[2025-10-01 23:58:20] ENGINE_ROOM: coal_01
+[2025-10-01 23:58:20] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:58:20] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:58:20] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:58:20] ENGINE_INV: ['lit torch']
+[2025-10-01 23:58:20] ENGINE_HP: 70
+[2025-10-01 23:59:04] RAW_MODEL_OUTPUT: {"narration": "You try to ignite the coal piles with your lit torch, but it's clear that there's not enough airflow in this cramped space and the dust is too damp for a flame to catch. The coal remains cold and dark.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:59:04] LLM_PARSED: {"narration": "You try to ignite the coal piles with your lit torch, but it's clear that there's not enough airflow in this cramped space and the dust is too damp for a flame to catch. The coal remains cold and dark.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:59:04] ENGINE_NOTES: Inferred item event from input: light_torch; Ignored 'light_torch' outside Prison Cell.
+[2025-10-01 23:59:04] ENGINE_ROOM: coal_01
+[2025-10-01 23:59:04] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:59:04] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:59:04] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:59:04] ENGINE_INV: ['lit torch']
+[2025-10-01 23:59:04] ENGINE_HP: 70
+[2025-10-01 23:59:29] RAW_MODEL_OUTPUT: {"narration": "You lick the flame of your lit torch, and it's a brief moment of warmth before you pull back, feeling the heat dissipate.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:59:29] LLM_PARSED: {"narration": "You lick the flame of your lit torch, and it's a brief moment of warmth before you pull back, feeling the heat dissipate.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-01 23:59:29] ENGINE_NOTES: 
+[2025-10-01 23:59:29] ENGINE_ROOM: coal_01
+[2025-10-01 23:59:29] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:59:29] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:59:29] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:59:29] ENGINE_INV: ['lit torch']
+[2025-10-01 23:59:29] ENGINE_HP: 70
+[2025-10-01 23:59:49] RAW_MODEL_OUTPUT: {"narration": "You approach the far door and find it unlocked, thanks to your lit torch.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-01 23:59:49] LLM_PARSED: {"narration": "You approach the far door and find it unlocked, thanks to your lit torch.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-01 23:59:49] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room coal_01.; Room transition: coal_01 -> hall_01
+[2025-10-01 23:59:49] ENGINE_ROOM: hall_01
+[2025-10-01 23:59:49] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-01 23:59:49] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-01 23:59:49] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-01 23:59:49] ENGINE_INV: ['lit torch']
+[2025-10-01 23:59:49] ENGINE_HP: 70
+[2025-10-02 00:00:10] RAW_MODEL_OUTPUT: {"narration": "You try to extinguish the flame, but it's stubborn and refuses to be put out.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:00:10] LLM_PARSED: {"narration": "You try to extinguish the flame, but it's stubborn and refuses to be put out.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:00:10] ENGINE_NOTES: Inferred item event from input: extinguish_torch; Torch extinguished while held.
+[2025-10-02 00:00:10] ENGINE_ROOM: hall_01
+[2025-10-02 00:00:10] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-02 00:00:10] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:00:10] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:00:10] ENGINE_INV: ['wooden torch']
+[2025-10-02 00:00:10] ENGINE_HP: 70
+[2025-10-02 00:00:37] RAW_MODEL_OUTPUT: {"narration": "You hurl the wooden torch at the stone wall with considerable force; it bounces off with a dull thud.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:00:37] LLM_PARSED: {"narration": "You hurl the wooden torch at the stone wall with considerable force; it bounces off with a dull thud.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:00:37] ENGINE_NOTES: Inferred item event from input: drop_torch; HP changed 70 -> 40 (delta -30).
+[2025-10-02 00:00:37] ENGINE_ROOM: hall_01
+[2025-10-02 00:00:37] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-02 00:00:37] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:00:37] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:00:37] ENGINE_INV: []
+[2025-10-02 00:00:37] ENGINE_HP: 40
+[2025-10-02 00:00:57] RAW_MODEL_OUTPUT: {"narration": "You carefully pluck the keyring from the knight's belt, now empty-handed.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys"], "flags_set": {"knight_knocked_out": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:00:57] LLM_PARSED: {"narration": "You carefully pluck the keyring from the knight's belt, now empty-handed.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys"], "flags_set": {"knight_knocked_out": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:00:57] ENGINE_NOTES: 
+[2025-10-02 00:00:57] ENGINE_ROOM: hall_01
+[2025-10-02 00:00:57] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-02 00:00:57] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:00:57] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:00:57] ENGINE_INV: ['keys']
+[2025-10-02 00:00:57] ENGINE_HP: 40
+[2025-10-02 00:01:13] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the door you came from, returning to the coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_coal"], "flags_set": {"coal_intro_shown": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:01:13] LLM_PARSED: {"narration": "You carefully make your way back through the door you came from, returning to the coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_coal"], "flags_set": {"coal_intro_shown": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:01:13] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room hall_01.; Room transition: hall_01 -> coal_01
+[2025-10-02 00:01:13] ENGINE_ROOM: coal_01
+[2025-10-02 00:01:13] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-02 00:01:13] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:01:13] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:01:13] ENGINE_INV: ['keys']
+[2025-10-02 00:01:13] ENGINE_HP: 40
+[2025-10-02 00:01:36] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl back through the hole and emerge into the safety of your prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_intro_shown": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:01:36] LLM_PARSED: {"narration": "You carefully crawl back through the hole and emerge into the safety of your prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_intro_shown": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:01:36] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room coal_01.; Room transition: coal_01 -> cell_01
+[2025-10-02 00:01:36] ENGINE_ROOM: cell_01
+[2025-10-02 00:01:36] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:01:36] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:01:36] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:01:36] ENGINE_INV: ['keys']
+[2025-10-02 00:01:36] ENGINE_HP: 40
+[2025-10-02 00:01:57] RAW_MODEL_OUTPUT: {"narration": "You try to unlock the iron door with your keys, but it's not that simple. The guard stirs and looks at you suspiciously.", "noise_level": 2, "hp_delta": -20, "events": ["guard_punishes"], "flags_set": {"coal_intro_shown": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:01:57] LLM_PARSED: {"narration": "You try to unlock the iron door with your keys, but it's not that simple. The guard stirs and looks at you suspiciously.", "noise_level": 2, "hp_delta": -20, "events": ["guard_punishes"], "flags_set": {"coal_intro_shown": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:01:57] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room cell_01.; Inferred item event from input: unlock_courtyard_door; HP changed 40 -> 20 (delta -20).
+[2025-10-02 00:01:57] ENGINE_ROOM: cell_01
+[2025-10-02 00:01:57] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:01:57] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:01:57] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:01:57] ENGINE_INV: ['keys']
+[2025-10-02 00:01:57] ENGINE_HP: 20
+[2025-10-02 00:02:19] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back up through the crawlable hole in the wall.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:02:19] LLM_PARSED: {"narration": "You carefully make your way back up through the crawlable hole in the wall.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:02:19] ENGINE_NOTES: Inferred movement event from input: enter_coal_cellar; Room transition: cell_01 -> coal_01
+[2025-10-02 00:02:19] ENGINE_ROOM: coal_01
+[2025-10-02 00:02:19] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:02:19] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:02:19] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:02:19] ENGINE_INV: ['keys']
+[2025-10-02 00:02:19] ENGINE_HP: 20
+[2025-10-02 00:02:38] RAW_MODEL_OUTPUT: {"narration": "You fumble in the darkness and manage to open the far cellar door.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:02:38] LLM_PARSED: {"narration": "You fumble in the darkness and manage to open the far cellar door.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:02:38] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room coal_01.; Ignored 'open_hall_door' without light present in this room.
+[2025-10-02 00:02:38] ENGINE_ROOM: coal_01
+[2025-10-02 00:02:38] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:02:38] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:02:38] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:02:38] ENGINE_INV: ['keys']
+[2025-10-02 00:02:38] ENGINE_HP: 20
+[2025-10-02 00:03:18] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way to the far cellar door, feeling your way through the darkness until you reach it. With a bit of effort, you manage to open the door and slip inside.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:03:18] LLM_PARSED: {"narration": "You carefully make your way to the far cellar door, feeling your way through the darkness until you reach it. With a bit of effort, you manage to open the door and slip inside.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:03:18] ENGINE_NOTES: Filtered LLM flags from ['coal_intro_shown'] to [] for room coal_01.; Ignored 'open_hall_door' without light present in this room.
+[2025-10-02 00:03:18] ENGINE_ROOM: coal_01
+[2025-10-02 00:03:18] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:03:18] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:03:18] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': False}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:03:18] ENGINE_INV: ['keys']
+[2025-10-02 00:03:18] ENGINE_HP: 20
+[2025-10-02 00:30:53] PROMPT_VERSION: 3.3 (... )
+[2025-10-02 00:31:28] RAW_MODEL_OUTPUT: {
+  "narration": "You hesitate, then decide against it.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-02 00:31:28] LLM_PARSED: {"narration": "You hesitate, then decide against it.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:31:28] ENGINE_NOTES: 
+[2025-10-02 00:31:28] ENGINE_ROOM: cell_01
+[2025-10-02 00:31:28] ENGINE_FLAGS_CELL: {'found_loose_stone': False, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:31:28] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 00:31:28] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:31:28] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:31:28] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:31:28] ENGINE_INV: []
+[2025-10-02 00:31:28] ENGINE_HP: 100
+[2025-10-02 00:32:06] RAW_MODEL_OUTPUT: {"narration": "You lie down on the straw 'bed', feeling a bit worn out from your ordeal. The guard outside seems oblivious to your actions.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:32:06] LLM_PARSED: {"narration": "You lie down on the straw 'bed', feeling a bit worn out from your ordeal. The guard outside seems oblivious to your actions.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:32:06] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.
+[2025-10-02 00:32:06] ENGINE_ROOM: cell_01
+[2025-10-02 00:32:06] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:32:06] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 00:32:06] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:32:06] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:32:06] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:32:06] ENGINE_INV: []
+[2025-10-02 00:32:06] ENGINE_HP: 100
+[2025-10-02 00:32:37] RAW_MODEL_OUTPUT: {"narration": "You try to wiggle the loose cobblestone into a more comfortable position, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:32:37] LLM_PARSED: {"narration": "You try to wiggle the loose cobblestone into a more comfortable position, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:32:37] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.
+[2025-10-02 00:32:37] ENGINE_ROOM: cell_01
+[2025-10-02 00:32:37] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:32:37] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 00:32:37] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:32:37] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:32:37] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:32:37] ENGINE_INV: []
+[2025-10-02 00:32:37] ENGINE_HP: 100
+[2025-10-02 00:33:14] RAW_MODEL_OUTPUT: {"narration": "You try to remove the straw bed, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:33:14] LLM_PARSED: {"narration": "You try to remove the straw bed, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:33:14] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.
+[2025-10-02 00:33:14] ENGINE_ROOM: cell_01
+[2025-10-02 00:33:14] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:33:14] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 00:33:14] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:33:14] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:33:14] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:33:14] ENGINE_INV: []
+[2025-10-02 00:33:14] ENGINE_HP: 100
+[2025-10-02 00:33:51] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"straw_rummaged": true, "found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:33:51] LLM_PARSED: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"straw_rummaged": true, "found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:33:51] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged', 'found_loose_stone'] to ['found_loose_stone'] for room cell_01.; Removed 'straw_rummaged' since player did not mention straw/hay/bed.; Inferred 'stone_lifted' from player intent.
+[2025-10-02 00:33:51] ENGINE_ROOM: cell_01
+[2025-10-02 00:33:51] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:33:51] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 00:33:51] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:33:51] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:33:51] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:33:51] ENGINE_INV: []
+[2025-10-02 00:33:51] ENGINE_HP: 100
+[2025-10-02 00:34:12] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl through the hole in the floor and find yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:34:12] LLM_PARSED: {"narration": "You carefully crawl through the hole in the floor and find yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:34:12] ENGINE_NOTES: Removed 'dark_stumble' outside the coal cellar.; Ignored non-guard hp_delta=-10 (noise=0) in cell.; Room transition: cell_01 -> coal_01
+[2025-10-02 00:34:12] ENGINE_ROOM: coal_01
+[2025-10-02 00:34:12] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:34:12] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-02 00:34:12] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:34:12] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:34:12] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:34:12] ENGINE_INV: []
+[2025-10-02 00:34:12] ENGINE_HP: 100
+[2025-10-02 00:34:44] RAW_MODEL_OUTPUT: {"narration": "You pick up the unknown object at your feet and find a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:34:44] LLM_PARSED: {"narration": "You pick up the unknown object at your feet and find a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:34:44] ENGINE_NOTES: 
+[2025-10-02 00:34:44] ENGINE_ROOM: coal_01
+[2025-10-02 00:34:44] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:34:44] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:34:44] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:34:44] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:34:44] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:34:44] ENGINE_INV: ['wooden torch']
+[2025-10-02 00:34:44] ENGINE_HP: 100
+[2025-10-02 00:34:59] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawl opening and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_intro_shown": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:34:59] LLM_PARSED: {"narration": "You carefully make your way back through the crawl opening and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_intro_shown": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:34:59] ENGINE_NOTES: Room transition: coal_01 -> cell_01
+[2025-10-02 00:34:59] ENGINE_ROOM: cell_01
+[2025-10-02 00:34:59] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': True, 'torch_lit': False}
+[2025-10-02 00:34:59] ENGINE_FLAGS_COAL: {'has_torch_stick': True, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:34:59] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:34:59] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:34:59] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:34:59] ENGINE_INV: ['wooden torch']
+[2025-10-02 00:34:59] ENGINE_HP: 100
+[2025-10-02 00:35:24] RAW_MODEL_OUTPUT: {"narration": "You fumble with the wall torch and manage to light it on the wooden stick. The sudden flame casts flickering shadows around the cell.", "noise_level": 1, "hp_delta": 0, "events": ["light_torch"], "flags_set": {"torch_lit": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:35:24] LLM_PARSED: {"narration": "You fumble with the wall torch and manage to light it on the wooden stick. The sudden flame casts flickering shadows around the cell.", "noise_level": 1, "hp_delta": 0, "events": ["light_torch"], "flags_set": {"torch_lit": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-02 00:35:24] ENGINE_NOTES: Torch lit.
+[2025-10-02 00:35:24] ENGINE_ROOM: cell_01
+[2025-10-02 00:35:24] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': True}
+[2025-10-02 00:35:24] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-02 00:35:24] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:35:24] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:35:24] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:35:24] ENGINE_INV: ['lit torch']
+[2025-10-02 00:35:24] ENGINE_HP: 100
+[2025-10-02 00:35:43] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back to the crawlable hole and climb down into the coal cellar.", "noise_level": 1, "hp_delta": -10, "events": ["dark_stumble", "return_to_coal"], "flags_set": {"entered_hole": false}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:35:43] LLM_PARSED: {"narration": "You carefully make your way back to the crawlable hole and climb down into the coal cellar.", "noise_level": 1, "hp_delta": -10, "events": ["dark_stumble", "return_to_coal"], "flags_set": {"entered_hole": false}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:35:43] ENGINE_NOTES: Removed 'dark_stumble' outside the coal cellar.; Inferred movement event from input: enter_coal_cellar; Ignored non-guard hp_delta=-10 (noise=1) in cell.; Room transition: cell_01 -> coal_01
+[2025-10-02 00:35:43] ENGINE_ROOM: coal_01
+[2025-10-02 00:35:43] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:35:43] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-02 00:35:43] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:35:43] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:35:43] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:35:43] ENGINE_INV: ['lit torch']
+[2025-10-02 00:35:43] ENGINE_HP: 100
+[2025-10-02 00:36:13] RAW_MODEL_OUTPUT: {"narration": "You fumble in the darkness for the handle of the far cellar door and manage to grasp it with your hands. With a bit of effort, you push the door open, revealing a short stone staircase leading down into the darkness.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"torch_lit": false}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:36:13] LLM_PARSED: {"narration": "You fumble in the darkness for the handle of the far cellar door and manage to grasp it with your hands. With a bit of effort, you push the door open, revealing a short stone staircase leading down into the darkness.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"torch_lit": false}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-02 00:36:13] ENGINE_NOTES: Room transition: coal_01 -> hall_01
+[2025-10-02 00:36:13] ENGINE_ROOM: hall_01
+[2025-10-02 00:36:13] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:36:13] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-02 00:36:13] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-02 00:36:13] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:36:13] ENGINE_ITEMS: {'torch': {'location': 'player', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:36:13] ENGINE_INV: ['lit torch']
+[2025-10-02 00:36:13] ENGINE_HP: 100
+[2025-10-02 00:36:31] RAW_MODEL_OUTPUT: {"narration": "You carefully drop the lit torch on the floor, its flame flickering as it falls.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"torch_lit": false}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:36:31] LLM_PARSED: {"narration": "You carefully drop the lit torch on the floor, its flame flickering as it falls.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"torch_lit": false}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:36:31] ENGINE_NOTES: Inferred item event from input: drop_torch
+[2025-10-02 00:36:31] ENGINE_ROOM: hall_01
+[2025-10-02 00:36:31] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:36:31] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-02 00:36:31] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': True}
+[2025-10-02 00:36:31] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:36:31] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:36:31] ENGINE_INV: []
+[2025-10-02 00:36:31] ENGINE_HP: 100
+[2025-10-02 00:36:53] RAW_MODEL_OUTPUT: {
+  "narration": "You carefully slip behind a pillar to get closer to the knight, then swiftly grab the keyring from his belt without making a sound.",
+  "noise_level": 1,
+  "hp_delta": 0,
+  "events": ["pickup_keys"],
+  "flags_set": {"knight_knocked_out": false},
+  "progression": "hall_01",
+  "safety_reason": ""
+}
+[2025-10-02 00:36:53] LLM_PARSED: {"narration": "You carefully slip behind a pillar to get closer to the knight, then swiftly grab the keyring from his belt without making a sound.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys"], "flags_set": {"knight_knocked_out": false}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:36:53] ENGINE_NOTES: 
+[2025-10-02 00:36:53] ENGINE_ROOM: hall_01
+[2025-10-02 00:36:53] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:36:53] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': True, 'coal_intro_shown': True}
+[2025-10-02 00:36:53] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': True}
+[2025-10-02 00:36:53] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:36:53] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:36:53] ENGINE_INV: ['keys']
+[2025-10-02 00:36:53] ENGINE_HP: 100
+[2025-10-02 00:37:21] RAW_MODEL_OUTPUT: {"narration": "You carefully slip behind a pillar to get closer to the knight, then swiftly grab the keyring from his belt without making a sound. You quietly open the heavy door to the courtyard.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys", "open_hall_door"], "flags_set": {"knight_knocked_out": false}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:37:21] LLM_PARSED: {"narration": "You carefully slip behind a pillar to get closer to the knight, then swiftly grab the keyring from his belt without making a sound. You quietly open the heavy door to the courtyard.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys", "open_hall_door"], "flags_set": {"knight_knocked_out": false}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-02 00:37:21] ENGINE_NOTES: Inferred movement event from input: unlock_courtyard_door; Already holding the keys; pickup ignored.; Room transition: hall_01 -> courtyard_01
+[2025-10-02 00:37:21] ENGINE_ROOM: courtyard_01
+[2025-10-02 00:37:21] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:37:21] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:37:21] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': True, 'hall_intro_shown': True}
+[2025-10-02 00:37:21] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-02 00:37:21] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:37:21] ENGINE_INV: ['keys']
+[2025-10-02 00:37:21] ENGINE_HP: 100
+[2025-10-02 00:37:42] RAW_MODEL_OUTPUT: {"narration": "You sprint across the courtyard towards the tower, your footsteps echoing off the walls.", "noise_level": 2, "hp_delta": 0, "events": ["climb_ladder_up"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-02 00:37:42] LLM_PARSED: {"narration": "You sprint across the courtyard towards the tower, your footsteps echoing off the walls.", "noise_level": 2, "hp_delta": 0, "events": ["climb_ladder_up"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-02 00:37:42] ENGINE_NOTES: 
+[2025-10-02 00:37:42] ENGINE_ROOM: courtyard_01
+[2025-10-02 00:37:42] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:37:42] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:37:42] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': True, 'hall_intro_shown': True}
+[2025-10-02 00:37:42] ENGINE_FLAGS_COURTYARD: {'at_tower_top': True, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': True, 'in_moat': False}
+[2025-10-02 00:37:42] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:37:42] ENGINE_INV: ['keys']
+[2025-10-02 00:37:42] ENGINE_HP: 100
+[2025-10-02 00:37:55] RAW_MODEL_OUTPUT: {"narration": "You leap into the moat, the water's surface barely rippling as you splash down.", "noise_level": 1, "hp_delta": -40, "events": ["jump_into_moat"], "flags_set": {"in_moat": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-02 00:37:55] LLM_PARSED: {"narration": "You leap into the moat, the water's surface barely rippling as you splash down.", "noise_level": 1, "hp_delta": -40, "events": ["jump_into_moat"], "flags_set": {"in_moat": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-02 00:37:55] ENGINE_NOTES: Filtered LLM flags from ['in_moat'] to [] for room courtyard_01.; HP changed 100 -> 60 (delta -40).
+[2025-10-02 00:37:55] ENGINE_ROOM: courtyard_01
+[2025-10-02 00:37:55] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:37:55] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:37:55] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': True, 'hall_intro_shown': True}
+[2025-10-02 00:37:55] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': True, 'in_moat': True}
+[2025-10-02 00:37:55] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:37:55] ENGINE_INV: ['keys']
+[2025-10-02 00:37:55] ENGINE_HP: 60
+[2025-10-02 00:38:18] RAW_MODEL_OUTPUT: {"narration": "You swim across the moat, your muscles aching from the exertion.", "noise_level": 1, "hp_delta": -0, "events": ["swim_across"], "flags_set": {"in_moat": false}, "progression": "victory", "safety_reason": ""}
+[2025-10-02 00:38:18] LLM_PARSED: {"narration": "You swim across the moat, your muscles aching from the exertion.", "noise_level": 1, "hp_delta": 0, "events": ["swim_across"], "flags_set": {"in_moat": false}, "progression": "victory", "safety_reason": ""}
+[2025-10-02 00:38:18] ENGINE_NOTES: 
+[2025-10-02 00:38:18] ENGINE_ROOM: courtyard_01
+[2025-10-02 00:38:18] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': True, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-02 00:38:18] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': True}
+[2025-10-02 00:38:18] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': True, 'hall_intro_shown': True}
+[2025-10-02 00:38:18] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': True, 'in_moat': True}
+[2025-10-02 00:38:18] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'player'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-02 00:38:18] ENGINE_INV: ['keys']
+[2025-10-02 00:38:18] ENGINE_HP: 60

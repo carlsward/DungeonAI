@@ -1,6 +1,6 @@
 # ui_server.py
 # Flask-baserad web-UI för Escape the Castle med CRT-look, rums-intros,
-# stabil inputrad, glow-highlight för key events och typskrivaranimation + ljud.
+# stabil inputrad, glow-highlight för key events och typskrivaranimation + ljud + musik.
 
 from __future__ import annotations
 
@@ -241,7 +241,7 @@ INDEX_HTML = r"""
   // ---- Tangentbordsljud ----
   const keyAudio = new Audio('/static/sfx/keyboard.mp3');
   keyAudio.loop = true;
-  keyAudio.volume = 0.95;
+  keyAudio.volume = 0.6;
 
   function startKeyAudio(){
     keyAudio.currentTime = 0;
@@ -252,8 +252,47 @@ INDEX_HTML = r"""
     keyAudio.currentTime = 0;
   }
 
+  // ---- Bakgrundsmusik per rum ----
+  const bgmMap = {
+    "cell_01": new Audio('/static/sfx/prison_music.mp3'),
+    "coal_01": new Audio('/static/sfx/coalroom_music.mp3'),
+    "hall_01": new Audio('/static/sfx/hallway_music.mp3'),
+    "courtyard_01": new Audio('/static/sfx/courtyard_music.mp3')
+  };
+  for (const a of Object.values(bgmMap)){ a.loop = true; a.volume = 0.55; }
+
+  let currentBgmKey = null;
+  function setBgm(roomId){
+    if (currentBgmKey && bgmMap[currentBgmKey]){
+      bgmMap[currentBgmKey].pause();
+      try { bgmMap[currentBgmKey].currentTime = 0; } catch(e){}
+    }
+    const next = bgmMap[roomId];
+    if (next){
+      currentBgmKey = roomId;
+      next.play().catch(()=>{ /* kräver user gesture första gången */ });
+    }
+  }
+
+  // ---- SFX ----
+  const sfx = {
+    door: new Audio('/static/sfx/opening_doors.mp3'),
+    punch: new Audio('/static/sfx/punch_sound.mp3'),
+    lose: new Audio('/static/sfx/losing_sound.mp3'),
+    win: new Audio('/static/sfx/vinning_sound.mp3')
+  };
+  sfx.door.volume = 0.9;
+  sfx.punch.volume = 0.9;
+  sfx.lose.volume = 0.95;
+  sfx.win.volume = 0.95;
+
+  function playOnce(audio){
+    // skapa en klon så flera kan överlappa om det behövs
+    const a = audio.cloneNode(true);
+    a.play().catch(()=>{});
+  }
+
   // ---- Key-event detection (glow) ----
-  // Du kan lägga till fler fraser vid behov.
   const KEY_EVENT_PATTERNS = [
     /Torchlight pushes back the darkness/i,
     /You reveal a crawlable hole/i,
@@ -266,9 +305,11 @@ INDEX_HTML = r"""
     /The lawn falls silent/i,
     /You sprint across the lowered gate/i,
     /You swim hard, scramble up the far bank/i,
-    /The knight whirls .* you knock him out/i
+    /The knight whirls .* you knock him out/i,
+    /You push the far door open and step into the great hall/i,
+    /You pull the door open and step into the castle courtyard/i,
+    /You carefully crawl into the hole and drop into the coal cellar/i
   ];
-
   function isKeyEventLine(text){
     return KEY_EVENT_PATTERNS.some(re => re.test(text));
   }
@@ -291,8 +332,34 @@ INDEX_HTML = r"""
     caption.textContent = s.room_title;
   }
 
+  // ---- Ljudlogik kopplat till state från servern ----
+  const DOOR_EVENTS = new Set(["open_hall_door", "unlock_courtyard_door", "return_to_coal"]);
+  function handleAudioFromState(s, prev){
+    // Start/byt BGM vid rum
+    setBgm(s.room_id);
+
+    // Dörrljud om events innehåller dörr-aktiviteter
+    if (s.events && s.events.some(e => DOOR_EVENTS.has(e))){
+      playOnce(sfx.door);
+    }
+
+    // Punch varje gång hp_delta < 0
+    if (typeof s.hp_delta === 'number' && s.hp_delta < 0){
+      playOnce(sfx.punch);
+    }
+
+    // Losing/winning – spela en gång när det inträffar
+    if (s.dead){
+      playOnce(sfx.lose);
+      // valfritt: pausa BGM
+      if (currentBgmKey && bgmMap[currentBgmKey]) bgmMap[currentBgmKey].pause();
+    } else if (s.game_won){
+      playOnce(sfx.win);
+      if (currentBgmKey && bgmMap[currentBgmKey]) bgmMap[currentBgmKey].pause();
+    }
+  }
+
   // ---- Typskrivaranimation för SYS-rader ----
-  // Skriver text linje för linje, spelar ljud under tiden.
   const BASE_DELAY = 14; // ms per tecken
   const PUNCT_PAUSE = { ',': 80, '.': 120, '!': 140, '?': 140, ';': 100, ':': 100 };
 
@@ -302,18 +369,15 @@ INDEX_HTML = r"""
       line.className = 'sys line' + (isKey ? ' glowline' : '');
       parentEl.appendChild(line);
 
-      // Skriv tecken för tecken
       for (let i=0; i<lineText.length; i++){
         line.textContent += lineText[i];
         log.scrollTop = log.scrollHeight;
 
         const ch = lineText[i];
         const extra = PUNCT_PAUSE[ch] || 0;
-        const delay = BASE_DELAY + (extra ? 0 : 0);
+        const delay = BASE_DELAY;
         await new Promise(r => setTimeout(r, delay));
-        if (extra){
-          await new Promise(r => setTimeout(r, extra));
-        }
+        if (extra){ await new Promise(r => setTimeout(r, extra)); }
       }
       resolve();
     });
@@ -321,15 +385,11 @@ INDEX_HTML = r"""
 
   async function typeNarration(text){
     if (!text) return;
-
-    // Starta ljudet precis när vi börjar skriva
     startKeyAudio();
-
     const lines = text.split(/\r?\n/);
     for (const rawLine of lines){
-      const t = rawLine; // oförändrat (servern trustas)
+      const t = rawLine;
       if (t.trim().length === 0){
-        // tom rad – lägg in liten spacer
         const spacer = document.createElement('div');
         spacer.className = 'line';
         spacer.innerHTML = '&nbsp;';
@@ -340,8 +400,6 @@ INDEX_HTML = r"""
       const key = isKeyEventLine(t);
       await typeLine(t, log, key);
     }
-
-    // Stanna ljudet när allt är klart
     stopKeyAudio();
   }
 
@@ -360,6 +418,8 @@ INDEX_HTML = r"""
     const s = await r.json();
     if (s.narration) await typeNarration(s.narration.trim());
     updateStatus(s);
+    handleAudioFromState(s);
+    cmd.focus();
   }
 
   async function sendCmd(){
@@ -376,6 +436,7 @@ INDEX_HTML = r"""
     const s = await r.json();
     if (s.narration) await typeNarration(s.narration.trim());
     updateStatus(s);
+    handleAudioFromState(s);
     cmd.focus();
   }
 
@@ -412,6 +473,7 @@ def get_state():
         narration += WELCOME_TEXT.strip() + "\n"
         narration += append_room_entry_text(STATE)
 
+    # första laddningen – inget hp_delta/noise, och inga events ännu
     return jsonify({
         "narration": narration,
         "hp": STATE.hp,
@@ -421,6 +483,9 @@ def get_state():
         "room_id": STATE.current_room,
         "room_title": ROOM_TITLES.get(STATE.current_room, STATE.current_room),
         "cause": "",
+        "events": [],
+        "game_won": False,
+        "dead": STATE.hp <= 0,
     })
 
 @app.route("/act", methods=["POST"])
@@ -466,6 +531,7 @@ def act():
 
     STATE.inventory = inventory_items_from_items(STATE)
 
+    # skicka events + vinst/död i svaret så klienten kan trigga ljud
     return jsonify({
         "narration": narration,
         "hp": STATE.hp,
@@ -475,14 +541,19 @@ def act():
         "room_id": STATE.current_room,
         "room_title": ROOM_TITLES.get(STATE.current_room, STATE.current_room),
         "cause": result.get("cause", ""),
+        "events": result.get("events", []),
+        "game_won": bool(result.get("game_won", False)),
+        "dead": STATE.hp <= 0,
     })
 
-# Statik
+# Statik (art)
 @app.route("/static/art/<path:filename>")
 def art_file(filename):
     return send_from_directory(os.path.join(app.static_folder, "art"), filename)
 
 if __name__ == "__main__":
-    # Lägg keyboard.mp3 i static/sfx/keyboard.mp3
+    # Lägg filer i:
+    # static/sfx/{keyboard.mp3, prison_music.mp3, coalroom_music.mp3, hallway_music.mp3, courtyard_music.mp3,
+    #            opening_doors.mp3, punch_sound.mp3, losing_sound.mp3, vinning_sound.mp3}
     # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png}
     app.run(host="127.0.0.1", port=5000, debug=True)
