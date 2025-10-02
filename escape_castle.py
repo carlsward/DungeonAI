@@ -396,7 +396,7 @@ Global rules:
 - **Self-harm attempts:** never describe the player injuring or killing themselves. Give a grounded, in-universe refusal (survival instinct, hesitation), then end with "Nothing happened." Do NOT apply damage.
 
 - Narration: immersive 2nd person, ~3 sentences, announce each key outcome once. If impossible/no change, end with "Nothing happened."
-- Use only these semantic events: 'enter_coal_cellar','return_to_cell','dark_stumble','open_hall_door','light_torch','extinguish_torch','pickup_stick','pickup_torch','drop_torch','pickup_keys','drop_keys','unlock_courtyard_door','knight_notice','combat_knock_guard','climb_ladder_up','climb_ladder_down','pull_lever','guards_arrive','pickup_crossbow','drop_crossbow','shoot_guard','cross_gate_bridge','jump_into_moat','swim_across'.
+- Use only these semantic events: 'straw_rummaged','stone_lifted','enter_coal_cellar','return_to_cell','open_hall_door','return_to_coal','dark_stumble','pickup_stick','pickup_torch','drop_torch','light_torch','extinguish_torch','pickup_keys','drop_keys','unlock_courtyard_door','guard_punishes','knight_notice','combat_knock_guard','climb_ladder_up','climb_ladder_down','pull_lever','guards_arrive','pickup_crossbow','drop_crossbow','shoot_guard','cross_gate_bridge','jump_into_moat','swim_across'.
 - Event parity: only narrate outcomes that correspond to 'events' and/or 'flags_set'. Do NOT invent new event names.
 
 Coal cellar (coal_01) — darkness & safety:
@@ -661,6 +661,7 @@ _SEEING_DETAILS_IN_COAL_RE = re.compile(
     r"\b(see|make\s+out|glimpse|visible)\b.*\b(door|stair|staircase|steps?|coal|heaps?)\b",
     re.IGNORECASE
 )
+_CROSS_IMPLICIT_RE = re.compile(r"\b(run|dash|sprint|go|head|make)\b.*\b(across|over|to\s+the\s+other\s+side)\b|\bescape\b", re.IGNORECASE)
 
 
 def infer_move_event(current_room: str, text: str) -> Optional[str]:
@@ -726,7 +727,6 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
 
     return None
 
-_CROSS_IMPLICIT_RE = re.compile(r"\b(run|dash|sprint|go|head|make)\b.*\b(across|over|to\s+the\s+other\s+side)\b|\bescape\b", re.IGNORECASE)
 
 _KEYS_RE = re.compile(r"\b(key|keys|keyring|keychain|key\s*ring)\b", re.IGNORECASE)
 _UNLOCK_RE = re.compile(r"\b(unlock|use\s+key|use\s+keys|open\s+with\s+(?:key|keys))\b", re.IGNORECASE)
@@ -905,7 +905,7 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         r"(?:\b(use|shine|raise|brandish|wave|aim|point)\b.*\btorch\b|\btorch\b.*\b(use|shine|raise|brandish|wave|aim|point)\b)",
         _re.IGNORECASE
     )
-    SEE_QUERY_RE = re.compile(r"\bwhat\s+(?:can|do)\s+i\s+see\b", re.IGNORECASE)
+    SEE_QUERY_RE = re.compile(r"\bwhat\s+(?:can|do)\s+i\s+see\b", _re.IGNORECASE)
 
     # Courtyard-specific intents
     _SHOOT_RE = _re.compile(r"\b(shoot|fire|loose|let\s+fly|squeeze(?:\s+the)?\s+trigger|aim\s+and\s+fire)\b", _re.IGNORECASE)
@@ -925,9 +925,16 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     attempted_move_stone_input = False
     if state.current_room == "cell_01":
         was_stone_moved_before = bool(state.flags_cell.get("stone_moved", False))
-        # Försöker spelaren manipulera stenen denna tur?
         if _STONE_ACT_RE1.search(player_action_text or "") or _STONE_ACT_RE2.search(player_action_text or ""):
             attempted_move_stone_input = True
+        # NEW: snapshot – hade vi redan hittat den lösa stenen innan denna tur?
+        was_found_before = bool(state.flags_cell.get("found_loose_stone", False))
+    else:
+        # definieras för full tydlighet även utanför cellen
+        was_found_before = bool(state.flags_cell.get("found_loose_stone", False))
+
+
+
 
 
     room_transition: Optional[str] = None
@@ -980,11 +987,14 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         events.append(ev_item)
         notes.append(f"Inferred item event from input: {ev_item}")
 
-    # --- Inject straw rummage if player mentions straw while in the cell and stone not yet found
+        # --- Straw rummage => deterministiskt: hitta den lösa stenen denna tur ---
     if state.current_room == "cell_01" and not state.flags_cell["found_loose_stone"]:
         if _re.search(r"\b(straw|hay|straw\s*bed|bed)\b", player_action_text or "", flags=_re.IGNORECASE):
             if "straw_rummaged" not in events:
                 events.append("straw_rummaged")
+            # Viktigt: markera upptäckten direkt i motor-state (oberoende av LLM)
+            state.flags_cell["found_loose_stone"] = True
+
 
     # Dedupe while preserving order
     events = list(dict.fromkeys(events))
@@ -1513,33 +1523,38 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         nl = narration.lower()
         cues: List[str] = []
 
-        # Om spelaren precis hittade stenen, hjälp texten på traven
-        if "found_loose_stone" in new_flags and ("loose stone" not in nl) and ("loose cobblestone" not in nl):
-            cues.append("You notice a loose stone beneath the straw bed.")
+        # NEW: hinta baserat på state-delta (inte new_flags)
+        if (not was_found_before) and state.flags_cell.get("found_loose_stone", False):
+            if ("loose stone" not in nl) and ("loose cobblestone" not in nl):
+                cues.append("You notice a loose stone beneath the straw bed.")
 
-        # Första lyckade lyftet: tvinga fram hål-raden
-        if "stone_moved" in new_flags and ("crawlable hole" not in nl) and (" a hole" not in nl and " the hole" not in nl):
-            cues.append("You reveal a crawlable hole.")
+        # NEW: hål-cue också baserad på delta i state
+        if (not was_stone_moved_before) and state.flags_cell.get("stone_moved", False):
+            if ("crawlable hole" not in nl) and (" a hole" not in nl and " the hole" not in nl):
+                cues.append("You reveal a crawlable hole.")
 
+        # Behåll torchraden om den precis tändes denna tur (denna är redan new_flags-driven)
         if "torch_lit" in new_flags and ("torch" not in nl or "lit" not in nl):
             cues.append("Your torch catches fire and burns steadily.")
 
         if cues:
-            # Om modellen råkade lägga till "Nothing happened." trots framgång, städa bort det
-            narration = re.sub(r'\s*Nothing happened\.\s*$', '', narration).strip()
+            narration = _re.sub(r'\s*Nothing happened\.\s*$', '', narration).strip()
+
             if narration and narration[-1] not in ".!?":
                 narration += "."
             narration += " " + " ".join(cues)
 
-                # Om stenen faktiskt flyttades denna tur: skriv deterministiskt för att undvika motsägelser
-        if "stone_moved" in new_flags and not was_stone_moved_before:
+        # Deterministisk, kort och tydlig rad första gången stenen verkligen lyfts
+        if (not was_stone_moved_before) and state.flags_cell.get("stone_moved", False):
             narration = "You carefully lift the loose cobblestone aside, revealing a crawlable hole."
+
 
 
             # Om stenen redan var åt sidan före turen och spelaren försöker igen:
     if state.current_room == "cell_01" and was_stone_moved_before and attempted_move_stone_input and not room_transition:
         # Stryk meningslös "Nothing happened." och ersätt med tydlig förklaring
-        narration = re.sub(r'\s*Nothing happened\.\s*$', '', narration).strip()
+        narration = _re.sub(r'\s*Nothing happened\.\s*$', '', narration).strip()
+
         narration = "The loose stone is already aside."
 
 
@@ -1674,7 +1689,7 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     # Om ingen transition skedde men narrationen hävdar att du "är i" ett annat rum: klampa
     if not room_transition:
-        narration = llm.narration.strip() or narration
+       
         claim_hall = _re.search(r"\b(Great Hall)\b", narration, _re.IGNORECASE)
         claim_coal = _re.search(r"\b(Coal Cellar)\b", narration, _re.IGNORECASE)
         claim_cell = _re.search(r"\b(Prison Cell)\b", narration, _re.IGNORECASE)
