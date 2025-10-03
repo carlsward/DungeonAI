@@ -2324,3 +2324,144 @@
 [2025-10-04 00:09:56] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way towards the squat tower in the courtyard, then begin climbing the ladder.", "noise_level": 1, "hp_delta": 0, "events": ["climb_ladder_up"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": ""}
 [2025-10-04 00:10:20] RAW_MODEL_OUTPUT: {"narration": "You leap into the moat below, the water enveloping you with a splash. The shock of the cold water hits you hard.", "noise_level": 2, "hp_delta": -40, "events": ["jump_into_moat"], "flags_set": {"in_moat": true}, "progression": "courtyard_01", "safety_reason": ""}
 [2025-10-04 00:10:49] RAW_MODEL_OUTPUT: {"narration": "You swim across the moat, the water's chill enveloping you as you reach the far side.", "noise_level": 1, "hp_delta": -0, "events": ["swim_across"], "flags_set": {"in_moat": false}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:15:23] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 00:16:15] RAW_MODEL_OUTPUT: {
+  "narration": "You yell at the guard, but he's too far away and doesn't react.",
+  "noise_level": 2,
+  "hp_delta": 0,
+  "events": ["guard_punishes"],
+  "flags_set": [],
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-04 00:16:43] RAW_MODEL_OUTPUT: {"narration": "You scream at the guard, but he's too far away and doesn't react.", "noise_level": 2, "hp_delta": 0, "events": ["guard_punishes"], "flags_set": [], "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:17:17] RAW_MODEL_OUTPUT: {"narration": "You lie down on the straw bed, and it's surprisingly soft.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:17:55] RAW_MODEL_OUTPUT: {"narration": "You carefully dig out the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:18:19] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true, "stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:18:42] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl into the hole beneath the straw bed.", "noise_level": 0, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-04 00:19:14] RAW_MODEL_OUTPUT: {"narration": "You pick up the unknown object at your feet and find a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-04 00:19:38] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawl opening and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_intro_shown": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:20:01] RAW_MODEL_OUTPUT: {"narration": "You carefully hold the wooden torch stick near the wall torch and manage to light it on fire.", "noise_level": 1, "hp_delta": 0, "events": ["light_torch"], "flags_set": {"torch_lit": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:20:45] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back down into the coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_coal"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-04 00:21:27] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down into the coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-04 00:22:03] RAW_MODEL_OUTPUT: {"narration": "You approach the far cellar door and find it unlocked. With a bit of effort, you push it open.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_01_to_hall_01": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-04 00:22:45] RAW_MODEL_OUTPUT: {"narration": "You lunge at the knight with your lit torch, but he's too quick and sidesteps your attack. He spins around, eyes widening in alarm as you charge towards him.", "noise_level": 2, "hp_delta": -10, "events": ["knight_notice", "combat_knock_guard"], "flags_set": {"knight_knocked_out": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-04 00:23:20] RAW_MODEL_OUTPUT: {"narration": "You carefully drop your lit torch on the floor, and it casts a warm glow in the hall. You then reach out to take the keyring from the knight's belt, but he doesn't seem to notice. The keys clink as you pick them up.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys"], "flags_set": {"knight_knocked_out": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-04 00:24:16] RAW_MODEL_OUTPUT: {
+  "narration": "You try to enter and unlock the door, but it's locked from the outside.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": "locked door"
+}
+[2025-10-04 00:24:59] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down into the coal cellar through the hole.", "noise_level": 1, "hp_delta": -10, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "darkness"}
+[2025-10-04 00:25:24] RAW_MODEL_OUTPUT: {"narration": "You find yourself in a cramped 5×5 meter dungeon cell.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 00:25:48] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl into the hole beneath the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-04 00:27:29] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 00:28:04] RAW_MODEL_OUTPUT: {
+  "narration": "You furiously kick the straw bed, sending it flying across the cell. The guard stirs on his bench outside, eyes narrowing at the commotion.",
+  "noise_level": 2,
+  "hp_delta": -20,
+  "events": ["guard_punishes"],
+  "flags_set": {"straw_rummaged": true},
+  "progression": "cell_01",
+  "safety_reason": "Guard's reaction to noise"
+}
+[2025-10-04 00:28:40] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a crawlable hole leading down to the coal cellar.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"stone_moved": true}, "progression": "cell_01", "safety_reason": "Careful inspection of the straw bed"}
+[2025-10-04 00:29:04] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole, finding yourself in a dimly lit coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "Careful descent into the coal cellar"}
+[2025-10-04 00:29:36] RAW_MODEL_OUTPUT: {"narration": "You pick up the unknown object at your feet, and to your surprise, it's a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": "Picked up the unknown object"}
+[2025-10-04 00:30:00] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawl opening and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_intro_shown": false}, "progression": "cell_01", "safety_reason": "Returned to the cell"}
+[2025-10-04 00:30:21] RAW_MODEL_OUTPUT: {"narration": "You carefully hold the wooden torch stick near the wall torch and manage to light it on fire.", "noise_level": 1, "hp_delta": 0, "events": ["light_torch"], "flags_set": {"torch_lit": true}, "progression": "cell_01", "safety_reason": "Lit the torch"}
+[2025-10-04 00:31:24] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl back into the hole you previously discovered.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": "Crawled back into the hole"}
+[2025-10-04 00:31:55] RAW_MODEL_OUTPUT: {"narration": "You fumble in the darkness until your hand brushes against the stone door handle. With a bit of effort, you manage to push the door open.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"torch_lit": false}, "progression": "coal_01", "safety_reason": "Pushed open the dark cellar door"}
+[2025-10-04 00:32:43] RAW_MODEL_OUTPUT: {"narration": "You push against the stone door and it creaks open, revealing a short staircase leading down to a well-lit hall.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"torch_lit": true}, "progression": "hall_01", "safety_reason": "Pushed open the cellar door"}
+[2025-10-04 00:33:28] RAW_MODEL_OUTPUT: {
+  "narration": "You gently lay the lit torch on a nearby pillar, its flame casting flickering shadows on the walls.", 
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "hall_01",
+  "safety_reason": "Carefully placed lit torch"
+}
+[2025-10-04 00:34:12] RAW_MODEL_OUTPUT: {
+  "narration": "You swiftly approach the knight from behind, but your sudden movement catches his attention. He spins around just as you kick him in the back, and he stumbles forward, unconscious.",
+  "noise_level": 2,
+  "hp_delta": -10,
+  "events": ["knight_knocked_out"],
+  "flags_set": {"knight_knocked_out": true},
+  "progression": "hall_01",
+  "safety_reason": ""
+}
+[2025-10-04 00:34:45] RAW_MODEL_OUTPUT: {
+  "narration": "You carefully approach the knight and take his keyring from his belt without making a sound.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": ["pickup_keys"],
+  "flags_set": {"knight_knocked_out": true},
+  "progression": "hall_01",
+  "safety_reason": ""
+}
+[2025-10-04 00:35:18] RAW_MODEL_OUTPUT: {"narration": "You approach the courtyard door and try to unlock it with the keys you picked up earlier.", "noise_level": 1, "hp_delta": 0, "events": ["unlock_courtyard_door"], "flags_set": {"courtyard_door_unlocked": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-04 00:35:51] RAW_MODEL_OUTPUT: {"narration": "You climb the ladder to the tower platform and find yourself at the top.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_up"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:36:13] RAW_MODEL_OUTPUT: {"narration": "You drop the keys on the grassy courtyard floor and pick up the crossbow from the tower platform.", "noise_level": 1, "hp_delta": 0, "events": ["drop_keys", "pickup_crossbow"], "flags_set": {"crossbow_in_hand": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:36:49] RAW_MODEL_OUTPUT: {"narration": "You pull the lever at the tower top, and the gate creaks down into a bridge across the moat. Three guards arrive on the grass below, charging towards you.", "noise_level": 2, "hp_delta": 0, "events": ["pull_lever", "guards_arrive"], "flags_set": {"gate_lowered": true, "guards_present": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:37:14] RAW_MODEL_OUTPUT: {"narration": "You take aim with your crossbow and fire at the three guards charging towards you. One guard falls to the ground, clutching his chest. Two more remain, but they're now wary of your position.", "noise_level": 2, "hp_delta": 0, "events": ["shoot_guard"], "flags_set": {"guards_remaining": 2}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:37:29] RAW_MODEL_OUTPUT: {"narration": "You take aim with your crossbow and fire at the two remaining guards. One guard falls to the ground, clutching his chest. The other remains standing, but now wary of your position.", "noise_level": 2, "hp_delta": 0, "events": ["shoot_guard"], "flags_set": {"guards_remaining": 1}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:38:04] RAW_MODEL_OUTPUT: {"narration": "You carefully climb down the ladder, your eyes fixed on the ground below. Your feet touch the grassy courtyard with a soft thud.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_down"], "flags_set": {"at_tower_top": false}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:38:19] RAW_MODEL_OUTPUT: {"narration": "You carefully climb down the ladder from the tower platform and step onto the grassy courtyard below.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_down"], "flags_set": {"at_tower_top": false}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:38:38] RAW_MODEL_OUTPUT: {"narration": "You carefully climb down the ladder from the tower platform and step onto the grassy courtyard below.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_down"], "flags_set": {"at_tower_top": false}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-04 00:38:59] RAW_MODEL_OUTPUT: {"narration": "You carefully cross the lowered gate-bridge and step onto the other side of the moat.", "noise_level": 0, "hp_delta": 0, "events": ["cross_gate_bridge"], "flags_set": {"in_moat": false}, "progression": "win", "safety_reason": ""}
+[2025-10-04 01:04:48] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 01:05:19] RAW_MODEL_OUTPUT: {
+  "narration": "You let one rip on the straw bed; the stench wafts up to the guard outside, who suddenly perks up.",
+  "noise_level": 2,
+  "hp_delta": 0,
+  "events": ["guard_punishes"],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-04 01:05:19] LLM_PARSED: {"narration": "You let one rip on the straw bed; the stench wafts up to the guard outside, who suddenly perks up.", "noise_level": 2, "hp_delta": 0, "events": ["guard_punishes"], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 01:05:19] ENGINE_NOTES: HP delta overridden to -20 due to guard punishment (noise=2) in cell.; HP changed 100 -> 80 (delta -20).
+[2025-10-04 01:05:19] ENGINE_ROOM: cell_01
+[2025-10-04 01:05:19] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-04 01:05:19] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-04 01:05:19] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-04 01:05:19] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-04 01:05:19] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-04 01:05:19] ENGINE_INV: []
+[2025-10-04 01:05:19] ENGINE_HP: 80
+[2025-10-04 01:05:40] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 01:05:54] RAW_MODEL_OUTPUT: {
+  "narration": "You let one rip onto the thin straw 'bed', but it's just a stinky cloud that lingers.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": "Nothing happened."
+}
+[2025-10-04 01:05:54] LLM_PARSED: {"narration": "You let one rip onto the thin straw 'bed', but it's just a stinky cloud that lingers.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Nothing happened."}
+[2025-10-04 01:05:54] ENGINE_NOTES: 
+[2025-10-04 01:05:54] ENGINE_ROOM: cell_01
+[2025-10-04 01:05:54] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-04 01:05:54] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-04 01:05:54] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-04 01:05:54] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-04 01:05:54] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-04 01:05:54] ENGINE_INV: []
+[2025-10-04 01:05:54] ENGINE_HP: 100
+[2025-10-04 01:06:18] RAW_MODEL_OUTPUT: {"narration": "Your loud scream echoes through the corridor, and the guard's eyes snap open. He looks at you with a mixture of annoyance and concern.", "noise_level": 2, "hp_delta": -20, "events": ["guard_punishes"], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 01:06:18] LLM_PARSED: {"narration": "Your loud scream echoes through the corridor, and the guard's eyes snap open. He looks at you with a mixture of annoyance and concern.", "noise_level": 2, "hp_delta": -20, "events": ["guard_punishes"], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 01:06:18] ENGINE_NOTES: HP changed 100 -> 80 (delta -20).
+[2025-10-04 01:06:18] ENGINE_ROOM: cell_01
+[2025-10-04 01:06:18] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-04 01:06:18] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-04 01:06:18] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-04 01:06:18] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-04 01:06:18] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-04 01:06:18] ENGINE_INV: []
+[2025-10-04 01:06:18] ENGINE_HP: 80

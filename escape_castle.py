@@ -689,6 +689,12 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
 
 
     elif current_room == "coal_01":
+        
+                # Allow pronoun phrasing: "go to the door and open it"
+        if "door" in t and re.search(r"\bopen\s+it\b", t):
+            return "open_hall_door"
+
+        
         # öppna/gå igenom dörren längst bort i källaren
         if re.search(r"\b(open|unlatch|unlock|go\s+through|enter)\b.*\bdoor\b", t):
             return "open_hall_door"
@@ -712,6 +718,11 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
             return "return_to_coal"
         
     elif current_room == "courtyard_01":
+
+        # Exit synonyms -> crossing the bridge (validator will require gate lowered)
+        if re.search(r"\b(exit|leave|head\s+out|go\s+out|get\s+out|leave\s+the\s+castle|exit\s+the\s+castle)\b", t):
+            return "cross_gate_bridge"
+
         # VATTEN först
         if _JUMP_MOAT_RE.search(t):
             return "jump_into_moat"
@@ -1030,7 +1041,20 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 events.append("straw_rummaged")
             state.flags_cell["found_loose_stone"] = True
             # Force en konsekvent rad så vi inte får "inget" + "du hittade" samtidigt
-            llm.narration = "You peer under the thin straw bed and spot a loose cobblestone near the wall."
+            # Keep LLM's first sentence as flavor (if any), then add the fixed discovery line.
+            orig = (llm.narration or "").strip()
+            first = ""
+            if orig:
+                parts = re.split(r"(?<=[.!?])\s+", orig)
+                first = (parts[0] or "").strip()
+            fixed = "You notice a loose cobblestone under the straw."
+
+            # Avoid duplicating if the LLM already said it
+            already_said = re.search(r"\bloose\s+(?:stone|cobblestone)\b", orig, re.IGNORECASE)
+            if first and not already_said and not re.search(r"\bNothing happened\.\s*$", first):
+                llm.narration = f"{first} {fixed}"
+            else:
+                llm.narration = fixed
 
             
             
@@ -1176,6 +1200,14 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     elif state.current_room == "hall_01":
 
+                # Normalisera spelarens input för hall-intent
+        lower_action = (player_action_text or "").lower()
+        # Räknas som icke-attack (t.ex. "drop the torch and take the keys")
+        non_attack_item_action = (_DROP_RE.search(lower_action) is not None) or (_PICK_RE.search(lower_action) is not None)
+        # Riktiga våldsintentioner (verb), inte bara ordet "torch"
+        attack_intent = (HIT_VERBS_RE.search(lower_action) is not None) or re.search(r"\b(attack|smash|bash|stab|burn|swing)\b", lower_action)
+
+
         # Rensa bort falsk riddarstrid om noise < 2
         if noise < 2:
             if any(e in {"knight_notice", "combat_knock_guard"} for e in events):
@@ -1208,7 +1240,18 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             # strengthen narration
             if llm.narration and llm.narration[-1] not in ".!?":
                 llm.narration += "."
-            llm.narration = "The knight whirls at the noise; you clash briefly and you knock him out cold."
+            # Keep up to one short flavor sentence, then canonical KO line
+            orig = (llm.narration or "").strip()
+            flavor = ""
+            parts = re.split(r"(?<=[.!?])\s+", orig) if orig else []
+            if parts and parts[0]:
+                first = parts[0].strip()
+                if not re.search(r"\bThe knight whirls at the noise; you clash briefly and you knock him out cold\.\b", first, re.IGNORECASE):
+                    flavor = first[:140].strip()  # short flavor
+
+            fixed = "The knight whirls at the noise; you clash briefly and you knock him out cold."
+            llm.narration = (f"{flavor} {fixed}".strip() if flavor else fixed)
+
 
         # If the knight is already out, scrub any new notice/combat and correct the tone
         if was_knight_out_before:
@@ -1224,16 +1267,13 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             ):
                 llm.narration = "The knight is unconscious on the ground. Further actions against him have no effect."
 
-            # Om spelaren försöker ‘attackera’ alltjämt, svara konsekvent
-            lower_action = (player_action_text or "").lower()
-            if any(w in lower_action for w in ["hit", "kick", "attack", "strike", "torch", "sword", "punch", "smack", "club"]):
+                        # Om spelaren verkligen försöker attackera igen (inte lägga/släppa/plocka),
+            # skriv över narrationen. Att bara nämna "torch" räcker inte.
+            if attack_intent and not non_attack_item_action:
                 llm.narration = "The knight is unconscious on the ground. Further actions against him have no effect."
 
-                # Extra guard: prevent further attacks on unconscious knight
-        if was_knight_out_before:
-            lower_action = (player_action_text or "").lower()
-            if any(word in lower_action for word in ["hit", "kick", "attack", "strike", "torch", "sword"]):
-                llm.narration = "The knight is unconscious on the ground. Further attacks have no effect."
+
+
 
 
         # Clamp narration claiming to pass through the courtyard door without actually unlocking
@@ -1315,6 +1355,14 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             if llm.narration and llm.narration[-1] not in ".!?":
                 llm.narration += "."
             llm.narration = "You climb the ladder and step onto the small platform."
+
+        # Ignore ladder-down if already on the grass
+        if "climb_ladder_down" in events and not state.flags_courtyard.get("at_tower_top", False):
+            events = [e for e in events if e != "climb_ladder_down"]
+            if not ("pull_lever" in events or "shoot_guard" in events or "cross_gate_bridge" in events or "jump_into_moat" in events or "swim_across" in events):
+                llm.narration = "You’re already on the grass. Nothing happened."
+
+
 
         if "climb_ladder_down" in events:
             state.flags_courtyard["at_tower_top"] = False
@@ -1588,6 +1636,8 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 keys["location"] = "player"
                 state.items["keys"] = keys
                 _recalc_slot()
+
+            
             else:
                 notes.append("Keys are not in this room; pickup ignored.")
                 llm.narration = "You don't find any keys here. Nothing happened."
@@ -1712,7 +1762,8 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         # hinta baserat på state-delta (inte new_flags)
         if (not was_found_before) and state.flags_cell.get("found_loose_stone", False):
             if ("loose stone" not in nl) and ("loose cobblestone" not in nl):
-                cues.append("You notice a loose stone beneath the straw bed.")
+                cues.append("You notice a loose cobblestone under the straw.")
+
 
         # hål-cue också baserad på delta i state
         if (not was_stone_moved_before) and state.flags_cell.get("stone_moved", False):
@@ -1758,7 +1809,8 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         if not (has_guard and has_hit_verb):
             if narration and narration[-1] not in ".!?":
                 narration += "."
-            narration += " The guard unlocks the door, strikes you with his fist, locks the door, and then returns to his bench."
+            narration += " The guard gets annoyed and unlocks the door, strikes you with his fist, locks the door, and then returns to his bench."
+
 
     # Guard-scrub i alla rum utom cell_01
     if state.current_room != "cell_01" and "guard_punishes" in events:
