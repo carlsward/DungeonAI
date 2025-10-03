@@ -337,7 +337,11 @@ INDEX_HTML = r"""
     "hall_01": new Audio('/static/sfx/hallway_music.mp3'),
     "courtyard_01": new Audio('/static/sfx/courtyard_music.mp3')
   };
-  for (const a of Object.values(bgmMap)){ a.loop = true; a.volume = 0.55; }
+  for (const [key, a] of Object.entries(bgmMap)) {
+  a.loop = true;
+  a.volume = (key === "cell_01") ? 0.275 : 0.55; // 0.55 / 2
+}
+
 
   let currentBgmKey = null;
   function setBgm(roomId){
