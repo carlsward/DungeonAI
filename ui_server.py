@@ -1,6 +1,23 @@
 # ui_server.py
 # Flask-baserad web-UI för Escape the Castle med CRT-look, rums-intros,
 # stabil inputrad, glow-highlight för key events och typskrivaranimation + ljud + musik.
+#
+# Integrerad med så många scenbilder som möjligt utifrån dina filnamn i static/art/.
+# Exempel på filer som stöds direkt (lägg i static/art/):
+#   cell.png, coal.png, hall.png, courtyard.png,
+#   straw_rummaged.png, movestonesaside.png, enter_coal_cellar.png, return_to_cell.png,
+#   opening_door_from_coal_cellar_to_hall.png, just_entered_hall.png,
+#   just_unlocked_courtyard_door.png,
+#   pickup_keys.png, drop_keys.png,
+#   setting_fire_to_torch_in_prison_cell.png,
+#   dark_stumble.png, first_time_in_coal_cellar_without_torch.png, in_coalroom_with_torch.png,
+#   guard_punishes_you_in_prison_cell.png,
+#   fight_knight_with_hands.png, fight_knight_with_torch.png, sneaking_up_on_guard_in_hall.png,
+#   climbing_up_tower.png, climb_ladder_down.png,
+#   pull_lever_on_tower.png, guards_arrive_when_pulling_lever.png, gate_lowered.png,
+#   pickup_crossbow.png, drop_crossbow.png, shooting_crossbow_from_tower.png,
+#   cross_gate_bridge.png, jump_into_moat.png, swim_across_moat.png,
+#   nothing_happened.png
 
 from __future__ import annotations
 
@@ -40,7 +57,7 @@ ROOM_TITLES = {
     "courtyard_01": "Castle Courtyard",
 }
 
-# Basbilder per rum
+# Basbilder per rum (fallback)
 ART_DEFAULT = {
     "cell_01": "cell.png",
     "coal_01": "coal.png",
@@ -48,73 +65,159 @@ ART_DEFAULT = {
     "courtyard_01": "courtyard.png",
 }
 
+# Hjälpare: finns en art-fil?
 def _exists_art(filename: str) -> bool:
-    return os.path.exists(os.path.join(app.static_folder, "art", filename))
+    return os.path.isfile(os.path.join(app.static_folder, "art", filename))
+
+# Välj första befintliga fil i en lista kandidatnamn
+def _first_existing(*names: str) -> str | None:
+    for n in names:
+        if n and _exists_art(n):
+            return n
+    return None
+
+# Mapping för varje event → kandidatnamn (listor för att täcka dina faktiska filer + fallback)
+EVENT_ART = {
+    # Cell
+    "straw_rummaged":       ["straw_rummaged.png"],
+    "stone_lifted":         ["movestonesaside.png"],
+    "enter_coal_cellar":    ["enter_coal_cellar.png"],
+    "return_to_cell":       ["return_to_cell.png"],
+
+    # Allmänt fackel
+    "pickup_stick":         ["pickup_stick.png", "pickup_torch.png"],
+    "pickup_torch":         ["pickup_torch.png"],
+    "drop_torch":           ["drop_torch.png"],
+    "light_torch":          ["setting_fire_to_torch_in_prison_cell.png", "setting_fire_to_torch.png"],
+    "extinguish_torch":     ["extinguish_torch.png"],
+
+    # Källardörr (till hall)
+    "open_hall_door":       ["opening_door_from_coal_cellar_to_hall.png", "just_entered_hall.png", "open_hall_door.png"],
+
+    # Hall & nycklar
+    "return_to_coal":       ["return_to_coal.png", "opening_door_from_coal_cellar_to_hall.png"],
+    "pickup_keys":          ["pickup_keys.png", "sneaking_up_on_guard_in_hall.png"],
+    "drop_keys":            ["drop_keys.png"],
+    "unlock_courtyard_door":["just_unlocked_courtyard_door.png", "unlock_courtyard_door.png"],
+
+    # Cell/hall straff/strid
+    "guard_punishes":       ["guard_punishes_you_in_prison_cell.png", "guard_punishes.png", "punch_frame.png"],
+    "knight_notice":        ["fight_knight_with_hands.png", "fight_knight_with_torch.png"],
+    "combat_knock_guard":   ["fight_knight_with_torch.png", "fight_knight_with_hands.png"],
+
+    # Gården
+    "climb_ladder_up":      ["climbing_up_tower.png", "going_up_tower.png"],
+    "climb_ladder_down":    ["climb_ladder_down.png", "climbing_up_tower.png", "going_up_tower.png"],
+    "pull_lever":           ["pull_lever_on_tower.png", "pull_lever.png"],
+    "guards_arrive":        ["guards_arrive_when_pulling_lever.png", "guards_arrive.png"],
+    "pickup_crossbow":      ["pickup_crossbow.png"],
+    "drop_crossbow":        ["drop_crossbow.png"],
+    "shoot_guard":          ["shooting_crossbow_from_tower.png", "shooting_from_tower2.png", "shooting_from_tower.png"],
+    "cross_gate_bridge":    ["cross_gate_bridge.png", "running_away.png"],
+    "jump_into_moat":       ["jump_into_moat.png"],
+    "swim_across":          ["swim_across_moat.png", "swim_across.png", "running_away.png"],
+
+    # Övrigt / säkerhet
+    "dark_stumble":         ["dark_stumble.png", "first_time_in_coal_cellar_without_torch.png",
+                             "first_time_in_coalroom_without_lit_torch.png", "first_time_in_coalroom_withouth_lit_torch.png"],
+}
+
+# Rumskontext-bilder (när inget specifikt event tog över)
+CONTEXT_ART = {
+    "cell_01": [
+        (lambda s: True, ["cell.png"]),
+    ],
+    "coal_01": [
+        (lambda s: not s.flags_coal.get("torch_lit", False),
+         ["first_time_in_coal_cellar_without_torch.png",  # din fil
+          "first_time_in_coalroom_without_lit_torch.png", # alias
+          "first_time_in_coalroom_withouth_lit_torch.png",# alias (stavning)
+          "coal.png"]),
+        (lambda s: s.flags_coal.get("torch_lit", False),
+         ["in_coalroom_with_torch.png", "coal.png"]),
+    ],
+    "hall_01": [
+        (lambda s: True, ["hall.png"]),
+    ],
+    "courtyard_01": [
+        (lambda s: s.flags_courtyard.get("at_tower_top", False),
+         ["climbing_up_tower.png", "courtyard.png"]),
+        (lambda s: True, ["courtyard.png"]),
+    ]
+}
+
 
 def pick_art_filename(state: GameState, result: dict, narration: str) -> str:
     """
-    Välj rätt bild för denna tick, utifrån aktuellt rum, events och flaggor.
-    Prioriterad ordning per rum. Fallback till ART_DEFAULT[room].
+    Välj rätt bild för denna tick, utifrån events (prioriterat), vinst/död och rumskontext.
+    Fallback till ART_DEFAULT[room] om inget passar eller fil saknas.
     """
-    events = set(result.get("events", []))
+    events = list(result.get("events", []))
     room   = state.current_room
 
-    # Neutral fallback om inget hände
+    # 1) Victory / death får absolut högsta prio
+    if result.get("game_won"):
+        art = _first_existing(*EVENT_ART.get("cross_gate_bridge", [])) or \
+              _first_existing(*EVENT_ART.get("swim_across", [])) or \
+              _first_existing("running_away.png")
+        if art: return art
+
+    if state.hp <= 0:
+        art = _first_existing("you_died.png", "losing_frame.png")
+        if art: return art
+
+    # 2) "Nothing happened" – om ingen event och explicit fras
     if ("Nothing happened." in (narration or "")) and not events:
-        if _exists_art("nothing_happened.png"):
-            return "nothing_happened.png"
+        art = _first_existing("nothing_happened.png")
+        if art: return art
 
-    # ----- Prison Cell -----
-    if room == "cell_01":
-        if "light_torch" in events:
-            if _exists_art("setting_fire_to_torch.png"):
-                return "setting_fire_to_torch.png"
-        if "stone_lifted" in events or state.flags_cell.get("stone_moved"):
-            if _exists_art("movestonesaside.png"):
-                return "movestonesaside.png"
-        if "straw_rummaged" in events or state.flags_cell.get("found_loose_stone"):
-            if _exists_art("finding_cobblestone_2.png"):
-                return "finding_cobblestone_2.png"
-        return ART_DEFAULT["cell_01"]
+    # 3) Event-prioritet per rum (grovt viktigast → minst viktigt)
+    PRIORITY = [
+        # Courtyard win/jump/shoot/lever
+        "cross_gate_bridge", "swim_across", "jump_into_moat",
+        "shoot_guard", "guards_arrive", "pull_lever",
+        "climb_ladder_up", "climb_ladder_down",
+        "pickup_crossbow", "drop_crossbow",
 
-    # ----- Coal Cellar -----
-    if room == "coal_01":
-        if not state.flags_coal.get("torch_lit", False):
-            if _exists_art("first_time_in_coalroom_without_lit_torch.png"):
-                return "first_time_in_coalroom_without_lit_torch.png"
-        if state.flags_coal.get("torch_lit", False):
-            if _exists_art("in_coalroom_with_torch.png"):
-                return "in_coalroom_with_torch.png"
-        return ART_DEFAULT["coal_01"]
+        # Hall
+        "combat_knock_guard", "knight_notice",
+        "unlock_courtyard_door", "pickup_keys", "drop_keys", "return_to_coal",
 
-    # ----- Great Hall -----
-    if room == "hall_01":
-        if "combat_knock_guard" in events:
-            # Stöder både korrekt och felstavat filnamn
-            if _exists_art("fight_with_torch.png"):
-                return "fight_with_torch.png"
-            if _exists_art("fiht_with_torch.png"):
-                return "fiht_with_torch.png"
-            if _exists_art("fight_with_hands.png"):
-                return "fight_with_hands.png"
-        if "pickup_keys" in events and _exists_art("smygande_bakom2.png"):
-            return "smygande_bakom2.png"
-        return ART_DEFAULT["hall_01"]
+        # Cell & Coal door/torch
+        "open_hall_door", "light_torch", "extinguish_torch",
+        "drop_torch", "pickup_torch", "pickup_stick",
 
-    # ----- Courtyard -----
-    if room == "courtyard_01":
-        # Vinst (både bro och simma – använder samma flyktbild)
-        if "cross_gate_bridge" in events or "swim_across" in events or result.get("game_won"):
-            if _exists_art("running_away.png"):
-                return "running_away.png"
-        if "shoot_guard" in events and _exists_art("shooting_from_tower2.png"):
-            return "shooting_from_tower2.png"
-        if "climb_ladder_up" in events or state.flags_courtyard.get("at_tower_top"):
-            if _exists_art("going_up_tower.png"):
-                return "going_up_tower.png"
-        return ART_DEFAULT["courtyard_01"]
+        # Cell exploration
+        "stone_lifted", "straw_rummaged", "enter_coal_cellar", "return_to_cell",
 
-    # Fallback
+        # Safety/damage
+        "guard_punishes", "dark_stumble",
+    ]
+
+    # Extra: om gate redan är nere i gården – visa gate_lowered.png när inget annat tar över
+    if room == "courtyard_01" and state.flags_courtyard.get("gate_lowered", False):
+        art = _first_existing("gate_lowered.png")
+        if art and not events:
+            return art
+
+    # Gå igenom events enligt prioritet och välj första befintliga bild
+    for ev in PRIORITY:
+        if ev in events:
+            art = _first_existing(*EVENT_ART.get(ev, []))
+            if art:
+                return art
+
+    # 4) Kontext-bild beroende på rumstillstånd (t.ex. fackel i källaren)
+    for predicate, candidates in CONTEXT_ART.get(room, []):
+        try:
+            if predicate(state):
+                art = _first_existing(*candidates)
+                if art:
+                    return art
+        except Exception:
+            pass
+
+    # 5) Rums-fallback
     return ART_DEFAULT.get(room, "cell.png")
 
 
@@ -130,7 +233,6 @@ def append_room_entry_text(state: GameState) -> str:
             out.append(COAL_INTRO_TEXT + "\n")
             state.flags_coal["coal_intro_shown"] = True
         if torch_light_present_here(state):
-            # Den här raden vill du uttryckligen highlighta
             out.append("Torchlight pushes back the darkness: heaps of coal crowd the tight stone floor, and at the far end a short staircase leads to a closed door.\n")
 
     elif room == "hall_01":
@@ -219,9 +321,10 @@ INDEX_HTML = r"""
         scrollbar-color: rgba(156,255,87,.35) rgba(0,0,0,.2); scrollbar-width: thin; }
   .log .user{ color: var(--accent); }
   .log .sys{}
+  .thinking{ opacity:.9; font-style:italic; }
+
   .line{ margin: 0 0 4px 0; }
 
-  /* Key-event highlight (glow + pulser) */
   .glowline{
     text-shadow:
       0 0 8px rgba(156,255,87,.85),
@@ -261,7 +364,6 @@ INDEX_HTML = r"""
   .imgwrap{ flex:1; display:flex; align-items:center; justify-content:center; padding: 12px; }
   .imgwrap img{ width:100%; height:100%; object-fit:contain; image-rendering: pixelated; filter: contrast(1.05) saturate(0.9) brightness(0.92); }
 
-  /* STÖRRE & CENTRERAD platsrubrik */
   .right .caption{
     padding:10px 12px; font-size:18px; font-weight:800; letter-spacing:.8px; text-align:center;
     border-top:1px solid rgba(156,255,87,.14);
@@ -322,12 +424,16 @@ INDEX_HTML = r"""
   keyAudio.volume = 0.6;
 
   function startKeyAudio(){
-    keyAudio.currentTime = 0;
-    keyAudio.play().catch(()=>{ /* autoplay kan vara blockerad, ignoreras */ });
+    try {
+      keyAudio.currentTime = 0;
+      keyAudio.play().catch(()=>{});
+    } catch(e){}
   }
   function stopKeyAudio(){
-    keyAudio.pause();
-    keyAudio.currentTime = 0;
+    try {
+      keyAudio.pause();
+      keyAudio.currentTime = 0;
+    } catch(e){}
   }
 
   // ---- Bakgrundsmusik per rum ----
@@ -337,39 +443,69 @@ INDEX_HTML = r"""
     "hall_01": new Audio('/static/sfx/hallway_music.mp3'),
     "courtyard_01": new Audio('/static/sfx/courtyard_music.mp3')
   };
-  for (const [key, a] of Object.entries(bgmMap)) {
-  a.loop = true;
-  a.volume = (key === "cell_01") ? 0.275 : 0.55; // 0.55 / 2
-}
-
-
-  let currentBgmKey = null;
-  function setBgm(roomId){
-    if (currentBgmKey && bgmMap[currentBgmKey]){
-      bgmMap[currentBgmKey].pause();
-      try { bgmMap[currentBgmKey].currentTime = 0; } catch(e){}
-    }
-    const next = bgmMap[roomId];
-    if (next){
-      currentBgmKey = roomId;
-      next.play().catch(()=>{ /* kräver user gesture första gången */ });
-    }
+  for (const [k, a] of Object.entries(bgmMap)) {
+    a.loop = true;
+    a.volume = (k === "cell_01") ? 0.275 : 0.55;
   }
 
   // ---- SFX ----
   const sfx = {
-    door: new Audio('/static/sfx/opening_doors.mp3'),
+    door:  new Audio('/static/sfx/opening_doors.mp3'),
     punch: new Audio('/static/sfx/punch_sound.mp3'),
-    lose: new Audio('/static/sfx/losing_sound.mp3'),
-    win: new Audio('/static/sfx/vinning_sound.mp3')
+    lose:  new Audio('/static/sfx/losing_sound.mp3'),
+    win:   new Audio('/static/sfx/vinning_sound.mp3')
   };
   sfx.door.volume = 0.9;
   sfx.punch.volume = 0.9;
   sfx.lose.volume = 0.95;
   sfx.win.volume = 0.95;
 
+  // ---- Preload ----
+  keyAudio.preload = 'auto';
+  Object.values(bgmMap).forEach(a => a.preload = 'auto');
+  Object.values(sfx).forEach(a => a.preload = 'auto');
+
+  // ---- BGM-state + unlock ----
+  let currentBgmKey = null;
+  let audioReady = false;
+  let pendingBgmKey = 'cell_01';
+
+  function setBgm(roomId){
+    pendingBgmKey = roomId;
+    if (!audioReady) return;
+    if (roomId === currentBgmKey) return;
+
+    if (currentBgmKey && bgmMap[currentBgmKey]) {
+      const cur = bgmMap[currentBgmKey];
+      cur.pause();
+      try { cur.currentTime = 0; } catch(e){}
+    }
+    const next = bgmMap[roomId];
+    if (next){
+      next.play().then(()=>{ currentBgmKey = roomId; }).catch(()=>{});
+    }
+  }
+
+  function unlockAudioOnce(){
+    if (audioReady) return;
+    audioReady = true;
+
+    const all = [keyAudio, ...Object.values(bgmMap), ...Object.values(sfx)];
+    all.forEach(a => { try { a.load(); } catch(e){} });
+
+    Promise.all(all.map(a=>{
+      a.muted = true;
+      return a.play().then(()=>{
+        a.pause(); a.currentTime = 0; a.muted = false;
+      }).catch(()=>{ a.muted = false; });
+    })).finally(()=>{
+      setBgm(pendingBgmKey);
+    });
+  }
+  window.addEventListener('pointerdown', unlockAudioOnce, { once:true });
+  window.addEventListener('keydown',     unlockAudioOnce, { once:true });
+
   function playOnce(audio){
-    // skapa en klon så flera kan överlappa om det behövs
     const a = audio.cloneNode(true);
     a.play().catch(()=>{});
   }
@@ -396,7 +532,6 @@ INDEX_HTML = r"""
     return KEY_EVENT_PATTERNS.some(re => re.test(text));
   }
 
-  // ---- Hjälp: status & bilder ----
   function updateStatus(s){
     hp.textContent = `HP: ${s.hp}` + (s.hp_delta !== 0 ? ` (${s.hp_delta > 0 ? '+' : ''}${s.hp_delta})` : '');
     if (s.cause) hp.textContent += ` — ${s.cause}`;
@@ -404,7 +539,6 @@ INDEX_HTML = r"""
     room.textContent = `Room: ${s.room_title}`;
     inv.textContent = `Inventory: ${s.inventory && s.inventory.length ? s.inventory.join(', ') : 'empty'}`;
 
-    // NYTT: använd bild som servern valt, annars fallback per rum
     if (s.art){
       img.src = `/static/art/${s.art}`;
     } else {
@@ -419,23 +553,16 @@ INDEX_HTML = r"""
     caption.textContent = s.room_title;
   }
 
-  // ---- Ljudlogik kopplat till state från servern ----
   const DOOR_EVENTS = new Set(["open_hall_door", "unlock_courtyard_door", "return_to_coal"]);
-  function handleAudioFromState(s, prev){
-    // Start/byt BGM vid rum
+  function handleAudioFromState(s){
     setBgm(s.room_id);
 
-    // Dörrljud om events innehåller dörr-aktiviteter
     if (s.events && s.events.some(e => DOOR_EVENTS.has(e))){
       playOnce(sfx.door);
     }
-
-    // Punch varje gång hp_delta < 0
     if (typeof s.hp_delta === 'number' && s.hp_delta < 0){
       playOnce(sfx.punch);
     }
-
-    // Losing/winning – spela en gång när det inträffar
     if (s.dead){
       playOnce(sfx.lose);
       if (currentBgmKey && bgmMap[currentBgmKey]) bgmMap[currentBgmKey].pause();
@@ -445,8 +572,7 @@ INDEX_HTML = r"""
     }
   }
 
-  // ---- Typskrivaranimation för SYS-rader ----
-  const BASE_DELAY = 14; // ms per tecken
+  const BASE_DELAY = 14;
   const PUNCT_PAUSE = { ',': 80, '.': 120, '!': 140, '?': 140, ';': 100, ':': 100 };
 
   function typeLine(lineText, parentEl, isKey){
@@ -461,8 +587,7 @@ INDEX_HTML = r"""
 
         const ch = lineText[i];
         const extra = PUNCT_PAUSE[ch] || 0;
-        const delay = BASE_DELAY;
-        await new Promise(r => setTimeout(r, delay));
+        await new Promise(r => setTimeout(r, BASE_DELAY));
         if (extra){ await new Promise(r => setTimeout(r, extra)); }
       }
       resolve();
@@ -489,7 +614,6 @@ INDEX_HTML = r"""
     stopKeyAudio();
   }
 
-  // ---- Vanliga utskrifter (user prompt)—utan animation
   function appendUser(text){
     const div = document.createElement('div');
     div.className = 'user line';
@@ -498,7 +622,49 @@ INDEX_HTML = r"""
     log.scrollTop = log.scrollHeight;
   }
 
-  // ---- API-anrop ----
+  const THINK_LINES = [
+    "Gathering strength to do your action",
+    "Thinking about what to eat later",
+    "You forgot for a second what you were supposed to do",
+    "Consulting the imaginary map",
+    "Counting cobblestones for luck",
+    "Practicing a heroic eyebrow raise",
+    "Untangling the narrative threads",
+    "Rolling a mental d20",
+    "Quietly negotiating with physics",
+    "Rewinding the scene to check continuity"
+  ];
+  let thinkingTimer = null;
+  let thinkingEl = null;
+
+  function startThinking(){
+    const msg = THINK_LINES[Math.floor(Math.random()*THINK_LINES.length)];
+    thinkingEl = document.createElement('div');
+    thinkingEl.className = 'sys line thinking';
+    thinkingEl.textContent = msg;
+    log.appendChild(thinkingEl);
+    log.scrollTop = log.scrollHeight;
+
+    let dots = 0;
+    thinkingTimer = setInterval(()=>{
+      dots = (dots + 1) % 4;
+      thinkingEl.textContent = msg + '.'.repeat(dots);
+      log.scrollTop = log.scrollHeight;
+    }, 350);
+  }
+
+  function stopThinking(){
+    if (thinkingTimer){
+      clearInterval(thinkingTimer);
+      thinkingTimer = null;
+    }
+    if (thinkingEl){
+      const txt = thinkingEl.textContent.replace(/\.*$/, '...');
+      thinkingEl.textContent = txt;
+      thinkingEl = null;
+    }
+  }
+
   async function fetchState(){
     const r = await fetch('/state');
     const s = await r.json();
@@ -514,16 +680,24 @@ INDEX_HTML = r"""
     appendUser(text);
     cmd.value = "";
 
-    const r = await fetch('/act', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ text })
-    });
-    const s = await r.json();
-    if (s.narration) await typeNarration(s.narration.trim());
-    updateStatus(s);
-    handleAudioFromState(s);
-    cmd.focus();
+    startThinking();
+    try{
+      const r = await fetch('/act', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ text })
+      });
+      const s = await r.json();
+      stopThinking();
+
+      if (s.narration) await typeNarration(s.narration.trim());
+      updateStatus(s);
+      handleAudioFromState(s);
+      cmd.focus();
+    } catch(err){
+      stopThinking();
+      console.error(err);
+    }
   }
 
   send.addEventListener('click', sendCmd);
@@ -534,7 +708,6 @@ INDEX_HTML = r"""
     }
   });
 
-  // Init
   fetchState();
 </script>
 </body>
@@ -559,7 +732,6 @@ def get_state():
         narration += WELCOME_TEXT.strip() + "\n"
         narration += append_room_entry_text(STATE)
 
-    # första laddningen – inget hp_delta/noise, och inga events ännu
     return jsonify({
         "narration": narration,
         "hp": STATE.hp,
@@ -572,7 +744,7 @@ def get_state():
         "events": [],
         "game_won": False,
         "dead": STATE.hp <= 0,
-        "art": ART_DEFAULT.get(STATE.current_room, "cell.png"),  # <-- bild för startscreen
+        "art": ART_DEFAULT.get(STATE.current_room, "cell.png"),
     })
 
 @app.route("/act", methods=["POST"])
@@ -582,7 +754,7 @@ def act():
     if not player_action:
         return jsonify({"error": "empty"}), 400
 
-    # Förbered prompten (samma som i terminal-versionen)
+    # Bygg prompt (samma som terminal-versionen)
     scene_card = SCENES[STATE.current_room]
     scene_json = json.dumps(scene_card, ensure_ascii=False, indent=2)
 
@@ -618,10 +790,9 @@ def act():
 
     STATE.inventory = inventory_items_from_items(STATE)
 
-    # Välj rätt art för klienten
+    # Art-val
     art_file = pick_art_filename(STATE, result, narration)
 
-    # skicka events + vinst/död i svaret så klienten kan trigga ljud
     return jsonify({
         "narration": narration,
         "hp": STATE.hp,
@@ -646,5 +817,5 @@ if __name__ == "__main__":
     # Lägg filer i:
     # static/sfx/{keyboard.mp3, prison_music.mp3, coalroom_music.mp3, hallway_music.mp3, courtyard_music.mp3,
     #            opening_doors.mp3, punch_sound.mp3, losing_sound.mp3, vinning_sound.mp3}
-    # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png, ...}
+    # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png, ... samt event-bilderna listade ovan}
     app.run(host="127.0.0.1", port=5000, debug=True)
