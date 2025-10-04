@@ -682,6 +682,16 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
 
     if current_room == "cell_01":
         # Down through the hole / to the cellar
+
+            # NEW: allow bare 'crawl', 'crawl in', or 'crawl down' to mean entering the hole
+        if re.search(r"^\s*crawl(?:\s+(?:in|down))?\s*$", t):
+            return "enter_coal_cellar"
+
+        # NEW: 'go back' in the cell means back down into the cellar
+        if re.search(r"\bgo\s+back\b", t):
+            return "enter_coal_cellar"
+
+
         if re.search(r"\b(crawl|go|climb|head|move|enter)\b.*\b(hole|opening|crawl(?:space)?)\b", t):
             return "enter_coal_cellar"
         if re.search(r"\b(?:to|towards?)\b.*\b(?:coal\s+cellar|cellar)\b", t):
