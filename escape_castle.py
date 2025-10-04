@@ -38,7 +38,7 @@ TEMPERATURE = 0.2
 TOP_P = 0.9
 
 DEV_LOG_PATH = "game_dev.log"
-
+NOTHING_LINE = "Nothing special happened."
 
 # -----------------------------
 # Utilities
@@ -710,6 +710,11 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
             return "return_to_cell"
 
     elif current_room == "hall_01":
+
+                # Pronoun / bare-verb support for the obvious courtyard door
+        if re.search(r"\b(unlock|open)\s+it\b", t) or re.search(r"^\s*(unlock|open)\s*$", t):
+            return "unlock_courtyard_door"
+
         # öppna/låsa upp gårdsdörren – behandlas lika (motorn kräver keys i inventory)
         if re.search(r"\b(open|unlock|use\s+keys?|go\s+through|enter)\b.*\b(courtyard|heavy)?\s*door\b", t):
             return "unlock_courtyard_door"
@@ -1411,14 +1416,17 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 if state.flags_courtyard["guards_remaining"] <= 0:
                     state.flags_courtyard["guards_present"] = False
                 # Canonical one-liners
+                                # Flavor + canonical lines
+                flavor = "You brace the crossbow and exhale."
                 if kills == 1:
-                    llm.narration = "You loose a bolt; a guard crumples."
+                    llm.narration = f"{flavor} You loose a bolt; a guard crumples."
                 else:
-                    llm.narration = f"You fire rapidly; {kills} guards drop."
+                    llm.narration = f"{flavor} You fire rapidly; {kills} guards drop."
                 if state.flags_courtyard["guards_remaining"] > 0:
                     llm.narration += f" {state.flags_courtyard['guards_remaining']} remain."
                 else:
                     llm.narration += " The lawn falls silent."
+
 
         # Jump into moat: only from tower top; -40 HP, then you are in the moat
         if "jump_into_moat" in events:
@@ -1957,8 +1965,8 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     # If something meaningful happened but earlier narration injected "Nothing happened.", strip it
     if something_happened:
-        narration = _re.sub(r'\s*Nothing happened\.\s*$', '', narration).strip()
-        narration = narration.replace(" Nothing happened.", " ").replace("Nothing happened.", "").strip()
+        narration = _re.sub(r'\s*Nothing (?:special )?happened\.\s*$', '', narration).strip()
+        narration = _re.sub(r'(?<!\S)Nothing (?:special )?happened\.(?:\s+)?', '', narration).strip()
 
     if not something_happened and not look_only:
         if scrubbed_illegal_events:
@@ -1968,6 +1976,9 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 narration += "."
             if "Nothing happened." not in narration:
                 narration += " Nothing happened."
+                    # Normalize boring-outcome wording globally
+                narration = narration.replace("Nothing happened.", NOTHING_LINE)
+
         # else: crossbow_nohold => exakt fras, ingen "Nothing happened."
 
     # ---------------- Result ----------------
