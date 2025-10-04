@@ -688,6 +688,11 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
             return "enter_coal_cellar"
         if "cellar" in t and any(w in t for w in ["go", "enter", "head", "toward", "to"]):
             return "enter_coal_cellar"
+        
+        # NEW: allow terse phrasing "crawl down" from the cell to the cellar
+        if re.search(r"\bcrawl\s+down\b", t):
+            return "enter_coal_cellar"
+
                 # short intent like "crawl back" (engine will still gate on stone_moved)
         if re.search(r"\bcrawl\b.*\bback\b", t) and re.search(r"\b(hole|opening|crawl(?:space)?)\b", t):
             return "enter_coal_cellar"

@@ -159,6 +159,23 @@ def pick_art_filename(state: GameState, result: dict, narration: str) -> str | N
     events = list(result.get("events", []))
     room   = state.current_room
 
+        # --- COAL WITH LIGHT OVERRIDE ---
+    # If we are in the coal cellar and there is torchlight present here,
+    # always show the "coal-with-torch" image (character with torch in cellar).
+    if room == "coal_01" and torch_light_present_here(state):
+        art = _first_existing("opening_door_from_coal_cellar_to_hall.png")
+        if art:
+            return art
+        
+            # --- JUST ENTERED HALL OVERRIDE ---
+    # On room transition into the hall, show the hall scene (not the door-from-coal image).
+    if result.get("room_transition") == "hall_01":
+        art = _first_existing("hall.png")
+        if art:
+            return art
+
+
+
     # 1) Victory
     if result.get("game_won"):
         art = _first_existing("cross_gate_bridge.png")
@@ -166,9 +183,10 @@ def pick_art_filename(state: GameState, result: dict, narration: str) -> str | N
 
     # 2) "Nothing special happened." – om inga events
     # (motorn normaliserar till "Nothing special happened.")
-    if ("Nothing special happened." in (narration or "")) and not events:
+    if (("Nothing special happened." in (narration or "")) or ("Nothing special happened" in (narration or ""))) and not events:
         art = _first_existing("nothing_happened.png")
-        if art: return art
+        if art:
+            return art
 
     # 3) Specialfall
     # 3a) Hall-strid: välj rätt variant beroende på om torch hålls i handen
@@ -388,7 +406,7 @@ INDEX_HTML = r"""
     lose:  new Audio('/static/sfx/losing_sound.mp3'),
     win:   new Audio('/static/sfx/vinning_sound.mp3')
   };
-  sfx.door.volume = 0.9; sfx.punch.volume = 0.9; sfx.lose.volume = 0.95; sfx.win.volume = 0.95;
+  sfx.door.volume = 0.5; sfx.punch.volume = 0.7; sfx.lose.volume = 0.6; sfx.win.volume = 0.5;
 
   // ---- Preload ----
   keyAudio.preload = 'auto';
