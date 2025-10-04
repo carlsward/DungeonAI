@@ -3684,3 +3684,39 @@
 [2025-10-04 18:51:20] ENGINE_ITEMS: {'torch': {'location': 'hall_01', 'lit': True}, 'keys': {'location': 'courtyard_01'}, 'crossbow': {'location': 'player'}}
 [2025-10-04 18:51:20] ENGINE_INV: ['crossbow']
 [2025-10-04 18:51:20] ENGINE_HP: 10
+[2025-10-04 19:21:44] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 19:23:02] RAW_MODEL_OUTPUT: {
+  "narration": "You slam your fists against the iron door, yelling at the guard to get his attention. He stirs from his doze and looks at you with a scowl.",
+  "noise_level": 2,
+  "hp_delta": 0,
+  "events": ["guard_punishes"],
+  "flags_set": [],
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-04 19:24:16] RAW_MODEL_OUTPUT: {"narration": "You sit down on the cold cobblestone floor, trying to catch your breath and gather your thoughts.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": ["straw_rummaged"], "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 19:25:49] RAW_MODEL_OUTPUT: {"narration": "You awkwardly try to bust a move in the cramped cell, but your feet get tangled in the straw bed.", "noise_level": 2, "hp_delta": 0, "events": ["guard_punishes"], "flags_set": [], "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 19:26:19] RAW_MODEL_OUTPUT: {"narration": "You flop onto the straw bed, and it's surprisingly comfortable.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 19:27:09] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 19:27:44] RAW_MODEL_OUTPUT: {
+  "narration": "You peer under the straw bed and notice a loose cobblestone hidden beneath.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": ["straw_rummaged"],
+  "flags_set": {"found_loose_stone": true},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-04 19:28:26] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the cobblestone from under the straw bed, revealing a crawlable hole leading down to a coal cellar.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true, "stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-04 19:29:29] PROMPT_VERSION: 3.3 (... )
+[2025-10-04 19:30:03] RAW_MODEL_OUTPUT: {
+  "narration": "You peer under the straw bed and notice a small, loose cobblestone partially hidden.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": ["straw_rummaged"],
+  "flags_set": {"found_loose_stone": true},
+  "progression": null,
+  "safety_reason": null
+}
+[2025-10-04 19:30:44] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed, revealing a crawlable hole leading down to a coal cellar.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true, "stone_moved": true}, "progression": null, "safety_reason": null}
+[2025-10-04 19:31:03] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl through the hole in the floor, finding yourself in a dark coal cellar.", "noise_level": 1, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}

@@ -1,23 +1,30 @@
 # ui_server.py
-# Flask-baserad web-UI för Escape the Castle med CRT-look, rums-intros,
-# stabil inputrad, glow-highlight för key events och typskrivaranimation + ljud + musik.
-#
-# Integrerad med så många scenbilder som möjligt utifrån dina filnamn i static/art/.
-# Exempel på filer som stöds direkt (lägg i static/art/):
-#   cell.png, coal.png, hall.png, courtyard.png,
-#   straw_rummaged.png, movestonesaside.png, enter_coal_cellar.png, return_to_cell.png,
-#   opening_door_from_coal_cellar_to_hall.png, just_entered_hall.png,
-#   just_unlocked_courtyard_door.png,
-#   pickup_keys.png, drop_keys.png,
-#   setting_fire_to_torch_in_prison_cell.png,
-#   dark_stumble.png, first_time_in_coal_cellar_without_torch.png, in_coalroom_with_torch.png,
-#   guard_punishes_you_in_prison_cell.png,
-#   fight_knight_with_hands.png, fight_knight_with_torch.png, sneaking_up_on_guard_in_hall.png,
-#   climbing_up_tower.png, climb_ladder_down.png,
-#   pull_lever_on_tower.png, guards_arrive_when_pulling_lever.png, gate_lowered.png,
-#   pickup_crossbow.png, drop_crossbow.png, shooting_crossbow_from_tower.png,
-#   cross_gate_bridge.png, jump_into_moat.png, swim_across_moat.png,
+# Flask-baserad web-UI för Escape the Castle med CRT-look.
+# ► Endast följande art-filer används (lägg i static/art/):
+#   cell.png
+#   climb_ladder_down.png
+#   climbing_up_tower.png
+#   cross_gate_bridge.png
+#   dark_stumble.png
+#   drop_crossbow.png
+#   pickup_crossbow.png
+#   drop_keys.png
+#   pickup_keys.png
+#   enter_coal_cellar.png
+#   fight_knight_with_hands.png
+#   fight_knight_with_torch.png
+#   guard_punishes_you_in_prison_cell.png
+#   guards_arrive_when_pulling_lever.png
+#   hall.png
+#   jump_into_moat.png
+#   just_unlocked_courtyard_door.png
+#   movestoneaside.png
 #   nothing_happened.png
+#   opening_door_from_coal_cellar_to_hall.png
+#   return_to_cell.png
+#   setting_fire_to_torch_in_prison_cell.png
+#   shooting_crossbow_from_tower.png
+#   straw_rummaged.png
 
 from __future__ import annotations
 
@@ -57,12 +64,11 @@ ROOM_TITLES = {
     "courtyard_01": "Castle Courtyard",
 }
 
-# Basbilder per rum (fallback)
+# Basbilder per rum (endast tillåtna filer)
+# OBS: vi har INGEN default för courtyard/coal (för att inte använda bannade filer).
 ART_DEFAULT = {
     "cell_01": "cell.png",
-    "coal_01": "coal.png",
     "hall_01": "hall.png",
-    "courtyard_01": "courtyard.png",
 }
 
 # Hjälpare: finns en art-fil?
@@ -76,138 +82,133 @@ def _first_existing(*names: str) -> str | None:
             return n
     return None
 
-# Mapping för varje event → kandidatnamn (listor för att täcka dina faktiska filer + fallback)
+# Mapping för varje event → exakt fil (endast dina filer)
 EVENT_ART = {
     # Cell
     "straw_rummaged":       ["straw_rummaged.png"],
-    "stone_lifted":         ["movestonesaside.png"],
-    "enter_coal_cellar":    ["enter_coal_cellar.png"],
+    "stone_lifted":         ["movestoneaside.png"],  # ← stavning fixad
+    "enter_coal_cellar":    ["enter_coal_cellar.png"],  # visas också som kontext i mörk källare
     "return_to_cell":       ["return_to_cell.png"],
 
-    # Allmänt fackel
-    "pickup_stick":         ["pickup_stick.png", "pickup_torch.png"],
-    "pickup_torch":         ["pickup_torch.png"],
-    "drop_torch":           ["drop_torch.png"],
-    "light_torch":          ["setting_fire_to_torch_in_prison_cell.png", "setting_fire_to_torch.png"],
-    "extinguish_torch":     ["extinguish_torch.png"],
+    # Fackla (enbart 'light_torch' har bild enligt listan)
+    "light_torch":          ["setting_fire_to_torch_in_prison_cell.png"],
 
     # Källardörr (till hall)
-    "open_hall_door":       ["opening_door_from_coal_cellar_to_hall.png", "just_entered_hall.png", "open_hall_door.png"],
+    "open_hall_door":       ["opening_door_from_coal_cellar_to_hall.png"],
 
     # Hall & nycklar
-    "return_to_coal":       ["return_to_coal.png", "opening_door_from_coal_cellar_to_hall.png"],
-    "pickup_keys":          ["pickup_keys.png", "sneaking_up_on_guard_in_hall.png"],
+    "pickup_keys":          ["pickup_keys.png"],
     "drop_keys":            ["drop_keys.png"],
-    "unlock_courtyard_door":["just_unlocked_courtyard_door.png", "unlock_courtyard_door.png"],
+    "unlock_courtyard_door":["just_unlocked_courtyard_door.png"],
 
-    # Cell/hall straff/strid
-    "guard_punishes":       ["guard_punishes_you_in_prison_cell.png", "guard_punishes.png", "punch_frame.png"],
-    "knight_notice":        ["fight_knight_with_hands.png", "fight_knight_with_torch.png"],
-    "combat_knock_guard":   ["fight_knight_with_torch.png", "fight_knight_with_hands.png"],
+    # Cell-straff
+    "guard_punishes":       ["guard_punishes_you_in_prison_cell.png"],
+
+    # Hall-strid (specialfall nedan väljer hands/torch-bild)
+    "knight_notice":        [],  # styrs i speciallogik
+    "combat_knock_guard":   [],  # styrs i speciallogik
 
     # Gården
-    "climb_ladder_up":      ["climbing_up_tower.png", "going_up_tower.png"],
-    "climb_ladder_down":    ["climb_ladder_down.png", "climbing_up_tower.png", "going_up_tower.png"],
-    "pull_lever":           ["pull_lever_on_tower.png", "pull_lever.png"],
-    "guards_arrive":        ["guards_arrive_when_pulling_lever.png", "guards_arrive.png"],
+    "climb_ladder_up":      ["climbing_up_tower.png"],
+    "climb_ladder_down":    ["climb_ladder_down.png"],
+    "pull_lever":           ["guards_arrive_when_pulling_lever.png"],
+    "guards_arrive":        ["guards_arrive_when_pulling_lever.png"],
     "pickup_crossbow":      ["pickup_crossbow.png"],
     "drop_crossbow":        ["drop_crossbow.png"],
-    "shoot_guard":          ["shooting_crossbow_from_tower.png", "shooting_from_tower2.png", "shooting_from_tower.png"],
-    "cross_gate_bridge":    ["cross_gate_bridge.png", "running_away.png"],
+    # 'shoot_guard': endast bild om man är uppe i tornet (speciallogik)
+    "shoot_guard":          [],
+
+    "cross_gate_bridge":    ["cross_gate_bridge.png"],  # vinst
     "jump_into_moat":       ["jump_into_moat.png"],
-    "swim_across":          ["swim_across_moat.png", "swim_across.png", "running_away.png"],
 
     # Övrigt / säkerhet
-    "dark_stumble":         ["dark_stumble.png", "first_time_in_coal_cellar_without_torch.png",
-                             "first_time_in_coalroom_without_lit_torch.png", "first_time_in_coalroom_withouth_lit_torch.png"],
+    "dark_stumble":         ["dark_stumble.png"],
 }
 
 # Rumskontext-bilder (när inget specifikt event tog över)
+# Endast dina filer: cell.png / hall.png som bas, samt:
+# - enter_coal_cellar.png när man är i coal cellar och det är mörkt
+# - opening_door_from_coal_cellar_to_hall.png när man är i coal cellar med ljus/fackla
 CONTEXT_ART = {
     "cell_01": [
         (lambda s: True, ["cell.png"]),
     ],
     "coal_01": [
         (lambda s: not s.flags_coal.get("torch_lit", False),
-         ["first_time_in_coal_cellar_without_torch.png",  # din fil
-          "first_time_in_coalroom_without_lit_torch.png", # alias
-          "first_time_in_coalroom_withouth_lit_torch.png",# alias (stavning)
-          "coal.png"]),
+         ["enter_coal_cellar.png"]),
         (lambda s: s.flags_coal.get("torch_lit", False),
-         ["in_coalroom_with_torch.png", "coal.png"]),
+         ["opening_door_from_coal_cellar_to_hall.png"]),
     ],
     "hall_01": [
         (lambda s: True, ["hall.png"]),
     ],
-    "courtyard_01": [
-        (lambda s: s.flags_courtyard.get("at_tower_top", False),
-         ["climbing_up_tower.png", "courtyard.png"]),
-        (lambda s: True, ["courtyard.png"]),
-    ]
+    # Ingen generell courtyard-bild i din lista → bara event-bilder där
+    "courtyard_01": []
 }
 
-
-def pick_art_filename(state: GameState, result: dict, narration: str) -> str:
+def pick_art_filename(state: GameState, result: dict, narration: str) -> str | None:
     """
-    Välj rätt bild för denna tick, utifrån events (prioriterat), vinst/död och rumskontext.
-    Fallback till ART_DEFAULT[room] om inget passar eller fil saknas.
+    Välj rätt bild för denna tick utifrån:
+    1) Vinst (cross_gate_bridge.png),
+    2) "Nothing special happened." om inget event,
+    3) Specialfall (hall-strid & tower-shoot),
+    4) Event-prioritet,
+    5) Rumskontext,
+    6) Fallback: ART_DEFAULT för cell/hall, annars None (behåll senaste bild).
     """
     events = list(result.get("events", []))
     room   = state.current_room
 
-    # 1) Victory / death får absolut högsta prio
+    # 1) Victory
     if result.get("game_won"):
-        art = _first_existing(*EVENT_ART.get("cross_gate_bridge", [])) or \
-              _first_existing(*EVENT_ART.get("swim_across", [])) or \
-              _first_existing("running_away.png")
+        art = _first_existing("cross_gate_bridge.png")
         if art: return art
 
-    if state.hp <= 0:
-        art = _first_existing("you_died.png", "losing_frame.png")
-        if art: return art
-
-    # 2) "Nothing happened" – om ingen event och explicit fras
-    if ("Nothing happened." in (narration or "")) and not events:
+    # 2) "Nothing special happened." – om inga events
+    # (motorn normaliserar till "Nothing special happened.")
+    if ("Nothing special happened." in (narration or "")) and not events:
         art = _first_existing("nothing_happened.png")
         if art: return art
 
-    # 3) Event-prioritet per rum (grovt viktigast → minst viktigt)
+    # 3) Specialfall
+    # 3a) Hall-strid: välj rätt variant beroende på om torch hålls i handen
+    if any(ev in events for ev in ("knight_notice", "combat_knock_guard")):
+        torch_in_hand = (state.items.get("torch", {}).get("location") == "player")
+        art = _first_existing("fight_knight_with_torch.png" if torch_in_hand else "fight_knight_with_hands.png")
+        if art: return art
+
+    # 3b) Skjuta: visa bara tower-varianten om man står på plattformen
+    if "shoot_guard" in events and state.flags_courtyard.get("at_tower_top", False):
+        art = _first_existing("shooting_crossbow_from_tower.png")
+        if art: return art
+    # Skjuter man från gräset finns ingen tillåten bild → inget art-byte här
+
+    # 4) Event-prioritet (endast de events som har explicit art-lista)
     PRIORITY = [
-        # Courtyard win/jump/shoot/lever
-        "cross_gate_bridge", "swim_across", "jump_into_moat",
-        "shoot_guard", "guards_arrive", "pull_lever",
+        # Courtyard vinst/hopp/lever/vakter/stege/vapen
+        "cross_gate_bridge", "jump_into_moat",
+        "guards_arrive", "pull_lever",
         "climb_ladder_up", "climb_ladder_down",
         "pickup_crossbow", "drop_crossbow",
 
         # Hall
-        "combat_knock_guard", "knight_notice",
-        "unlock_courtyard_door", "pickup_keys", "drop_keys", "return_to_coal",
+        "unlock_courtyard_door", "pickup_keys", "drop_keys",
 
-        # Cell & Coal door/torch
-        "open_hall_door", "light_torch", "extinguish_torch",
-        "drop_torch", "pickup_torch", "pickup_stick",
-
-        # Cell exploration
-        "stone_lifted", "straw_rummaged", "enter_coal_cellar", "return_to_cell",
+        # Coal/Cell
+        "open_hall_door", "light_torch",
+        "stone_lifted", "straw_rummaged",
+        "enter_coal_cellar", "return_to_cell",
 
         # Safety/damage
         "guard_punishes", "dark_stumble",
     ]
-
-    # Extra: om gate redan är nere i gården – visa gate_lowered.png när inget annat tar över
-    if room == "courtyard_01" and state.flags_courtyard.get("gate_lowered", False):
-        art = _first_existing("gate_lowered.png")
-        if art and not events:
-            return art
-
-    # Gå igenom events enligt prioritet och välj första befintliga bild
     for ev in PRIORITY:
         if ev in events:
             art = _first_existing(*EVENT_ART.get(ev, []))
             if art:
                 return art
 
-    # 4) Kontext-bild beroende på rumstillstånd (t.ex. fackel i källaren)
+    # 5) Rumskontext (t.ex. cell/hall bas, kolkällare mörk/ljus)
     for predicate, candidates in CONTEXT_ART.get(room, []):
         try:
             if predicate(state):
@@ -217,8 +218,8 @@ def pick_art_filename(state: GameState, result: dict, narration: str) -> str:
         except Exception:
             pass
 
-    # 5) Rums-fallback
-    return ART_DEFAULT.get(room, "cell.png")
+    # 6) Fallback — endast cell/hall har default enligt din lista.
+    return ART_DEFAULT.get(room, None)
 
 
 def append_room_entry_text(state: GameState) -> str:
@@ -257,117 +258,58 @@ INDEX_HTML = r"""
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Escape the Castle — CRT UI</title>
 <style>
-  :root{
-    --bg:#0b0f0b;
-    --phosphor:#9cff57;
-    --accent:#b6ff7b;
-  }
+  :root{ --bg:#0b0f0b; --phosphor:#9cff57; --accent:#b6ff7b; }
   *{ box-sizing:border-box; }
   html,body{ height:100%; margin:0; background:#000; }
   body{ display:flex; align-items:center; justify-content:center; padding:12px; }
-
-  .shell{
-    position:relative;
-    width:min(1200px, 96vw);
-    height:min(720px, 92vh);
+  .shell{ position:relative; width:min(1200px, 96vw); height:min(720px, 92vh);
     background: radial-gradient(120% 140% at 50% 50%, #0a0a0a 0%, #000 70%, #000 100%);
-    border-radius:22px;
-    box-shadow: 0 8px 40px rgba(0,0,0,.65), inset 0 0 140px rgba(0,0,0,.9);
-    overflow:hidden;
-  }
-  .crt{
-    position:absolute; inset:16px; border-radius:14px; overflow:hidden;
+    border-radius:22px; box-shadow: 0 8px 40px rgba(0,0,0,.65), inset 0 0 140px rgba(0,0,0,.9); overflow:hidden;}
+  .crt{ position:absolute; inset:16px; border-radius:14px; overflow:hidden;
     background: linear-gradient(180deg, rgba(12,18,12,.65), rgba(12,18,12,.65));
-    filter: saturate(0.9) contrast(1.02);
-    transform: perspective(1100px) translateZ(0) scale(1.002);
-  }
-  .crt::before{
-    content:""; position:absolute; inset:0; pointer-events:none;
-    background: repeating-linear-gradient(
-        to bottom,
-        rgba(0,0,0,0) 0px,
-        rgba(0,0,0,0) 2px,
-        rgba(0,0,0,.16) 3px,
-        rgba(0,0,0,.16) 4px
-    );
-    mix-blend-mode:multiply;
-  }
-  .crt::after{
-    content:""; position:absolute; inset:-1px; pointer-events:none;
+    filter: saturate(0.9) contrast(1.02); transform: perspective(1100px) translateZ(0) scale(1.002);}
+  .crt::before{ content:""; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px,
+      rgba(0,0,0,.16) 3px, rgba(0,0,0,.16) 4px); mix-blend-mode:multiply;}
+  .crt::after{ content:""; position:absolute; inset:-1px; pointer-events:none;
     background: radial-gradient(120% 180% at 50% 50%, rgba(255,255,255,.05), rgba(255,255,255,0) 60%);
-    animation: flicker 6.5s infinite, glow 7.2s infinite;
-  }
+    animation: flicker 6.5s infinite, glow 7.2s infinite;}
   @keyframes flicker { 0%,94%,100%{opacity:.06;} 96%{opacity:.11;} 98%{opacity:.03;} }
   @keyframes glow { 0%,100%{filter:brightness(1.00);} 45%{filter:brightness(1.02);} 70%{filter:brightness(0.98);} }
 
-  .screen{
-    position:relative;
-    display:grid; grid-template-columns: 1.4fr 0.9fr; gap:14px;
-    padding:16px; width:100%; height:100%;
-    color: var(--phosphor);
+  .screen{ position:relative; display:grid; grid-template-columns: 1.4fr 0.9fr; gap:14px;
+    padding:16px; width:100%; height:100%; color: var(--phosphor);
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-    text-shadow: 0 0 6px rgba(156,255,87,.25);
-  }
-
-  .left{
-    display:flex; flex-direction:column; min-width:0; overflow:hidden;
+    text-shadow: 0 0 6px rgba(156,255,87,.25); }
+  .left{ display:flex; flex-direction:column; min-width:0; overflow:hidden;
     background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.35)),
-                repeating-linear-gradient(90deg, rgba(10,20,10,.16) 0 1px, transparent 1px 2px);
-    border:1px solid rgba(156,255,87,.15); border-radius:12px;
-    box-shadow: inset 0 0 18px rgba(0,0,0,.65);
-  }
+      repeating-linear-gradient(90deg, rgba(10,20,10,.16) 0 1px, transparent 1px 2px);
+    border:1px solid rgba(156,255,87,.15); border-radius:12px; box-shadow: inset 0 0 18px rgba(0,0,0,.65);}
   .header{ padding:10px 12px; border-bottom:1px solid rgba(156,255,87,.14); font-weight:700; letter-spacing:.5px; }
   .log{ flex:1; overflow:auto; padding:12px; line-height:1.35; white-space:pre-wrap;
         scrollbar-color: rgba(156,255,87,.35) rgba(0,0,0,.2); scrollbar-width: thin; }
   .log .user{ color: var(--accent); }
-  .log .sys{}
-  .thinking{ opacity:.9; font-style:italic; }
-
   .line{ margin: 0 0 4px 0; }
-
-  .glowline{
-    text-shadow:
-      0 0 8px rgba(156,255,87,.85),
-      0 0 18px rgba(156,255,87,.45),
-      0 0 32px rgba(156,255,87,.25);
-    animation: pulse 2.1s ease-in-out 2;
-  }
+  .glowline{ text-shadow: 0 0 8px rgba(156,255,87,.85), 0 0 18px rgba(156,255,87,.45), 0 0 32px rgba(156,255,87,.25); animation: pulse 2.1s ease-in-out 2;}
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.85} }
-
   .status{ display:flex; gap:12px; flex-wrap:wrap; padding:8px 12px 0 12px; font-size:13px; opacity:.9; }
   .badge{ padding:2px 8px; border-radius:999px; border:1px solid rgba(156,255,87,.25); background: rgba(0,0,0,.35); }
-
-  .inputbar{
-    position: sticky; bottom: 0; padding:10px; display:flex; gap:8px; align-items:flex-end;
+  .inputbar{ position: sticky; bottom: 0; padding:10px; display:flex; gap:8px; align-items:flex-end;
     background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
-    border-top:1px solid rgba(156,255,87,.14);
-  }
-  .inputbar textarea{
-    flex:1; min-height:42px; max-height:120px; overflow:auto; resize:vertical;
-    padding:10px 10px 10px 12px; font:inherit; color:var(--phosphor);
-    background: rgba(0,0,0,.45); border:1px solid rgba(156,255,87,.22); border-radius:8px;
-    outline:none; box-shadow: inset 0 0 10px rgba(0,0,0,.55);
-  }
-  .inputbar button{
-    padding:10px 14px; color:#051; background: linear-gradient(180deg, #baff7a, #8de354);
-    border:none; border-radius:8px; font-weight:700; cursor:pointer;
-    box-shadow: 0 2px 0 #5ca534, 0 6px 14px rgba(0,0,0,.25);
-  }
+    border-top:1px solid rgba(156,255,87,.14);}
+  .inputbar textarea{ flex:1; min-height:42px; max-height:120px; overflow:auto; resize:vertical;
+    padding:10px 10px 10px 12px; font:inherit; color:var(--phosphor); background: rgba(0,0,0,.45);
+    border:1px solid rgba(156,255,87,.22); border-radius:8px; outline:none; box-shadow: inset 0 0 10px rgba(0,0,0,.55);}
+  .inputbar button{ padding:10px 14px; color:#051; background: linear-gradient(180deg, #baff7a, #8de354);
+    border:none; border-radius:8px; font-weight:700; cursor:pointer; box-shadow: 0 2px 0 #5ca534, 0 6px 14px rgba(0,0,0,.25); }
   .inputbar button:active{ transform: translateY(1px); box-shadow: 0 1px 0 #5ca534, 0 4px 10px rgba(0,0,0,.3); }
 
-  .right{
-    min-width:0; display:flex; flex-direction:column; overflow:hidden;
+  .right{ min-width:0; display:flex; flex-direction:column; overflow:hidden;
     background: radial-gradient(140% 140% at 50% 50%, rgba(10,20,10,.5), rgba(0,0,0,.7));
-    border:1px solid rgba(156,255,87,.15); border-radius:12px;
-    box-shadow: inset 0 0 18px rgba(0,0,0,.65);
-  }
+    border:1px solid rgba(156,255,87,.15); border-radius:12px; box-shadow: inset 0 0 18px rgba(0,0,0,.65); }
   .imgwrap{ flex:1; display:flex; align-items:center; justify-content:center; padding: 12px; }
   .imgwrap img{ width:100%; height:100%; object-fit:contain; image-rendering: pixelated; filter: contrast(1.05) saturate(0.9) brightness(0.92); }
-
-  .right .caption{
-    padding:10px 12px; font-size:18px; font-weight:800; letter-spacing:.8px; text-align:center;
-    border-top:1px solid rgba(156,255,87,.14);
-  }
+  .right .caption{ padding:10px 12px; font-size:18px; font-weight:800; letter-spacing:.8px; text-align:center; border-top:1px solid rgba(156,255,87,.14); }
 
   @media (max-width: 900px){
     .screen{ grid-template-columns: 1fr; }
@@ -424,16 +366,10 @@ INDEX_HTML = r"""
   keyAudio.volume = 0.6;
 
   function startKeyAudio(){
-    try {
-      keyAudio.currentTime = 0;
-      keyAudio.play().catch(()=>{});
-    } catch(e){}
+    try { keyAudio.currentTime = 0; keyAudio.play().catch(()=>{}); } catch(e){}
   }
   function stopKeyAudio(){
-    try {
-      keyAudio.pause();
-      keyAudio.currentTime = 0;
-    } catch(e){}
+    try { keyAudio.pause(); keyAudio.currentTime = 0; } catch(e){}
   }
 
   // ---- Bakgrundsmusik per rum ----
@@ -443,10 +379,7 @@ INDEX_HTML = r"""
     "hall_01": new Audio('/static/sfx/hallway_music.mp3'),
     "courtyard_01": new Audio('/static/sfx/courtyard_music.mp3')
   };
-  for (const [k, a] of Object.entries(bgmMap)) {
-    a.loop = true;
-    a.volume = (k === "cell_01") ? 0.275 : 0.55;
-  }
+  for (const [k, a] of Object.entries(bgmMap)) { a.loop = true; a.volume = (k === "cell_01") ? 0.275 : 0.55; }
 
   // ---- SFX ----
   const sfx = {
@@ -455,10 +388,7 @@ INDEX_HTML = r"""
     lose:  new Audio('/static/sfx/losing_sound.mp3'),
     win:   new Audio('/static/sfx/vinning_sound.mp3')
   };
-  sfx.door.volume = 0.9;
-  sfx.punch.volume = 0.9;
-  sfx.lose.volume = 0.95;
-  sfx.win.volume = 0.95;
+  sfx.door.volume = 0.9; sfx.punch.volume = 0.9; sfx.lose.volume = 0.95; sfx.win.volume = 0.95;
 
   // ---- Preload ----
   keyAudio.preload = 'auto';
@@ -477,13 +407,10 @@ INDEX_HTML = r"""
 
     if (currentBgmKey && bgmMap[currentBgmKey]) {
       const cur = bgmMap[currentBgmKey];
-      cur.pause();
-      try { cur.currentTime = 0; } catch(e){}
+      cur.pause(); try { cur.currentTime = 0; } catch(e){}
     }
     const next = bgmMap[roomId];
-    if (next){
-      next.play().then(()=>{ currentBgmKey = roomId; }).catch(()=>{});
-    }
+    if (next){ next.play().then(()=>{ currentBgmKey = roomId; }).catch(()=>{}); }
   }
 
   function unlockAudioOnce(){
@@ -495,12 +422,8 @@ INDEX_HTML = r"""
 
     Promise.all(all.map(a=>{
       a.muted = true;
-      return a.play().then(()=>{
-        a.pause(); a.currentTime = 0; a.muted = false;
-      }).catch(()=>{ a.muted = false; });
-    })).finally(()=>{
-      setBgm(pendingBgmKey);
-    });
+      return a.play().then(()=>{ a.pause(); a.currentTime = 0; a.muted = false; }).catch(()=>{ a.muted = false; });
+    })).finally(()=>{ setBgm(pendingBgmKey); });
   }
   window.addEventListener('pointerdown', unlockAudioOnce, { once:true });
   window.addEventListener('keydown',     unlockAudioOnce, { once:true });
@@ -528,9 +451,7 @@ INDEX_HTML = r"""
     /You pull the door open and step into the castle courtyard/i,
     /You carefully crawl into the hole and drop into the coal cellar/i
   ];
-  function isKeyEventLine(text){
-    return KEY_EVENT_PATTERNS.some(re => re.test(text));
-  }
+  function isKeyEventLine(text){ return KEY_EVENT_PATTERNS.some(re => re.test(text)); }
 
   function updateStatus(s){
     hp.textContent = `HP: ${s.hp}` + (s.hp_delta !== 0 ? ` (${s.hp_delta > 0 ? '+' : ''}${s.hp_delta})` : '');
@@ -539,30 +460,19 @@ INDEX_HTML = r"""
     room.textContent = `Room: ${s.room_title}`;
     inv.textContent = `Inventory: ${s.inventory && s.inventory.length ? s.inventory.join(', ') : 'empty'}`;
 
+    // Endast byt bild om servern skickar en art. Annars behåll förra (inga bannade fallbacks).
     if (s.art){
       img.src = `/static/art/${s.art}`;
-    } else {
-      const map = {
-        "cell_01": "/static/art/cell.png",
-        "coal_01": "/static/art/coal.png",
-        "hall_01": "/static/art/hall.png",
-        "courtyard_01": "/static/art/courtyard.png"
-      };
-      img.src = map[s.room_id] || "/static/art/cell.png";
     }
     caption.textContent = s.room_title;
   }
 
-  const DOOR_EVENTS = new Set(["open_hall_door", "unlock_courtyard_door", "return_to_coal"]);
+  const DOOR_EVENTS = new Set(["open_hall_door", "unlock_courtyard_door"]);
   function handleAudioFromState(s){
     setBgm(s.room_id);
 
-    if (s.events && s.events.some(e => DOOR_EVENTS.has(e))){
-      playOnce(sfx.door);
-    }
-    if (typeof s.hp_delta === 'number' && s.hp_delta < 0){
-      playOnce(sfx.punch);
-    }
+    if (s.events && s.events.some(e => DOOR_EVENTS.has(e))){ playOnce(sfx.door); }
+    if (typeof s.hp_delta === 'number' && s.hp_delta < 0){ playOnce(sfx.punch); }
     if (s.dead){
       playOnce(sfx.lose);
       if (currentBgmKey && bgmMap[currentBgmKey]) bgmMap[currentBgmKey].pause();
@@ -596,22 +506,16 @@ INDEX_HTML = r"""
 
   async function typeNarration(text){
     if (!text) return;
-    startKeyAudio();
     const lines = text.split(/\r?\n/);
     for (const rawLine of lines){
       const t = rawLine;
       if (t.trim().length === 0){
-        const spacer = document.createElement('div');
-        spacer.className = 'line';
-        spacer.innerHTML = '&nbsp;';
-        log.appendChild(spacer);
-        log.scrollTop = log.scrollHeight;
-        continue;
+        const spacer = document.createElement('div'); spacer.className = 'line'; spacer.innerHTML = '&nbsp;';
+        log.appendChild(spacer); log.scrollTop = log.scrollHeight; continue;
       }
       const key = isKeyEventLine(t);
       await typeLine(t, log, key);
     }
-    stopKeyAudio();
   }
 
   function appendUser(text){
@@ -623,46 +527,24 @@ INDEX_HTML = r"""
   }
 
   const THINK_LINES = [
-    "Gathering strength to do your action",
-    "Thinking about what to eat later",
-    "You forgot for a second what you were supposed to do",
-    "Consulting the imaginary map",
-    "Counting cobblestones for luck",
-    "Practicing a heroic eyebrow raise",
-    "Untangling the narrative threads",
-    "Rolling a mental d20",
-    "Quietly negotiating with physics",
-    "Rewinding the scene to check continuity"
+    "Gathering strength to do your action","Thinking about what to eat later","You forgot for a second what you were supposed to do",
+    "Consulting the imaginary map","Counting cobblestones for luck","Practicing a heroic eyebrow raise",
+    "Untangling the narrative threads","Rolling a mental d20","Quietly negotiating with physics","Rewinding the scene to check continuity"
   ];
-  let thinkingTimer = null;
-  let thinkingEl = null;
+  let thinkingTimer = null; let thinkingEl = null;
 
   function startThinking(){
     const msg = THINK_LINES[Math.floor(Math.random()*THINK_LINES.length)];
-    thinkingEl = document.createElement('div');
-    thinkingEl.className = 'sys line thinking';
-    thinkingEl.textContent = msg;
-    log.appendChild(thinkingEl);
-    log.scrollTop = log.scrollHeight;
+    thinkingEl = document.createElement('div'); thinkingEl.className = 'sys line thinking'; thinkingEl.textContent = msg;
+    log.appendChild(thinkingEl); log.scrollTop = log.scrollHeight;
 
     let dots = 0;
-    thinkingTimer = setInterval(()=>{
-      dots = (dots + 1) % 4;
-      thinkingEl.textContent = msg + '.'.repeat(dots);
-      log.scrollTop = log.scrollHeight;
-    }, 350);
+    thinkingTimer = setInterval(()=>{ dots = (dots + 1) % 4; thinkingEl.textContent = msg + '.'.repeat(dots); log.scrollTop = log.scrollHeight; }, 350);
   }
 
   function stopThinking(){
-    if (thinkingTimer){
-      clearInterval(thinkingTimer);
-      thinkingTimer = null;
-    }
-    if (thinkingEl){
-      const txt = thinkingEl.textContent.replace(/\.*$/, '...');
-      thinkingEl.textContent = txt;
-      thinkingEl = null;
-    }
+    if (thinkingTimer){ clearInterval(thinkingTimer); thinkingTimer = null; }
+    if (thinkingEl){ thinkingEl.textContent = thinkingEl.textContent.replace(/\.*$/, '...'); thinkingEl = null; }
   }
 
   async function fetchState(){
@@ -682,11 +564,7 @@ INDEX_HTML = r"""
 
     startThinking();
     try{
-      const r = await fetch('/act', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ text })
-      });
+      const r = await fetch('/act', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ text }) });
       const s = await r.json();
       stopThinking();
 
@@ -701,12 +579,10 @@ INDEX_HTML = r"""
   }
 
   send.addEventListener('click', sendCmd);
-  cmd.addEventListener('keydown', (e)=>{
-    if (e.key === 'Enter' && !e.shiftKey){
-      e.preventDefault();
-      sendCmd();
-    }
-  });
+  cmd.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendCmd(); } });
+
+  window.addEventListener('pointerdown', unlockAudioOnce, { once:true });
+  window.addEventListener('keydown',     unlockAudioOnce, { once:true });
 
   fetchState();
 </script>
@@ -732,6 +608,9 @@ def get_state():
         narration += WELCOME_TEXT.strip() + "\n"
         narration += append_room_entry_text(STATE)
 
+    # Starta i cellen med cell.png (tillåten)
+    start_art = ART_DEFAULT.get(STATE.current_room, "cell.png")
+
     return jsonify({
         "narration": narration,
         "hp": STATE.hp,
@@ -744,7 +623,7 @@ def get_state():
         "events": [],
         "game_won": False,
         "dead": STATE.hp <= 0,
-        "art": ART_DEFAULT.get(STATE.current_room, "cell.png"),
+        "art": start_art,
     })
 
 @app.route("/act", methods=["POST"])
@@ -805,7 +684,7 @@ def act():
         "events": result.get("events", []),
         "game_won": bool(result.get("game_won", False)),
         "dead": STATE.hp <= 0,
-        "art": art_file,
+        "art": art_file,  # kan vara None → klienten behåller förra bilden
     })
 
 # Statik (art)
@@ -814,8 +693,6 @@ def art_file(filename):
     return send_from_directory(os.path.join(app.static_folder, "art"), filename)
 
 if __name__ == "__main__":
-    # Lägg filer i:
-    # static/sfx/{keyboard.mp3, prison_music.mp3, coalroom_music.mp3, hallway_music.mp3, courtyard_music.mp3,
-    #            opening_doors.mp3, punch_sound.mp3, losing_sound.mp3, vinning_sound.mp3}
-    # Lägg scenbilder i static/art/{cell.png, coal.png, hall.png, courtyard.png, ... samt event-bilderna listade ovan}
+    # SFX läggs i static/sfx/...
+    # Art läggs i static/art/ (endast de filer som listas högst upp)
     app.run(host="127.0.0.1", port=5000, debug=True)
