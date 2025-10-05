@@ -6640,3 +6640,18 @@
   "progression": "cell_01",
   "safety_reason": ""
 }
+[2025-10-05 20:55:38] RAW_MODEL_OUTPUT: {
+  "narration": "Your loud scream echoes through the cell, and the guard's eyes snap open. He looks at you with a mixture of anger and annoyance.",
+  "noise_level": 2,
+  "hp_delta": -20,
+  "events": ["guard_punishes"],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": "Guard's reaction to noise"
+}
+[2025-10-05 20:56:37] RAW_MODEL_OUTPUT: {"narration": "You peer under the straw bed, and your eyes adjust to the dim light. You notice a loose cobblestone hidden beneath the straw.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 20:56:56] RAW_MODEL_OUTPUT: {"narration": "You try to remove the wall torch, but it's firmly attached and won't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Nothing special happened."}
+[2025-10-05 20:57:23] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 20:57:41] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole, feeling the cool air of the coal cellar envelop you.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-05 20:58:06] RAW_MODEL_OUTPUT: {"narration": "You pick up the unknown object at your feet, and it feels like a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-05 20:59:30] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawl opening behind you.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_returned": true}, "progression": "cell_01", "safety_reason": ""}

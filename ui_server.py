@@ -454,14 +454,12 @@ INDEX_HTML = r"""
     "courtyard_01": new Audio('/static/sfx/courtyard_music.mp3')
   };
   for (const [k, a] of Object.entries(bgmMap)) { a.loop = true; a.volume = (k === "cell_01") ? 0.275 : 0.55; }
+  bgmMap["cell_01"].volume = 0.15;
+  
 
-  // Lägre nivåer
-  bgmMap["cell_01"].volume = 0.15;   // cell music (tidigare 0.275)
-  sfx.door.volume = 0.20;            // open door SFX (tidigare 0.5)
-  sfx.win.volume  = 0.18;            // victory SFX (tidigare 0.5)
+  
 
-
-
+  
   // ---- SFX ----
   const sfx = {
     door:  new Audio('/static/sfx/opening_doors.mp3'),
@@ -469,7 +467,7 @@ INDEX_HTML = r"""
     lose:  new Audio('/static/sfx/losing_sound.mp3'),
     win:   new Audio('/static/sfx/vinning_sound.mp3')
   };
-  sfx.door.volume = 0.5; sfx.punch.volume = 0.7; sfx.lose.volume = 0.6; sfx.win.volume = 0.5;
+  sfx.door.volume = 0.30; sfx.punch.volume = 0.50; sfx.lose.volume = 0.30; sfx.win.volume = 0.15;
 
   // ---- Preload ----
   keyAudio.preload = 'auto';
@@ -528,7 +526,7 @@ INDEX_HTML = r"""
 
   function playOnce(audio){
     const a = audio.cloneNode(true);
-    a.volume = audio.volume;   // behåll mix-nivån
+    a.volume = audio.volume;   // ← behåll mix-nivån på klonen
     a.play().catch(()=>{});
   }
 
