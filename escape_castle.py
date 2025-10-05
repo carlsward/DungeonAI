@@ -1451,11 +1451,39 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
         t_lower = (player_action_text or "").lower()   # <-- flytta hit
 
-        if (not state.flags_courtyard.get("at_tower_top", False)) and (not state.flags_courtyard.get("in_moat", False)):
-            if _re.search(r"\b(climb|go|head|get)\b(?:\s+back)?\s+\bup\b", t_lower) \
-               and "climb_ladder_up" not in events:
+        # NEW: bare "climb up" (no 'ladder'/'tower' words) while on grass (not in moat)
+        if (not state.flags_courtyard.get("at_tower_top", False)) \
+            and (not state.flags_courtyard.get("in_moat", False)) \
+            and re.search(r"^\s*(?:climb|go|head|get)\s+up\s*$", t_lower) \
+            and "climb_ladder_up" not in events:
                 events.append("climb_ladder_up")
                 notes.append("Inferred 'climb_ladder_up' from bare 'climb up' while on the grass.")
+
+        if "climb_ladder_up" in events and "climb_ladder_down" in events:
+            up_asked = re.search(r"\bup\b", t_lower) is not None
+            down_asked = re.search(r"\bdown\b", t_lower) is not None
+            at_top_before = bool(state.flags_courtyard.get("at_tower_top", False))
+
+            if up_asked and not down_asked:
+                events = [e for e in events if e != "climb_ladder_down"]
+                notes.append("Resolved ladder conflict: kept up based on input.")
+            elif down_asked and not up_asked:
+                events = [e for e in events if e != "climb_ladder_up"]
+                notes.append("Resolved ladder conflict: kept down based on input.")
+            else:
+                # Default by where you started this turn
+                if at_top_before:
+                    events = [e for e in events if e != "climb_ladder_up"]
+                    notes.append("Resolved ladder conflict by position: kept down (was at top).")
+                else:
+                    events = [e for e in events if e != "climb_ladder_down"]
+                    notes.append("Resolved ladder conflict by position: kept up (was on grass).")
+
+                if (not state.flags_courtyard.get("at_tower_top", False)) and (not state.flags_courtyard.get("in_moat", False)):
+                    if _re.search(r"\b(climb|go|head|get)\b(?:\s+back)?\s+\bup\b", t_lower) \
+                    and "climb_ladder_up" not in events:
+                        events.append("climb_ladder_up")
+                        notes.append("Inferred 'climb_ladder_up' from bare 'climb up' while on the grass.")
 
 
         # Ignorera "climb up" om du redan är på plattformen
@@ -1790,17 +1818,31 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                         state.items["keys"] = keys
                     _recalc_slot()
                 else:
-                    # inte på tornet: kasta ≈ släpp i aktuellt rum (ändra inte annan logik)
-                    keys["location"] = state.current_room
-                    state.items["keys"] = keys
-                    _recalc_slot()
-                    if not llm.narration:
-                        llm.narration = "The keys clatter to the floor."
+                    # Not on the tower: courtyard grass cannot clear the wall into the moat
+                    if state.current_room == "courtyard_01":
+                        if to_moat:
+                            keys["location"] = "courtyard_01"
+                            state.items["keys"] = keys
+                            _recalc_slot()
+                            llm.narration = "It's not possible to throw over the wall; it lands on the grass."
+                        else:
+                            keys["location"] = state.current_room
+                            state.items["keys"] = keys
+                            _recalc_slot()
+                            if not llm.narration:
+                                llm.narration = "The keys clatter on the grass."
+                    else:
+                        # Other rooms: throwing behaves like dropping in-place
+                        keys["location"] = state.current_room
+                        state.items["keys"] = keys
+                        _recalc_slot()
+                        if not llm.narration:
+                            llm.narration = "The keys clatter to the floor."
             else:
                 notes.append("Tried to throw keys while not holding them; ignored.")
                 llm.narration = "You aren't holding any keys. Nothing special happened."
             # ta bort eventet så vi inte dubbelprocessar
-            events = [e for e in events if e != "throw_keys"]
+            
 
         # Kast av CROSSBOW
         if "throw_crossbow" in events:
@@ -1824,12 +1866,19 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                             state.items["crossbow"] = crossbow
                         _recalc_slot()
                     else:
-                        # på gräset: kasta ⇒ lägg i detta rum
-                        crossbow["location"] = state.current_room
-                        state.items["crossbow"] = crossbow
-                        _recalc_slot()
-                        if not llm.narration:
-                            llm.narration = "The crossbow thumps onto the ground."
+                        # On the grass: can't throw over the wall into the moat
+                        if to_moat and state.current_room == "courtyard_01":
+                            crossbow["location"] = "courtyard_01"
+                            state.items["crossbow"] = crossbow
+                            _recalc_slot()
+                            llm.narration = "It's not possible to throw over the wall; it lands on the grass."
+                        else:
+                            crossbow["location"] = state.current_room
+                            state.items["crossbow"] = crossbow
+                            _recalc_slot()
+                            if not llm.narration:
+                                llm.narration = "The crossbow thumps onto the ground."
+
                 else:
                     # andra rum: bete dig som vanligt drop i rummet
                     crossbow["location"] = state.current_room
@@ -1840,7 +1889,7 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             else:
                 notes.append("Tried to throw crossbow while not holding it; ignored.")
                 llm.narration = "You aren't holding the crossbow. Nothing special happened."
-            events = [e for e in events if e != "throw_crossbow"]
+            
 
 
     # 1) Process DROPS first (to free hands for same-turn pickups)

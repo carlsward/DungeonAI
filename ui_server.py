@@ -312,12 +312,29 @@ INDEX_HTML = r"""
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.85} }
   .status{ display:flex; gap:12px; flex-wrap:wrap; padding:8px 12px 0 12px; font-size:13px; opacity:.9; }
   .badge{ padding:2px 8px; border-radius:999px; border:1px solid rgba(156,255,87,.25); background: rgba(0,0,0,.35); }
-  .inputbar{ position: sticky; bottom: 0; padding:10px; display:flex; gap:8px; align-items:flex-end;
-    background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
-    border-top:1px solid rgba(156,255,87,.14);}
-  .inputbar textarea{ flex:1; min-height:42px; max-height:120px; overflow:auto; resize:vertical;
-    padding:10px 10px 10px 12px; font:inherit; color:var(--phosphor); background: rgba(0,0,0,.45);
-    border:1px solid rgba(156,255,87,.22); border-radius:8px; outline:none; box-shadow: inset 0 0 10px rgba(0,0,0,.55);}
+  .inputbar{
+  position: sticky; bottom: 0;
+  /* ändra / lägg till dessa: */
+  height: var(--inputbar-h);
+  padding:10px;
+  display:flex; gap:8px; align-items:center;
+  background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
+  border-top:1px solid rgba(156,255,87,.14);
+}
+  .inputbar textarea{
+  flex:1;
+  /* ersätt min/max/resize med: */
+  height: calc(var(--inputbar-h) - 20px);
+  min-height: calc(var(--inputbar-h) - 20px);
+  max-height: calc(var(--inputbar-h) - 20px);
+  overflow:auto;
+  resize: none;
+
+  padding:10px 10px 10px 12px; font:inherit; color:var(--phosphor);
+  background: rgba(0,0,0,.45);
+  border:1px solid rgba(156,255,87,.22); border-radius:8px;
+  outline:none; box-shadow: inset 0 0 10px rgba(0,0,0,.55);
+}
   .inputbar button{ padding:10px 14px; color:#051; background: linear-gradient(180deg, #baff7a, #8de354);
     border:none; border-radius:8px; font-weight:700; cursor:pointer; box-shadow: 0 2px 0 #5ca534, 0 6px 14px rgba(0,0,0,.25); }
   .inputbar button:active{ transform: translateY(1px); box-shadow: 0 1px 0 #5ca534, 0 4px 10px rgba(0,0,0,.3); }
