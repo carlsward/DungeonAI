@@ -421,6 +421,7 @@ INDEX_HTML = r"""
 
 <script>
   const victoryOverlay = document.getElementById('victoryOverlay');
+  let typingSessions = 0; // hur många samtidiga typeNarration som kör
 
   const log = document.getElementById('log');
   const cmd = document.getElementById('cmd');
@@ -454,6 +455,13 @@ INDEX_HTML = r"""
   };
   for (const [k, a] of Object.entries(bgmMap)) { a.loop = true; a.volume = (k === "cell_01") ? 0.275 : 0.55; }
 
+  // Lägre nivåer
+  bgmMap["cell_01"].volume = 0.15;   // cell music (tidigare 0.275)
+  sfx.door.volume = 0.20;            // open door SFX (tidigare 0.5)
+  sfx.win.volume  = 0.18;            // victory SFX (tidigare 0.5)
+
+
+
   // ---- SFX ----
   const sfx = {
     door:  new Audio('/static/sfx/opening_doors.mp3'),
@@ -472,6 +480,7 @@ INDEX_HTML = r"""
   let currentBgmKey = null;
   let audioReady = false;
   let pendingBgmKey = 'cell_01';
+  
 
   function setBgm(roomId){
     pendingBgmKey = roomId;
@@ -487,24 +496,42 @@ INDEX_HTML = r"""
   }
 
   function unlockAudioOnce(){
-    if (audioReady) return;
-    audioReady = true;
+  if (audioReady) return;
+  audioReady = true;
 
-    const all = [keyAudio, ...Object.values(bgmMap), ...Object.values(sfx)];
-    all.forEach(a => { try { a.load(); } catch(e){} });
+  // Var 'skrivmaskinen' igång när användaren klickade?
+  const wasTyping = typingSessions > 0;
+  const keyWasPlaying = !keyAudio.paused;
 
-    Promise.all(all.map(a=>{
-      a.muted = true;
-      return a.play().then(()=>{ a.pause(); a.currentTime = 0; a.muted = false; }).catch(()=>{ a.muted = false; });
-    })).finally(()=>{ setBgm(pendingBgmKey); });
-  }
+  // Lås endast upp BGM + SFX – rör inte keyAudio om det redan spelar
+  const toUnlock = [...Object.values(bgmMap), ...Object.values(sfx)];
+  toUnlock.forEach(a => { try { a.load(); } catch(e){} });
+
+  Promise.all(toUnlock.map(a=>{
+    a.muted = true;
+    return a.play()
+      .then(()=>{ a.pause(); a.currentTime = 0; a.muted = false; })
+      .catch(()=>{ a.muted = false; });
+  })).finally(()=>{
+    // Starta rätt BGM för rummet
+    setBgm(pendingBgmKey);
+
+    // Om tangentbordsljudet var aktivt (eller vi skriver just nu), säkerställ att det fortsätter
+    if (wasTyping || keyWasPlaying){
+      try { keyAudio.muted = false; keyAudio.play().catch(()=>{}); } catch(e){}
+    }
+  });
+}
+
   window.addEventListener('pointerdown', unlockAudioOnce, { once:true });
   window.addEventListener('keydown',     unlockAudioOnce, { once:true });
 
   function playOnce(audio){
     const a = audio.cloneNode(true);
+    a.volume = audio.volume;   // behåll mix-nivån
     a.play().catch(()=>{});
   }
+
 
   // ---- Key-event detection (glow) ----
   const KEY_EVENT_PATTERNS = [
@@ -585,18 +612,34 @@ INDEX_HTML = r"""
   }
 
   async function typeNarration(text){
-    if (!text) return;
+  if (!text) return;
+
+  // starta keyboard-klick när programmet börjar skriva
+  typingSessions++;
+  if (typingSessions === 1) startKeyAudio();
+
+  try{
     const lines = text.split(/\r?\n/);
     for (const rawLine of lines){
       const t = rawLine;
       if (t.trim().length === 0){
-        const spacer = document.createElement('div'); spacer.className = 'line'; spacer.innerHTML = '&nbsp;';
-        log.appendChild(spacer); log.scrollTop = log.scrollHeight; continue;
+        const spacer = document.createElement('div');
+        spacer.className = 'line';
+        spacer.innerHTML = '&nbsp;';
+        log.appendChild(spacer);
+        log.scrollTop = log.scrollHeight;
+        continue;
       }
       const key = isKeyEventLine(t);
       await typeLine(t, log, key);
     }
+  } finally {
+    // stoppa när all text är klar (även om något kastar)
+    typingSessions = Math.max(0, typingSessions - 1);
+    if (typingSessions === 0) stopKeyAudio();
   }
+}
+
 
   function appendUser(text){
     const div = document.createElement('div');

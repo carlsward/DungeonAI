@@ -2418,7 +2418,7 @@ WELCOME_TEXT = (
     "Notes:\n"
     "- Only one item in your inventory at once.\n"
     "- You will have a better experience if you specify your prompt.\n"
-    "- Try to limit yourself to one or at max two actions per prompt.\n"
+    "- Limit yourself to one action per prompt.\n"
     "- The engine should handle certain misspelling, but try to spell correctly.\n"
     "- If the LLM hallucinates a narration that ends in 'Nothing special happened', you are most likely in the same state as before." 
 )
