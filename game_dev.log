@@ -6543,3 +6543,16 @@
 [2025-10-05 18:36:09] RAW_MODEL_OUTPUT: {"narration": "You aim the crossbow and fire at the guards, hitting one of them. The other two continue to approach you.", "noise_level": 2, "hp_delta": 0, "events": ["shoot_guard"], "flags_set": {"guards_remaining": 2}, "progression": "courtyard_01", "safety_reason": ""}
 [2025-10-05 18:36:27] RAW_MODEL_OUTPUT: {"narration": "You aim the crossbow and fire at the guards, hitting one of them. The other guard is now alone, but you're out of bolts.", "noise_level": 2, "hp_delta": 0, "events": ["shoot_guard"], "flags_set": {"guards_remaining": 1}, "progression": "courtyard_01", "safety_reason": ""}
 [2025-10-05 18:36:51] RAW_MODEL_OUTPUT: {"narration": "You carefully climb down from the tower platform, your feet thudding on the stone floor as you descend the ladder. You reach solid ground and take a moment to look around, then turn towards the castle entrance.", "noise_level": 1, "hp_delta": 0, "events": ["climb_ladder_down"], "flags_set": {"at_tower_top": false}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-05 18:49:27] PROMPT_VERSION: 3.3 (... )
+[2025-10-05 18:50:21] RAW_MODEL_OUTPUT: {
+  "narration": "You peer under the straw bed, and it's just as dusty and uninviting as the rest of the cell.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {
+    "straw_rummaged": true
+  },
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-05 18:50:36] RAW_MODEL_OUTPUT: {"narration": "You try to lift the loose cobblestone, but it's stuck firmly in place.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": "Nothing special happened."}

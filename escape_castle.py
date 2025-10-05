@@ -819,40 +819,56 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
 _KEYS_RE = re.compile(r"\b(key|keys|keyring|keychain|key\s*ring)\b", re.IGNORECASE)
 _UNLOCK_RE = re.compile(r"\b(unlock|use\s+key|use\s+keys|open\s+with\s+(?:key|keys))\b", re.IGNORECASE)
 
-def infer_item_event(text: str) -> Optional[str]:
+def infer_item_events(text: str) -> List[str]:
+    """
+    Infer *multiple* item events from a single player input.
+    Fixar t.ex. 'drop the keys and pick up the crossbow'
+    så att både 'drop_keys' och 'pickup_crossbow' triggas.
+    """
     t = (text or "").lower()
+    events: List[str] = []
+
     mentions_torch = ("torch" in t) or ("stick" in t)  # OBS: ‘fire’ är inte längre en fackel-signal
     mentions_keys = _KEYS_RE.search(t) is not None
     mentions_crossbow = _CROSSBOW_RE.search(t) is not None
-    if mentions_torch and _EXTINGUISH_RE.search(t):
-        return "extinguish_torch"
-    if mentions_torch and _DROP_RE.search(t):
-        return "drop_torch"
-    if mentions_torch and _PICK_RE.search(t):
-        return "pickup_torch"
+
+    # --- Frigör händer först (kast/släpp/släck) ---
+    if mentions_torch:
+        if _EXTINGUISH_RE.search(t):
+            events.append("extinguish_torch")
+        if _DROP_RE.search(t):
+            events.append("drop_torch")
+    if mentions_keys:
+        if _THROW_RE.search(t):
+            events.append("throw_keys")
+        elif _DROP_RE.search(t):
+            events.append("drop_keys")
+    if mentions_crossbow:
+        if _THROW_RE.search(t):
+            events.append("throw_crossbow")
+        elif _DROP_RE.search(t):
+            events.append("drop_crossbow")
+
+    # --- Plocka upp i andra passet ---
+    if _PICK_RE.search(t):
+        if mentions_torch:
+            events.append("pickup_torch")
+        if mentions_keys:
+            events.append("pickup_keys")
+        if mentions_crossbow:
+            events.append("pickup_crossbow")
+
+    # --- Övrigt som kan samsas i samma tur ---
     if mentions_torch and _LIGHT_TORCH_RE.search(t):
-        return "light_torch"
+        events.append("light_torch")
+    if mentions_keys and _UNLOCK_RE.search(t):
+        events.append("unlock_courtyard_door")
 
+    # Dedupe i ordning
+    seen = set()
+    events = [e for e in events if not (e in seen or seen.add(e))]
+    return events
 
-        # THROW har företräde framför DROP
-    if mentions_keys and _THROW_RE.search(t):
-        return "throw_keys"
-    if mentions_keys and _DROP_RE.search(t):
-        return "drop_keys"
-    if mentions_keys and _PICK_RE.search(t):
-        return "pickup_keys"
-    if _UNLOCK_RE.search(t) and mentions_keys:
-        return "unlock_courtyard_door"
-    
-    if mentions_crossbow and _THROW_RE.search(t):
-        return "throw_crossbow"
-    if mentions_crossbow and _DROP_RE.search(t):
-        return "drop_crossbow"
-    if mentions_crossbow and _PICK_RE.search(t):
-        return "pickup_crossbow"
-
-
-    return None
 
 
 def inventory_items_from_items(state: GameState) -> List[str]:
@@ -1100,9 +1116,11 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         events.append(ev_move)
         notes.append(f"Inferred movement event from input: {ev_move}")
 
-    ev_item = infer_item_event(player_action_text)
-    if ev_item and ev_item not in events:
-        events.append(ev_item)
+    ev_items = infer_item_events(player_action_text)
+    for ev_item in ev_items:
+        if ev_item not in events:
+            events.append(ev_item)
+
         notes.append(f"Inferred item event from input: {ev_item}")
 
     # Straw rummage => deterministiskt: hitta den lösa stenen denna tur
@@ -2398,11 +2416,11 @@ WELCOME_TEXT = (
     "High above, a tiny window reveals a foggy night sky and distant battlements—falling from there would be certain death. "
     "A thin straw bed lies on the floor. There is said to be a loose cobblestone somewhere in the cell—if you can find it.\n\n"
     "Notes:\n"
-    "- Only one item in your inventory at once\n"
-    "- You will have a better experience if you specify your prompt\n"
-    "- Try to limit yourself to one or at max two actions per prompt\n"
-    "- The engine should handle certain misspelling, but try to spell correctly\n"
-    "- If the LLM hallucinates a narration that ends in 'Nothing special happened', you are most likely in the same state as before" 
+    "- Only one item in your inventory at once.\n"
+    "- You will have a better experience if you specify your prompt.\n"
+    "- Try to limit yourself to one or at max two actions per prompt.\n"
+    "- The engine should handle certain misspelling, but try to spell correctly.\n"
+    "- If the LLM hallucinates a narration that ends in 'Nothing special happened', you are most likely in the same state as before." 
 )
 
 def print_status(hp: int, noise_level: int, hp_delta: int, inventory: List[str], cause: str = "") -> None:
