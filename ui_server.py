@@ -329,6 +329,35 @@ INDEX_HTML = r"""
   .imgwrap img{ width:100%; height:100%; object-fit:contain; image-rendering: pixelated; filter: contrast(1.05) saturate(0.9) brightness(0.92); }
   .right .caption{ padding:10px 12px; font-size:18px; font-weight:800; letter-spacing:.8px; text-align:center; border-top:1px solid rgba(156,255,87,.14); }
 
+  
+    /* Victory overlay */
+  .overlay-victory{
+    position:absolute; inset:16px;
+    display:none; align-items:center; justify-content:center; text-align:center;
+    background: radial-gradient(120% 140% at 50% 50%, rgba(0,0,0,.0), rgba(0,0,0,.65));
+    z-index: 10;
+  }
+  .overlay-victory .box{
+    padding: 24px 28px;
+    border:2px solid rgba(156,255,87,.45);
+    border-radius:14px;
+    background: rgba(0,0,0,.55);
+    box-shadow: 0 0 24px rgba(156,255,87,.25), inset 0 0 18px rgba(0,0,0,.6);
+  }
+  .overlay-victory h1{
+    margin:0 0 8px 0;
+    font-size:36px; letter-spacing:1.2px; color:var(--accent);
+    text-shadow: 0 0 12px rgba(156,255,87,.7), 0 0 32px rgba(156,255,87,.35);
+  }
+  .overlay-victory p{
+    margin:0; opacity:.9;
+  }
+  .overlay-victory.show{ display:flex; }
+
+
+
+
+
   @media (max-width: 900px){
     .screen{ grid-template-columns: 1fr; }
     .right{ order:-1; height: 36vh; }
@@ -338,6 +367,13 @@ INDEX_HTML = r"""
 <body>
   <div class="shell">
     <div class="crt">
+
+      <div id="victoryOverlay" class="overlay-victory">
+        <div class="box">
+          <h1>YOU ESCAPED!</h1>
+          <p> </p>
+        </div>
+      </div>
       <div class="screen">
         <div class="left">
           <div class="header">ESCAPE THE CASTLE — TERMINAL</div>
@@ -367,6 +403,8 @@ INDEX_HTML = r"""
   </div>
 
 <script>
+  const victoryOverlay = document.getElementById('victoryOverlay');
+
   const log = document.getElementById('log');
   const cmd = document.getElementById('cmd');
   const send = document.getElementById('send');
@@ -483,6 +521,13 @@ INDEX_HTML = r"""
       img.src = `/static/art/${s.art}`;
     }
     caption.textContent = s.room_title;
+        // Victory overlay toggle
+    if (s.game_won) {
+      victoryOverlay.classList.add('show');
+    } else {
+      victoryOverlay.classList.remove('show');
+    }
+
   }
 
   const DOOR_EVENTS = new Set(["open_hall_door", "unlock_courtyard_door"]);

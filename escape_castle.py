@@ -398,7 +398,7 @@ Global rules:
 - **Self-harm attempts:** never describe the player injuring or killing themselves. Give a grounded, in-universe refusal (survival instinct, hesitation), then end with "Nothing special happened." Do NOT apply damage.
 
 - Narration: immersive 2nd person, ~3 sentences, announce each key outcome once. If impossible/no change, end with "Nothing special happened."
-- Use only these semantic events: 'straw_rummaged','stone_lifted','enter_coal_cellar','return_to_cell','open_hall_door','return_to_coal','dark_stumble','pickup_stick','pickup_torch','drop_torch','light_torch','extinguish_torch','pickup_keys','drop_keys','unlock_courtyard_door','guard_punishes','knight_notice','combat_knock_guard','climb_ladder_up','climb_ladder_down','pull_lever','guards_arrive','pickup_crossbow','drop_crossbow','shoot_guard','cross_gate_bridge','jump_into_moat','swim_across'.
+- Use only these semantic events: 'straw_rummaged','stone_lifted','enter_coal_cellar','return_to_cell','open_hall_door','return_to_coal','dark_stumble','pickup_stick','pickup_torch','drop_torch','light_torch','extinguish_torch','pickup_keys','drop_keys','unlock_courtyard_door','guard_punishes','knight_notice','combat_knock_guard','climb_ladder_up','climb_ladder_down','pull_lever','guards_arrive','pickup_crossbow','drop_crossbow','shoot_guard','cross_gate_bridge','swim_across','throw_keys','throw_crossbow'.
 - Event parity: only narrate outcomes that correspond to 'events' and/or 'flags_set'. Do NOT invent new event names.
 
 Coal cellar (coal_01) — darkness & safety:
@@ -589,6 +589,8 @@ ALLOWED_EVENTS = {
     "shoot_guard",
     "cross_gate_bridge",
     "jump_into_moat", "swim_across",
+    "throw_keys", "throw_crossbow",
+
 }
 
 
@@ -602,7 +604,13 @@ HIT_VERBS_RE = re.compile(
 
 # ---------- Intent inference (from player's input) ----------
 
-_DROP_RE = re.compile(r"\b(drop|throw|toss|discard|leave|place|put\s+down|set\s+(?:it\s+)?down)\b", re.IGNORECASE)
+# 'throw' hanteras separat (annars krockar "throw" med vanlig 'drop')
+_DROP_RE = re.compile(
+    r"\b(drop|throw|toss|discard|leave|place|put\s+down|set\s+(?:it\s+)?down)\b",
+    re.IGNORECASE
+)
+# uttryckliga kast-verb
+_THROW_RE = re.compile(r"\b(throw|toss|hurl|chuck|lob|pitch|fling|yeet)\b", re.IGNORECASE)
 _PICK_RE = re.compile(r"\b(pick\s*up|take|grab|collect|retrieve|get|remove|detach|unhook|unmount|pull\s+off|rip\s+off)\b", re.IGNORECASE)
 _LIGHT_TORCH_RE = re.compile(
     r"(?:(?:light|ignite|set)\s+(?:the|your)?\s*(?:torch|stick)\b|"
@@ -618,10 +626,11 @@ _EXTINGUISH_RE = re.compile(r"\b(extinguish|snuff|put\s+out|douse|blow\s+out|que
 
 # --- Stone intent (lyfta/bända/ta bort) med fler synonymer ---
 _STONE_ACT_VERBS = (
-    r"(?:lift|raise|pry|prise|lever|heave|move|drag|shift|wiggle|jiggle|shake|work|"
+    r"(?:pick(?:\s*up)?|grab|lift|raise|pry|prise|lever|heave|move|drag|shift|wiggle|jiggle|shake|work|"
     r"remove|take(?:\s+out)?|pull(?:\s+out)?|yank|rip|loosen|dislodge|free|unseat|unwedge|"
     r"bend|smash|break)"
 )
+
 
 _STONE_ACT_RE1 = re.compile(
     rf"\b{_STONE_ACT_VERBS}\b.*\b(loose\s+)?(stone|cobblestone|rock)\b",
@@ -640,8 +649,9 @@ _CROSS_GATE_RE = re.compile(r"\b(cross|run|dash|go|head)\b.*\b(gate|bridge|drawb
 _SHOOT_RE = re.compile(r"\b(shoot|fire|loose|let\s+fly|squeeze(?:\s+the)?\s+trigger|aim\s+and\s+fire)\b", re.IGNORECASE)
 _ALL_THREE_RE = re.compile(r"\b(all\s+three|all\s+3|three|3|shoot\s+them\s+all|shoot\s+all)\b", re.IGNORECASE)
 _TWO_RE = re.compile(r"\b(two|2|both)\b", re.IGNORECASE)
-_LADDER_UP_RE = re.compile(r"\b(climb|go|head|get)\b.*\b(up|ladder\s+up|up\s+the\s+ladder)\b", re.IGNORECASE)
-_LADDER_DOWN_RE = re.compile(r"\b(climb|go|head|get)\b.*\b(down|ladder\s+down|down\s+the\s+ladder)\b", re.IGNORECASE)
+_LADDER_UP_RE = re.compile(r"\b(climb|go|head|get)\b.*\b(?:up\s+(?:the\s+)?(?:ladder|tower)|ladder\s+up|up\s+the\s+ladder)\b", re.IGNORECASE)
+_LADDER_DOWN_RE = re.compile(r"\b(climb|go|head|get)\b.*\b(?:down\s+(?:the\s+)?ladder|ladder\s+down|down\s+the\s+ladder)\b", re.IGNORECASE)
+
 _LEVER_RE = re.compile(r"\b(pull|yank|throw|press)\b.*\b(lever)\b", re.IGNORECASE)
 _TOWER_RE = re.compile(r"\b(go|head|move)\b.*\b(tower)\b", re.IGNORECASE)
 _JUMP_MOAT_RE = re.compile(r"\b(jump)\b.*\b(moat)\b", re.IGNORECASE)
@@ -710,6 +720,18 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
 
 
     elif current_room == "coal_01":
+
+        if re.search(r"\b(go|head|move|walk|step|enter)\b.*\b(great\s+hall|hall)\b", t):
+            return "open_hall_door"
+        
+
+        if re.search(r"\b(stair|stairs|staircase|steps?)\b", t):
+            going_down = re.search(r"\bdown\b", t) is not None
+            going_up   = re.search(r"\bup\b", t)   is not None
+            if going_down:
+                return "open_hall_door"
+            if going_up:
+                return None  # explicitly do nothing (stay), avoid "return_to_cell"
         
                 # Allow pronoun phrasing: "go to the door and open it"
         if "door" in t and re.search(r"\bopen\s+it\b", t):
@@ -744,6 +766,14 @@ def infer_move_event(current_room: str, text: str) -> Optional[str]:
             return "return_to_coal"
         
     elif current_room == "courtyard_01":
+
+        # NEW: "jump up to the tower/platform/ladder" should mean climb up the ladder (not moat)
+        if re.search(r"\bjump\b.*\b(up|onto)\b.*\b(tower|platform|ladder)\b", t):
+            return "climb_ladder_up"
+
+        # NEW: "go back into/to the courtyard/grass/ground/lawn" means get down from the platform
+        if re.search(r"\bgo\s+back\b.*\b(courtyard|grass|ground|lawn)\b", t):
+            return "climb_ladder_down"
 
         # Exit synonyms -> crossing the bridge (validator will require gate lowered)
         if re.search(r"\b(exit|leave|head\s+out|go\s+out|get\s+out|leave\s+the\s+castle|exit\s+the\s+castle)\b", t):
@@ -804,6 +834,9 @@ def infer_item_event(text: str) -> Optional[str]:
         return "light_torch"
 
 
+        # THROW har företräde framför DROP
+    if mentions_keys and _THROW_RE.search(t):
+        return "throw_keys"
     if mentions_keys and _DROP_RE.search(t):
         return "drop_keys"
     if mentions_keys and _PICK_RE.search(t):
@@ -811,10 +844,13 @@ def infer_item_event(text: str) -> Optional[str]:
     if _UNLOCK_RE.search(t) and mentions_keys:
         return "unlock_courtyard_door"
     
+    if mentions_crossbow and _THROW_RE.search(t):
+        return "throw_crossbow"
     if mentions_crossbow and _DROP_RE.search(t):
         return "drop_crossbow"
     if mentions_crossbow and _PICK_RE.search(t):
         return "pickup_crossbow"
+
 
     return None
 
@@ -981,8 +1017,14 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     _SHOOT_RE = _re.compile(r"\b(shoot|fire|loose|let\s+fly|squeeze(?:\s+the)?\s+trigger|aim\s+and\s+fire)\b", _re.IGNORECASE)
     _ALL_THREE_RE = _re.compile(r"\b(all\s+three|all\s+3|three|3|shoot\s+them\s+all|shoot\s+all)\b", _re.IGNORECASE)
     _TWO_RE = _re.compile(r"\b(two|2|both)\b", _re.IGNORECASE)
-    _LADDER_UP_RE = _re.compile(r"\b(climb|go|head|get)\b.*\b(up|ladder\s+up|up\s+the\s+ladder)\b", _re.IGNORECASE)
-    _LADDER_DOWN_RE = _re.compile(r"\b(climb|go|head|get)\b.*\b(down|ladder\s+down|down\s+the\s+ladder)\b", _re.IGNORECASE)
+    _LADDER_UP_RE = _re.compile(
+        r"\b(climb|go|head|get)\b.*\b(?:up\s+(?:the\s+)?(?:ladder|tower)|ladder\s+up|up\s+the\s+ladder)\b",
+        _re.IGNORECASE
+    )
+    _LADDER_DOWN_RE = _re.compile(
+        r"\b(climb|go|head|get)\b.*\b(?:down\s+(?:the\s+)?ladder|ladder\s+down|down\s+the\s+ladder)\b",
+        _re.IGNORECASE
+    )
     _LEVER_RE = _re.compile(r"\b(pull|yank|throw|press)\b.*\b(lever)\b", _re.IGNORECASE)
     _JUMP_MOAT_RE = _re.compile(r"\b(jump)\b.*\b(moat)\b", _re.IGNORECASE)
     _SWIM_RE = _re.compile(r"\b(swim|swim\s+across|cross\s+the\s+moat)\b", _re.IGNORECASE)
@@ -1076,7 +1118,7 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             if orig:
                 parts = re.split(r"(?<=[.!?])\s+", orig)
                 first = (parts[0] or "").strip()
-            fixed = "You notice a loose cobblestone under the straw."
+            fixed = "You notice a loose cobblestone underneath the straw bed."
 
             # Avoid duplicating if the LLM already said it
             already_said = re.search(r"\bloose\s+(?:stone|cobblestone)\b", orig, re.IGNORECASE)
@@ -1090,6 +1132,37 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     # Dedupe while preserving order
     events = list(dict.fromkeys(events))
+
+
+        # --- Drop hallucinated item events not mentioned by the player ---
+    t_input = (player_action_text or "")
+    mentioned_torch_input = _re.search(r"\b(torch|stick)\b", t_input, _re.IGNORECASE) is not None
+    mentioned_keys_input  = _KEYS_RE.search(t_input) is not None
+    mentioned_xbow_input  = _CROSSBOW_RE.search(t_input) is not None
+
+    allow_torch_intent = mentioned_torch_input or (_EXTINGUISH_RE.search(t_input) is not None) or (_LIGHT_TORCH_RE.search(t_input) is not None)
+    if not allow_torch_intent:
+        scrub_set = {"pickup_torch","drop_torch","extinguish_torch","light_torch"}
+        old = set(events)
+        events = [e for e in events if e not in scrub_set]
+        if set(events) != old:
+            notes.append("Removed torch item events not mentioned in input.")
+
+    if not mentioned_keys_input:
+        scrub_set = {"pickup_keys", "drop_keys"}
+        if state.current_room != "hall_01":
+            scrub_set.add("unlock_courtyard_door")
+        old = set(events)
+        events = [e for e in events if e not in scrub_set]
+        if set(events) != old:
+            notes.append("Removed keys pickup/drop (and unlock outside hall) not mentioned in input.")
+
+    if not mentioned_xbow_input:
+        scrub_set = {"pickup_crossbow","drop_crossbow"}
+        old = set(events)
+        events = [e for e in events if e not in scrub_set]
+        if set(events) != old:
+            notes.append("Removed crossbow item events not mentioned in input.")
 
     # Coal cellar: resolve contradictory movement intents in one turn
     if state.current_room == "coal_01":
@@ -1155,6 +1228,22 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             if "stone_lifted" not in events:
                 events.append("stone_lifted")
                 notes.append("Inferred 'stone_lifted' from player intent.")
+
+
+        # Cell: any non-key interaction with the loose cobblestone -> playful denial
+    if state.current_room == "cell_01":
+        mentions_stone = _re.search(r"\b(cobblestone|loose\s+stone|stone|rock)\b", t_input, _re.IGNORECASE) is not None
+        did_key_stone = ("stone_lifted" in events) or ("enter_coal_cellar" in events)
+        if mentions_stone and not did_key_stone:
+            # Städa bort spuriösa item-events som LLM kan ha kastat in när man leker med stenen
+            events = [e for e in events if e not in {
+                "pickup_torch","drop_torch","extinguish_torch","light_torch",
+                "pickup_keys","drop_keys",
+                "pickup_crossbow","drop_crossbow"
+            }]
+            # Låt ev. guard_punishes pga oväsen i cellen vara kvar; resten blir en färgad denial.
+            llm.narration = "You fumble with the loose stone, but it won’t serve as a tool—only as a lid. Nothing special happened."
+
 
     # ---------------- Darkness intent inference (engine-level guard) ----------------
     dark_here = (state.current_room == "coal_01" and not torch_light_present_here(state))
@@ -1289,24 +1378,28 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 events = [e for e in events if e not in {"knight_notice", "combat_knock_guard"}]
                 notes.append("Removed knight events after he was already unconscious.")
 
-            # Korrigera all text som påstår att han reagerar, står upp, duckar etc.
-            REACTION_RE = re.compile(
-                r"\b("
-                r"turns?|stumbles?|spins?|lurch(?:es|ed)?|reacts?|flinches?|"
-                r"eyes\s+(?:narrow|widen|wide(?:ns)?)|notic\w*|"
-                r"ducks?|dodg(?:e|es|ed)|avoids?|parries|blocks|"
-                r"stands?|standing|upright|rises?|gets?\s+up|with\s+his\s+back\s+turned"
-                r")\b",
-                re.IGNORECASE
-            )
-
-            if re.search(r"\bknight\b", llm.narration or "", re.IGNORECASE) and REACTION_RE.search(llm.narration or ""):
+            mentions_knight_input = _re.search(r"\b(knight|him)\b", t_input, _re.IGNORECASE) is not None
+            # Om spelaren faktiskt försöker göra något mot riddaren → fast no-effect-rad
+            if (mentions_knight_input and (attack_intent or LOOK_RE.search(t_input) is not None)) and not non_attack_item_action:
                 llm.narration = "The knight is unconscious on the ground. Further actions against him have no effect."
-
-                        # Om spelaren verkligen försöker attackera igen (inte lägga/släppa/plocka),
-            # skriv över narrationen. Att bara nämna "torch" räcker inte.
-            if attack_intent and not non_attack_item_action:
-                llm.narration = "The knight is unconscious on the ground. Further actions against him have no effect."
+            else:
+                # Rensa LLM-påhitt om att han reagerar, men bevara övrig flavor
+                REACTION_RE = _re.compile(
+                    r"\b(turns?|stumbles?|spins?|lurch(?:es|ed)?|reacts?|flinches?|"
+                    r"eyes\s+(?:narrow|widen|wide(?:ns)?)|notic\w*|"
+                    r"ducks?|dodg(?:e|es|ed)|avoids?|parries|blocks|"
+                    r"stands?|standing|upright|rises?|gets?\s+up)\b",
+                    _re.IGNORECASE
+                )
+                if _re.search(r"\bknight\b", llm.narration or "", _re.IGNORECASE) and REACTION_RE.search(llm.narration or ""):
+                    # Ta bort meningar om riddares reaktion, lämna resten och lägg en stilla markör.
+                    llm.narration = _re.sub(r"(?<!\S)(?:[^.?!]*\bknight\b[^.?!]*[.?!])", "", llm.narration).strip()
+                    if not llm.narration:
+                        llm.narration = "Pillars and portraits look on; the knight lies motionless."
+                    else:
+                        if llm.narration[-1] not in ".!?":
+                            llm.narration += "."
+                        llm.narration += " The knight lies motionless."
 
 
 
@@ -1356,10 +1449,67 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     elif state.current_room == "courtyard_01":
 
+        t_lower = (player_action_text or "").lower()   # <-- flytta hit
+
+        if (not state.flags_courtyard.get("at_tower_top", False)) and (not state.flags_courtyard.get("in_moat", False)):
+            if _re.search(r"\b(climb|go|head|get)\b(?:\s+back)?\s+\bup\b", t_lower) \
+               and "climb_ladder_up" not in events:
+                events.append("climb_ladder_up")
+                notes.append("Inferred 'climb_ladder_up' from bare 'climb up' while on the grass.")
+
+
+        # Ignorera "climb up" om du redan är på plattformen
+        if "climb_ladder_up" in events and state.flags_courtyard.get("at_tower_top", False):
+            events = [e for e in events if e != "climb_ladder_up"]
+            if not ("pull_lever" in events or "shoot_guard" in events or "cross_gate_bridge" in events
+                    or "jump_into_moat" in events or "swim_across" in events):
+                llm.narration = "You’re already on the platform. Nothing special happened."
+
+        
+
+                # No guards exist until the lever has been pulled and guards_arrive has occurred
+        if not state.flags_courtyard.get("guards_present", False):
+            # plocka bort ev. felaktiga guard-events
+            if "shoot_guard" in events:
+                events = [e for e in events if e != "shoot_guard"]
+                notes.append("Removed 'shoot_guard' since no guards are present yet.")
+            # städa narration som påstår att vakter står där
+            if _re.search(r"\bguards?\b", llm.narration or "", _re.IGNORECASE) and "guards_arrive" not in events:
+                llm.narration = _re.sub(r"(?<!\S)(?:[^.?!]*\bguards?\b[^.?!]*[.?!])", "", llm.narration).strip()
+                if not llm.narration:
+                    llm.narration = "The courtyard is quiet; no guards are on the lawn."
+
+
+
+                # --- Courtyard back-to-hall denial ---
+        BACK_TO_HALL_EXPLICIT = re.compile(
+            r"\b(?:go|head|run|walk|return|step|enter|open|use)\b.*\b(?:great\s+hall|hall)\b",
+            re.IGNORECASE
+        )
+        BACK_TO_HALL_GENERIC  = re.compile(
+            r"^\s*(?:go\s+back|head\s+back|back(?:\s+inside)?)\b",
+            re.IGNORECASE
+        )
+        if BACK_TO_HALL_EXPLICIT.search(player_action_text or "") or BACK_TO_HALL_GENERIC.search(player_action_text or ""):
+            llm.narration = "You eye the door back to the hall, but it’s locked behind you—and turning back would be suicide. Nothing special happened."
+            notes.append("Blocked attempt to go back into the hall from the courtyard.")
+            # städa bort ev. felaktiga 'unlock' händelser som LLM hittat på
+            events = [e for e in events if e != "unlock_courtyard_door"]
+
+
         # Rensa 'guards_arrive' om inte levern dragits från tower top just nu
         if "guards_arrive" in events and ("pull_lever" not in events or not state.flags_courtyard.get("at_tower_top", False)):
             events = [e for e in events if e != "guards_arrive"]
             notes.append("Removed 'guards_arrive' without valid 'pull_lever' at tower top.")
+
+
+                # Om du redan är på plattformen: tolka bar "climb down"/"descend" som steg-ner
+        
+        if state.flags_courtyard.get("at_tower_top", False):
+            if _re.search(r"\b(climb|descend|go|head|get|drop)\b.*\bdown\b", t_lower) \
+               and "climb_ladder_down" not in events and "jump_into_moat" not in events:
+                events.append("climb_ladder_down")
+                notes.append("Inferred 'climb_ladder_down' from bare 'climb down' while at tower top.")
 
 
         if "swim_across" in events:
@@ -1516,7 +1666,12 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
                 notes.append("Tried to cross from tower top.")
                 _set_narr("You’ll have to climb down to the grass first. Nothing special happened.")
             else:
-                pending_victory_via_gate = True
+                if state.flags_courtyard.get("guards_present", False) and int(state.flags_courtyard.get("guards_remaining", 0)) > 0:
+                    notes.append("Tried to cross while guards remain; denied.")
+                    _set_narr("The guards block the bridge, weapons raised. Deal with them first. Nothing special happened.")
+                else:
+                    pending_victory_via_gate = True
+
 
         # Ground damage each turn while guards remain and player ends turn on grass
         # (skip this damage if the player is achieving guaranteed victory this turn)
@@ -1596,6 +1751,97 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     holding_torch = (torch["location"] == "player")
     holding_keys  = (keys["location"]  == "player")
     holding_crossbow = (crossbow["location"] == "player")
+    slot_occupied = holding_torch or holding_keys or holding_crossbow
+
+    def _recalc_slot():
+        nonlocal holding_torch, holding_keys, holding_crossbow, slot_occupied
+        holding_torch = (state.items.get("torch", {}).get("location") == "player")
+        holding_keys = (state.items.get("keys", {}).get("location") == "player")
+        holding_crossbow = (state.items.get("crossbow", {}).get("location") == "player")
+        slot_occupied = holding_torch or holding_keys or holding_crossbow
+
+
+        # 0) Process THROWS (separat från drops)
+    if "throw_keys" in events or "throw_crossbow" in events:
+        t_text = (player_action_text or "").lower()
+        to_moat  = re.search(r"\bmoat\b", t_text) is not None
+        to_grass = (re.search(r"\b(grass|lawn|ground|down)\b", t_text) is not None) or (re.search(r"\bguards?\b", t_text) is not None)
+        # om varken moat eller grass nämns: defaulta till grass när man står uppe; annars plattform
+        default_to_grass_from_top = True
+
+        at_top  = state.current_room == "courtyard_01" and state.flags_courtyard.get("at_tower_top", False)
+        in_moat = state.current_room == "courtyard_01" and state.flags_courtyard.get("in_moat", False)
+
+        # Kast av KEYS
+        if "throw_keys" in events:
+            if holding_keys:
+                if state.current_room == "courtyard_01" and at_top:
+                    if to_moat:
+                        keys["location"] = "courtyard_moat"  # oåterfinnliga
+                        state.items["keys"] = keys
+                        llm.narration = "You hurl the keys into the moat; they splash and sink."
+                    elif to_grass or default_to_grass_from_top:
+                        keys["location"] = "courtyard_01"     # nere på gräset
+                        state.items["keys"] = keys
+                        llm.narration = "You pitch the keys down to the grass below."
+                    else:
+                        # skulle inte inträffa pga default_to_grass_from_top, men som fallback: lägg kvar på plattformen
+                        keys["location"] = "courtyard_tower_top"
+                        state.items["keys"] = keys
+                    _recalc_slot()
+                else:
+                    # inte på tornet: kasta ≈ släpp i aktuellt rum (ändra inte annan logik)
+                    keys["location"] = state.current_room
+                    state.items["keys"] = keys
+                    _recalc_slot()
+                    if not llm.narration:
+                        llm.narration = "The keys clatter to the floor."
+            else:
+                notes.append("Tried to throw keys while not holding them; ignored.")
+                llm.narration = "You aren't holding any keys. Nothing special happened."
+            # ta bort eventet så vi inte dubbelprocessar
+            events = [e for e in events if e != "throw_keys"]
+
+        # Kast av CROSSBOW
+        if "throw_crossbow" in events:
+            if holding_crossbow:
+                if state.current_room == "courtyard_01":
+                    if in_moat:
+                        notes.append("Denied throwing crossbow while in moat.")
+                        llm.narration = "You flail in the cold water and think better of it. Nothing special happened."
+                    elif at_top:
+                        if to_moat:
+                            crossbow["location"] = "courtyard_moat"  # oåterfinnlig (samma som drop->moat)
+                            state.items["crossbow"] = crossbow
+                            llm.narration = "You hurl the crossbow into the moat; it splashes and sinks."
+                        elif to_grass or default_to_grass_from_top:
+                            crossbow["location"] = "courtyard_01"     # nere på gräset
+                            state.items["crossbow"] = crossbow
+                            llm.narration = "You pitch the crossbow down to the grass below."
+                        else:
+                            # fallback: lägg kvar på plattformen
+                            crossbow["location"] = "courtyard_tower_top"
+                            state.items["crossbow"] = crossbow
+                        _recalc_slot()
+                    else:
+                        # på gräset: kasta ⇒ lägg i detta rum
+                        crossbow["location"] = state.current_room
+                        state.items["crossbow"] = crossbow
+                        _recalc_slot()
+                        if not llm.narration:
+                            llm.narration = "The crossbow thumps onto the ground."
+                else:
+                    # andra rum: bete dig som vanligt drop i rummet
+                    crossbow["location"] = state.current_room
+                    state.items["crossbow"] = crossbow
+                    _recalc_slot()
+                    if not llm.narration:
+                        llm.narration = "The crossbow lands with a dull thunk."
+            else:
+                notes.append("Tried to throw crossbow while not holding it; ignored.")
+                llm.narration = "You aren't holding the crossbow. Nothing special happened."
+            events = [e for e in events if e != "throw_crossbow"]
+
 
     # 1) Process DROPS first (to free hands for same-turn pickups)
     if "extinguish_torch" in events:
@@ -1611,7 +1857,7 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             llm.narration = "You snuff the torch; darkness creeps back."
         else:
             notes.append("No lit torch to extinguish; ignoring.")
-            llm.narration = "There’s no lit torch to extinguish. Nothing special happened."
+            llm.narration = "There’s no lit torch you want to extinguish. Nothing special happened."
 
     if "drop_torch" in events:
         if holding_torch:
@@ -1629,15 +1875,39 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
     if "drop_crossbow" in events:
         if holding_crossbow:
-            if state.current_room == "courtyard_01" and state.flags_courtyard.get("in_moat", False):
-                notes.append("Denied dropping crossbow in moat.")
-                llm.narration = "If you drop it here, it sinks into the moat. You hold on. Nothing special happened."
-                events = [e for e in events if e != "drop_crossbow"]
+            t_text = (player_action_text or "").lower()
+            to_moat   = re.search(r"\bmoat\b", t_text) is not None
+            to_grass  = re.search(r"\b(grass|lawn|ground|down)\b", t_text) is not None
+            to_plat   = re.search(r"\b(platform|here|floor|at\s+my\s+feet)\b", t_text) is not None
 
-            elif state.current_room == "courtyard_01" and state.flags_courtyard.get("at_tower_top", False):
-                crossbow["location"] = "courtyard_tower_top"
-                state.items["crossbow"] = crossbow
+            in_moat = state.current_room == "courtyard_01" and state.flags_courtyard.get("in_moat", False)
+            at_top  = state.current_room == "courtyard_01" and state.flags_courtyard.get("at_tower_top", False)
+
+            if state.current_room == "courtyard_01":
+                if in_moat:
+                    # I vallgraven: varna och hindra (annars sjunker vapnet och blir borta utan val)
+                    notes.append("Denied dropping crossbow in moat while player is in moat.")
+                    llm.narration = "If you drop it here, it sinks into the moat. You hold on. Nothing special happened."
+                    events = [e for e in events if e != "drop_crossbow"]
+                elif at_top:
+                    if to_moat:
+                        crossbow["location"] = "courtyard_moat"
+                        state.items["crossbow"] = crossbow
+                        llm.narration = "You hurl the crossbow into the moat; it splashes and sinks."
+                    elif to_grass:
+                        crossbow["location"] = "courtyard_01"  # gräset nedanför
+                        state.items["crossbow"] = crossbow
+                        llm.narration = "You pitch the crossbow down to the grass below."
+                    else:
+                        # default från plattformen om mål saknas ⇒ lägg kvar på plattformen
+                        crossbow["location"] = "courtyard_tower_top"
+                        state.items["crossbow"] = crossbow
+                else:
+                    # På gräset: droppa på marken här
+                    crossbow["location"] = state.current_room
+                    state.items["crossbow"] = crossbow
             else:
+                # Alla andra rum: vanligt drop i rummet
                 crossbow["location"] = state.current_room
                 state.items["crossbow"] = crossbow
         else:
@@ -1650,12 +1920,9 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
     holding_crossbow = (state.items.get("crossbow", {}).get("location") == "player")
     slot_occupied = holding_torch or holding_keys or holding_crossbow
 
-    def _recalc_slot():
-        nonlocal holding_torch, holding_keys, holding_crossbow, slot_occupied
-        holding_torch = (state.items.get("torch", {}).get("location") == "player")
-        holding_keys = (state.items.get("keys", {}).get("location") == "player")
-        holding_crossbow = (state.items.get("crossbow", {}).get("location") == "player")
-        slot_occupied = holding_torch or holding_keys or holding_crossbow
+        # Recompute slot occupancy after drops
+    _recalc_slot()
+
 
     # 2) Process PICKUPS after drops
     if ("pickup_stick" in events) or ("pickup_torch" in events) or ("has_torch_stick" in llm.flags_set):
@@ -1686,15 +1953,30 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
             notes.append("Hands full; cannot pick up keys while holding another item.")
             llm.narration = "Your hands are full. Drop what you're holding first. Nothing special happened."
         else:
-            if keys["location"] == state.current_room:
-                keys["location"] = "player"
-                state.items["keys"] = keys
-                _recalc_slot()
-
-            
+            if state.current_room == "courtyard_01":
+                at_top = state.flags_courtyard.get("at_tower_top", False)
+                if keys["location"] == "courtyard_moat":
+                    llm.narration = "You can't reach them — the keys sank into the moat. Nothing special happened."
+                    events = [e for e in events if e != "pickup_keys"]
+                elif at_top and keys["location"] == "courtyard_01":
+                    llm.narration = "The keys are down on the grass. Climb down first. Nothing special happened."
+                    events = [e for e in events if e != "pickup_keys"]
+                elif keys["location"] in ("courtyard_tower_top", state.current_room):
+                    keys["location"] = "player"
+                    state.items["keys"] = keys
+                    _recalc_slot()
+                else:
+                    notes.append("Keys are not in this room; pickup ignored.")
+                    llm.narration = "You don't find any keys here. Nothing special happened."
             else:
-                notes.append("Keys are not in this room; pickup ignored.")
-                llm.narration = "You don't find any keys here. Nothing special happened."
+                if keys["location"] == state.current_room:
+                    keys["location"] = "player"
+                    state.items["keys"] = keys
+                    _recalc_slot()
+                else:
+                    notes.append("Keys are not in this room; pickup ignored.")
+                    llm.narration = "You don't find any keys here. Nothing special happened."
+
 
     if "pickup_crossbow" in events:
         if holding_crossbow:
@@ -1705,6 +1987,14 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         else:
             in_moat = state.flags_courtyard.get("in_moat", False)
             at_top = state.flags_courtyard.get("at_tower_top", False)
+
+            if state.current_room == "courtyard_01" and crossbow.get("location") == "courtyard_moat":
+                notes.append("Crossbow is in the moat; cannot pick up.")
+                llm.narration = "You can't reach it—the crossbow sank into the moat. Nothing special happened."
+                # avbryt pickup den här turen
+                events = [e for e in events if e != "pickup_crossbow"]
+                # lämna slot/locations oförändrade
+
             if state.current_room == "courtyard_01" and in_moat:
                 notes.append("Crossbow pickup attempted from the moat; denied.")
                 llm.narration = "The crossbow is out of reach from the water. Get onto the grass or the platform first. Nothing special happened."
@@ -1964,7 +2254,9 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
         "straw_rummaged", "stone_lifted",
         "knight_notice", "combat_knock_guard",
         "climb_ladder_up", "climb_ladder_down", "pull_lever", "guards_arrive",
-        "cross_gate_bridge", "jump_into_moat", "swim_across"
+        "cross_gate_bridge", "jump_into_moat", "swim_across",
+        "throw_keys", "throw_crossbow",
+
     }
 
     something_happened = (
@@ -2053,11 +2345,15 @@ def validate_and_apply(state: GameState, llm: LLMResult, player_action_text: str
 
 WELCOME_TEXT = (
     "You stand in a dark stone cell. A torch burns low on one wall. An iron door with a barred window faces a torchlit corridor "
-    "where a drowsy guard slumps on a bench. He wears full armor; there is no realistic chance to trick him or defeat him. He gets angry if you make too much noise or annoy him."
+    "where a drowsy guard slumps on a bench. He wears full armor; there is no realistic chance to trick him or defeat him. He gets angry if you make too much noise or annoy him. "
     "High above, a tiny window reveals a foggy night sky and distant battlements—falling from there would be certain death. "
     "A thin straw bed lies on the floor. There is said to be a loose cobblestone somewhere in the cell—if you can find it.\n\n"
-    "Advice: Try to specify your prompt, like 'take the torch' insead of 'take it' for best result. Try to limit yourself to one or two actions per prompt. For exampel: 'Open the door.', or 'Drop the hammer and pick up the flower.' "
-    "\n"
+    "Notes:\n"
+    "- Only one item in your inventory at once\n"
+    "- You will have a better experience if you specify your prompt\n"
+    "- Try to limit yourself to one or at max two actions per prompt\n"
+    "- The engine should handle certain misspelling, but try to spell correctly\n"
+    "- If the LLM hallucinates a narration that ends in 'Nothing special happened', you are most likely in the same state as before" 
 )
 
 def print_status(hp: int, noise_level: int, hp_delta: int, inventory: List[str], cause: str = "") -> None:
@@ -2098,7 +2394,7 @@ def print_room_intro_if_needed(state: GameState) -> None:
 def print_coal_lit_entry_hint_if_applicable(state: GameState) -> None:
     """When entering the coal cellar with torchlight present, print what is now visible."""
     if state.current_room == "coal_01" and torch_light_present_here(state):
-        print("Torchlight pushes back the darkness: heaps of coal crowd the tight stone floor, and at the far end a short staircase leads to a closed door.\n")
+        print("Torchlight pushes back the darkness: heaps of coal crowd the tight stone floor, and at the far end a short staircase leads down to a closed door.\n")
 
 
 def main() -> None:
