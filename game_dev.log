@@ -6655,3 +6655,141 @@
 [2025-10-05 20:57:41] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole, feeling the cool air of the coal cellar envelop you.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
 [2025-10-05 20:58:06] RAW_MODEL_OUTPUT: {"narration": "You pick up the unknown object at your feet, and it feels like a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
 [2025-10-05 20:59:30] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back through the crawl opening behind you.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"coal_returned": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:01:38] PROMPT_VERSION: 3.3 (... )
+[2025-10-05 21:01:54] RAW_MODEL_OUTPUT: {
+  "narration": "You peer under the straw bed and spot a loose cobblestone hidden beneath.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": ["straw_rummaged"],
+  "flags_set": {"found_loose_stone": true},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-05 21:01:54] LLM_PARSED: {"narration": "You peer under the straw bed and spot a loose cobblestone hidden beneath.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:01:54] ENGINE_NOTES: 
+[2025-10-05 21:01:54] ENGINE_ROOM: cell_01
+[2025-10-05 21:01:54] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-05 21:01:54] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-05 21:01:54] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-05 21:01:54] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-05 21:01:54] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-05 21:01:54] ENGINE_INV: []
+[2025-10-05 21:01:54] ENGINE_HP: 100
+[2025-10-05 21:02:11] RAW_MODEL_OUTPUT: {"narration": "You try to remove the straw bed, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:02:11] LLM_PARSED: {"narration": "You try to remove the straw bed, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:02:11] ENGINE_NOTES: 
+[2025-10-05 21:02:11] ENGINE_ROOM: cell_01
+[2025-10-05 21:02:11] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-05 21:02:11] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-05 21:02:11] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-05 21:02:11] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-05 21:02:11] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-05 21:02:11] ENGINE_INV: []
+[2025-10-05 21:02:11] ENGINE_HP: 100
+[2025-10-05 21:02:41] PROMPT_VERSION: 3.3 (... )
+[2025-10-05 21:02:57] RAW_MODEL_OUTPUT: {
+  "narration": "You lie down on the straw bed, feeling a bit stiff from your imprisonment.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": ""
+}
+[2025-10-05 21:02:57] LLM_PARSED: {"narration": "You lie down on the straw bed, feeling a bit stiff from your imprisonment.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:02:57] ENGINE_NOTES: 
+[2025-10-05 21:02:57] ENGINE_ROOM: cell_01
+[2025-10-05 21:02:57] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': False, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-05 21:02:57] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-05 21:02:57] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-05 21:02:57] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-05 21:02:57] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-05 21:02:57] ENGINE_INV: []
+[2025-10-05 21:02:57] ENGINE_HP: 100
+[2025-10-05 21:03:13] RAW_MODEL_OUTPUT: {"narration": "You try to lift the loose cobblestone, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:03:13] LLM_PARSED: {"narration": "You try to lift the loose cobblestone, but it's stuck firmly in place.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-05 21:03:13] ENGINE_NOTES: Filtered LLM flags from ['straw_rummaged'] to [] for room cell_01.; Inferred 'stone_lifted' from player intent.
+[2025-10-05 21:03:13] ENGINE_ROOM: cell_01
+[2025-10-05 21:03:13] ENGINE_FLAGS_CELL: {'found_loose_stone': True, 'stone_moved': True, 'entered_hole': False, 'has_torch_stick': False, 'torch_lit': False}
+[2025-10-05 21:03:13] ENGINE_FLAGS_COAL: {'has_torch_stick': False, 'torch_lit': False, 'coal_intro_shown': False}
+[2025-10-05 21:03:13] ENGINE_FLAGS_HALL: {'knight_knocked_out': False, 'courtyard_door_unlocked': False, 'hall_intro_shown': False}
+[2025-10-05 21:03:13] ENGINE_FLAGS_COURTYARD: {'at_tower_top': False, 'gate_lowered': False, 'guards_present': False, 'guards_remaining': 0, 'courtyard_intro_shown': False, 'in_moat': False}
+[2025-10-05 21:03:13] ENGINE_ITEMS: {'torch': {'location': 'coal_01', 'lit': False}, 'keys': {'location': 'hall_01'}, 'crossbow': {'location': 'courtyard_tower_top'}}
+[2025-10-05 21:03:13] ENGINE_INV: []
+[2025-10-05 21:03:13] ENGINE_HP: 100
+[2025-10-06 16:54:26] PROMPT_VERSION: 3.3 (... )
+[2025-10-06 16:56:23] RAW_MODEL_OUTPUT: {
+  "narration": "You settle into the straw bed, trying to rest.",
+  "noise_level": 0,
+  "hp_delta": 0,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": "Nothing special happened."
+}
+[2025-10-06 16:58:21] RAW_MODEL_OUTPUT: {"narration": "You carefully lift and move the cobblestones to create a gap under the high window.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 16:59:43] RAW_MODEL_OUTPUT: {"narration": "You try to take the torch but it's stuck on the wall; you can't remove it. You attempt to melt the high window down, but it's made of solid stone and doesn't respond to your efforts.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:00:46] RAW_MODEL_OUTPUT: {"narration": "You try to rotate the straw bed but it's too heavy for you; it doesn't budge.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:01:37] RAW_MODEL_OUTPUT: {"narration": "You carefully lift up the cobblestone and find a small hole beneath it.", "noise_level": 0, "hp_delta": 0, "events": ["straw_rummaged"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:02:09] RAW_MODEL_OUTPUT: {"narration": "You can't remove the wall torch or use it as an item.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:02:28] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "found_loose_stone"], "flags_set": {"straw_rummaged": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:02:49] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way into the crawlable hole beneath the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:04:36] RAW_MODEL_OUTPUT: {"narration": "You feel the unknown object at your feet with your toes.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {"coal_intro_shown": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:05:13] RAW_MODEL_OUTPUT: {"narration": "You pick up the unknown object at your feet and find it's a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:05:43] RAW_MODEL_OUTPUT: {"narration": "You try to rub the wooden torch stick against the coal, but it's a futile effort; the dust and dampness make it impossible to create a spark.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:07:19] RAW_MODEL_OUTPUT: {"narration": "You try to ignite the stone, but it's a futile effort; the dampness and lack of airflow make it impossible to create a spark.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:07:52] RAW_MODEL_OUTPUT: {"narration": "You take a few steps forward in the darkness, but your foot catches on something and you stumble.", "noise_level": 1, "hp_delta": -10, "events": ["dark_stumble"], "flags_set": {}, "progression": "coal_01", "safety_reason": "Moving around without light is hazardous."}
+[2025-10-06 17:08:52] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back to the crawl opening and climb through it.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:09:16] RAW_MODEL_OUTPUT: {"narration": "You carefully hold the wooden torch stick and use it to light the wall torch. The cell is now slightly brighter.", "noise_level": 1, "hp_delta": 0, "events": ["light_torch"], "flags_set": {"torch_lit": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:09:38] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back to the hole in the floor and crawl through it once more.", "noise_level": 0, "hp_delta": -10, "events": ["dark_stumble", "enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-06 17:10:10] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl through the hole in the floor and find yourself back in the coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["dark_stumble", "return_to_coal"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-06 17:10:40] RAW_MODEL_OUTPUT: {"narration": "You try to escape through the hole in the floor, but it's too small for you to fit through without crawling.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true}, "progression": "cell_01", "safety_reason": "You carefully rummage through the straw to find a loose cobblestone."}
+[2025-10-06 17:11:17] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl through the hole in the floor and find yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You're now in the coal cellar, but it's pitch-black."}
+[2025-10-06 17:11:43] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way towards the short stone staircase leading down to a door.", "noise_level": 1, "hp_delta": 0, "events": [], "flags_set": {"coal_intro_shown": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:12:02] RAW_MODEL_OUTPUT: {"narration": "You approach the short stone staircase leading down to a door and try to open it. With your lit torch in hand, you can see that the door is not locked.", "noise_level": 1, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"coal_intro_shown": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-06 17:13:38] RAW_MODEL_OUTPUT: {"narration": "You try to throw your lit torch at the chandelier, but it's too heavy and awkward for a proper throw. It wobbles precariously in mid-air before falling back into your hands.", "noise_level": 2, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-06 17:14:07] RAW_MODEL_OUTPUT: {"narration": "You carefully take the keyring from the knight's belt without making a sound.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_keys"], "flags_set": {"knight_knocked_out": true}, "progression": "hall_01", "safety_reason": ""}
+[2025-10-06 17:14:29] RAW_MODEL_OUTPUT: {"narration": "You push open the heavy courtyard door and step into the bright sunlight.", "noise_level": 0, "hp_delta": 0, "events": ["open_hall_door"], "flags_set": {"at_tower_top": false}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-06 17:15:23] RAW_MODEL_OUTPUT: {"narration": "You climb the ladder to the tower platform, and from here you can see the lever that lowers the gate into a bridge across the moat.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_up"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-06 17:16:19] RAW_MODEL_OUTPUT: {"narration": "You carefully pick up the crossbow from the tower platform, feeling its weight in your hands.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_crossbow"], "flags_set": {"holding_crossbow": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-06 17:16:39] RAW_MODEL_OUTPUT: {"narration": "You try to hang the torch on something, but there's nothing suitable nearby.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:17:10] RAW_MODEL_OUTPUT: {"narration": "You try to place the crossbow on the platform's edge, but it slips and falls onto the grass.", "noise_level": 1, "hp_delta": 0, "events": ["drop_crossbow"], "flags_set": {}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:17:36] RAW_MODEL_OUTPUT: {"narration": "You carefully drop the keys onto the grass.", "noise_level": 1, "hp_delta": 0, "events": ["drop_keys"], "flags_set": {}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:18:02] RAW_MODEL_OUTPUT: {"narration": "You carefully pick up the crossbow from the tower platform.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_crossbow"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:18:15] RAW_MODEL_OUTPUT: {"narration": "You carefully climb down the ladder from the tower platform.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_down"], "flags_set": {"at_tower_top": false}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:18:37] RAW_MODEL_OUTPUT: {"narration": "You aim the crossbow at the courtyard door's lock and fire a bolt. The sound echoes through the yard.", "noise_level": 2, "hp_delta": 0, "events": ["shoot_guard"], "flags_set": {"guards_remaining": 3}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:19:20] RAW_MODEL_OUTPUT: {"narration": "You climb the ladder to the tower platform and find yourself at the top.", "noise_level": 0, "hp_delta": 0, "events": ["climb_ladder_up"], "flags_set": {"at_tower_top": true}, "progression": "courtyard_01", "safety_reason": "Nothing special happened."}
+[2025-10-06 17:19:36] RAW_MODEL_OUTPUT: {
+  "narration": "You pull the lever at the tower top, and with a loud booming noise, the gate lowers into a bridge across the moat. Three guards charge towards you from the grass below.",
+  "noise_level": 3,
+  "hp_delta": 0,
+  "events": ["pull_lever", "guards_arrive"],
+  "flags_set": {"gate_lowered": true, "guards_present": true},
+  "progression": "courtyard_01",
+  "safety_reason": ""
+}
+[2025-10-06 17:20:25] RAW_MODEL_OUTPUT: {"narration": "You leap into the moat below, but the impact is brutal. You take 40 points of damage from the fall.", "noise_level": 0, "hp_delta": -40, "events": [], "flags_set": {"in_moat": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-06 17:20:48] RAW_MODEL_OUTPUT: {"narration": "You leap into the moat below, but the impact is brutal. You take 40 points of damage from the fall.", "noise_level": 0, "hp_delta": -40, "events": [], "flags_set": {"in_moat": true}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-06 17:21:15] RAW_MODEL_OUTPUT: {"narration": "You try to swim across the moat, but it's too wide and deep. You can't make it.", "noise_level": 0, "hp_delta": -10, "events": [], "flags_set": {}, "progression": "courtyard_01", "safety_reason": ""}
+[2025-10-06 17:27:28] PROMPT_VERSION: 3.3 (... )
+[2025-10-06 17:28:09] PROMPT_VERSION: 3.3 (... )
+[2025-10-06 17:35:28] RAW_MODEL_OUTPUT: {
+  "narration": "You leap towards the high window, but your landing is clumsy and you stumble against the cobblestone floor.",
+  "noise_level": 1,
+  "hp_delta": -10,
+  "events": [],
+  "flags_set": {},
+  "progression": "cell_01",
+  "safety_reason": "clumsy landing"
+}
+[2025-10-06 17:37:41] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way towards the crawlable hole and descend into it.", "noise_level": 0, "hp_delta": 0, "events": ["enter_coal_cellar"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:38:54] RAW_MODEL_OUTPUT: {"narration": "You carefully lift the loose cobblestone from under the straw bed.", "noise_level": 1, "hp_delta": 0, "events": ["straw_rummaged", "stone_lifted"], "flags_set": {"found_loose_stone": true, "stone_moved": true}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:40:00] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the crawlable hole, finding yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-06 17:41:10] RAW_MODEL_OUTPUT: {"narration": "You carefully crawl through the hole in the floor, finding yourself in a dark coal cellar.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-06 17:41:56] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way down the hole in the floor.", "noise_level": 0, "hp_delta": -10, "events": ["enter_coal_cellar", "dark_stumble"], "flags_set": {"entered_hole": true}, "progression": "coal_01", "safety_reason": "You stumbled in the darkness."}
+[2025-10-06 17:43:04] RAW_MODEL_OUTPUT: {"narration": "You carefully pick up the unknown object at your feet. It's a wooden torch stick.", "noise_level": 0, "hp_delta": 0, "events": ["pickup_stick"], "flags_set": {"has_torch_stick": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:44:57] RAW_MODEL_OUTPUT: {"narration": "You try to light the wooden torch stick, but it's damp and won't catch fire in this dusty cellar.", "noise_level": 0, "hp_delta": 0, "events": [], "flags_set": {}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:46:03] RAW_MODEL_OUTPUT: {"narration": "You carefully ignite the wooden torch stick on one of the coal heaps, and it begins to burn steadily.", "noise_level": 1, "hp_delta": 0, "events": ["pickup_torch"], "flags_set": {"torch_lit": true}, "progression": "coal_01", "safety_reason": ""}
+[2025-10-06 17:49:13] RAW_MODEL_OUTPUT: {"narration": "You carefully make your way back up through the crawlspace and emerge into the prison cell.", "noise_level": 0, "hp_delta": 0, "events": ["return_to_cell"], "flags_set": {"entered_hole": false}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 17:51:11] RAW_MODEL_OUTPUT: {"narration": "You try to light your torch on the wall torch, but it's too hot and you get singed.", "noise_level": 1, "hp_delta": -5, "events": [], "flags_set": {}, "progression": "cell_01", "safety_reason": ""}
+[2025-10-06 21:23:58] PROMPT_VERSION: 3.3 (... )

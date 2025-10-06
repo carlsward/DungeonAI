@@ -654,7 +654,7 @@ _LADDER_DOWN_RE = re.compile(r"\b(climb|go|head|get)\b.*\b(?:down\s+(?:the\s+)?l
 
 _LEVER_RE = re.compile(r"\b(pull|yank|throw|press)\b.*\b(lever)\b", re.IGNORECASE)
 _TOWER_RE = re.compile(r"\b(go|head|move)\b.*\b(tower)\b", re.IGNORECASE)
-_JUMP_MOAT_RE = re.compile(r"\b(jump)\b.*\b(moat)\b", re.IGNORECASE)
+_JUMP_MOAT_RE = re.compile(r"\b(jump)\b.*\b(moat|water)\b", re.IGNORECASE)
 _SWIM_RE = re.compile(r"\b(swim|swim\s+across|cross\s+the\s+moat)\b", re.IGNORECASE)
 _JUMP_GENERIC_RE = re.compile(r"\bjump\b.*\b(down|off|from)\b", re.IGNORECASE)
 
@@ -2417,7 +2417,7 @@ WELCOME_TEXT = (
     "A thin straw bed lies on the floor. There is said to be a loose cobblestone somewhere in the cell—if you can find it.\n\n"
     "Notes:\n"
     "- Only one item in your inventory at once.\n"
-    "- You will have a better experience if you specify your prompt.\n"
+    "- It's better if you specify your prompt. Type 'Pick up the flower, instead of 'Pick it up'.\n"
     "- Limit yourself to one action per prompt.\n"
     "- The engine should handle certain misspelling, but try to spell correctly.\n"
     "- If the LLM hallucinates a narration that ends in 'Nothing special happened', you are most likely in the same state as before." 
